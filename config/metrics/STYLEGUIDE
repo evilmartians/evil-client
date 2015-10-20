@@ -1,0 +1,230 @@
+= Ruby Style Guide
+
+Adapted from Dan Kubb's Ruby Style Guide
+https://github.com/dkubb/styleguide/blob/master/RUBY-STYLE
+
+== Commiting:
+
+* Write descriptive commit messages, following the pattern:
+
+    [TYPE] name
+
+    The message, describing the changes being made
+
+* Use the types below to mark commits:
+
+  - FEATURE - for adding new features, or backward-compatible changes;
+  - CHANGE - for backward-incompatible changes;
+  - BUG FIX - for fixing bugs;
+  - REFACTORING - for other changes of the code not affecting the API;
+  - OTHER - for changes in documentaton, metrics etc, not touching the code;
+  - VERSION - for version changes.
+
+* Always separate commits of different types (such as FEATURE and CHANGE).
+
+* Try to separate various features from each other.
+
+* Include specification to the same commit as the code.
+
+* Run all tests before making a commit.
+  Never commit the code that break unit tests.
+
+* Use metric (run `rake check`) before making a commit.
+
+* Do refactoring before making a commit. Best writing is rewriting.
+
+* Follow semantic versioning.
+
+    http://semver.org/
+
+* For versions name the commit after a version number, following the pattern:
+
+    VERSION 1.0.0-rc2
+
+
+== Formatting:
+
+* Use UTF-8. Declare encoding in the first line of every file.
+
+    # encoding: utf-8
+
+* Use 2 space indent, no tabs.
+
+* Use Unix-style line endings.
+
+* Use spaces around operators, after commas, colons and semicolons,
+  around { and before }.
+
+* No spaces after (, [ and before ], ).
+
+* Align `when` and `else` with `case`.
+
+* Use an empty line before the return value of a method (unless it
+  only has one line), and an empty line between defs.
+
+* Use empty lines to break up a long method into logical paragraphs.
+
+* Keep lines fewer than 80 characters.
+
+* Strip trailing whitespace.
+
+
+== Syntax:
+
+* Write for 2.0.
+
+* Use double quotes
+  
+    http://viget.com/extend/just-use-double-quoted-ruby-strings
+
+* Use def with parentheses when there are arguments.
+
+* Never use for, unless you exactly know why.
+
+* Never use then, except in case statements.
+
+* Use when x then ... for one-line cases.
+
+* Use &&/|| for boolean expressions, and/or for control flow. (Rule
+  of thumb: If you have to use outer parentheses, you are using the
+  wrong operators.)
+
+* Avoid double negation (!!), unless Null Objects are expected.
+  
+    http://devblog.avdi.org/2011/05/30/null-objects-and-falsiness
+
+* Avoid multiline ?:, use if.
+
+* Use {...} when defining blocks on one line. Use do...end for multiline
+  blocks.
+
+* Avoid return where not required.
+
+* Use ||= freely.
+
+* Use OO regexps, and avoid =~ $0-9, $~, $` and $' when possible.
+
+* Do not use Enumerable#inject when the "memo" object does not change between
+  iterations, use Enumerable#each_with_object instead (in ruby 1.9,
+  active_support and backports).
+
+* Prefer ENV.fetch to ENV[] syntax.
+  Prefer block syntax for ENV.fetch to usage of the second argument.
+
+
+== Naming:
+
+* Use snake_case for methods.
+
+* Use CamelCase for classes and modules. (Keep acronyms like HTTP,
+  RFC, XML uppercase.)
+
+* Use SCREAMING_SNAKE_CASE for other constants.
+
+* Do not use single letter variable names. Avoid uncommunicative names.
+
+* Use consistent variable names. Try to keep the variable names close
+  to the object class name.
+
+* Use names prefixed with _ for unused variables.
+
+* When defining a predicate method that compares against another object of
+  a similar type, name the argument "other".
+
+* Prefer map over collect, detect over find, select over find_all.
+
+* Use def self.method to define singleton methods.
+
+* Avoid alias when alias_method will do.
+
+
+== Comments:
+
+* Use YARD and its conventions for API documentation. Don't put an
+  empty line between the comment block and the def.
+
+* Comments longer than a word are capitalized and use punctuation.
+  Use one space after periods.
+
+* Avoid superfluous comments.
+
+
+== Code structuring:
+
+* Break code into packages, decoupled from the environment.
+
+* Wrap packages into gems.
+
+* Inject dependencies explicitly.
+  Leave all outer references on the border of any package. Inside
+  the package use internal references only.
+
+* Follow SOLID principles.
+
+    http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+
+* Only give a method one purpose for existing. If you pass in a boolean
+  to a method, what you're saying is that this method has two different
+  behaviours. Just split it into two single purpose methods. If you have
+  to use the words "AND" or "OR" to describe what the method does it
+  probably does too much.
+
+* Avoid long methods.
+  Try to keep them at no more than 6 lines long, and preferably 4 or less.
+
+  If sections of a method are logically separate by blank lines, then
+  that's probably a sign that those sections should be split into separate
+  methods.
+
+* Avoid hashes-as-optional-parameters. Does the method do too much?
+
+* Avoid long parameter lists.
+
+* Add "global" methods to Kernel (if you have to) and make them private.
+
+* Use OptionParser for parsing complex command line options and
+  ruby -s for trivial command line options.
+
+* Avoid needless metaprogramming.
+
+* Always freeze objects assigned to constants.
+
+
+== General:
+
+* Code in a functional way, avoid mutation when it makes sense.
+
+* Try to have methods either return the state of the object and have
+  no side effects, or return self and have side effects. This is
+  otherwise known as Command-query separation (CQS):
+
+    http://en.wikipedia.org/wiki/Command-query_separation
+
+* Do not mutate arguments unless that is the purpose of the method.
+
+* Try following TRUE heuristics by Sandi Metz
+
+    http://designisrefactoring.com/2015/02/08/introducing-sandi-metz-true/
+
+* Do not mess around in core classes when writing libraries.
+  Namespace your code inside the modules, or wrap core classes to
+  decorators of your own.
+
+* Do not program defensively.
+  
+    http://www.erlang.se/doc/programming_rules.shtml#HDR11
+
+* Keep the code simple.
+
+* Don't overdesign.
+
+* Don't underdesign.
+
+* Avoid bugs.
+
+* Read other style guides and apply the parts that don't dissent with
+  this list.
+
+* Be consistent.
+
+* Use common sense.

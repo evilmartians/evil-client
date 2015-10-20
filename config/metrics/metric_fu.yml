@@ -1,0 +1,15 @@
+---
+folders: # The list of folders to be used by any metric.
+- lib
+- app
+metrics: # The list of allowed metrics. The other metrics are disabled.
+- cane
+- churn
+- flay
+- flog
+- reek
+- roodi
+- saikuro
+format: html
+output: tmp/metric_fu
+verbose: false

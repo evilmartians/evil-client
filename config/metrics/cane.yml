@@ -1,0 +1,5 @@
+---
+abc_max: "10"
+line_length: "80"
+no_doc: "y"
+no_readme: "y"

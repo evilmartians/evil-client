@@ -1,0 +1,9 @@
+# Settings for metric_fu and its packages are collected in the `config/metrics`
+# and loaded by the Hexx::Suit::Metrics::MetricFu.
+
+begin
+  require "hexx-suit"
+  Hexx::Suit::Metrics::MetricFu.load
+rescue LoadError
+  puts "The 'hexx-suit' gem is not installed"
+end

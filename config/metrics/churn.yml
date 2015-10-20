@@ -1,0 +1,6 @@
+---
+ignore_files:
+- spec
+- config
+minimum_churn_count: 0
+start_date: "1 year ago"

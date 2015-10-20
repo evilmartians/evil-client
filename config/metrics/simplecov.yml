@@ -1,0 +1,8 @@
+---
+output: tmp/coverage
+filters: # The list of paths to be excluded from coverage checkup
+- "spec/"
+- "config/"
+groups: # The list of groups to be shown in the coverage report
+  Libraries: "lib/"
+  Application: "app/"

@@ -1,0 +1,72 @@
+---
+# settings added by the 'hexx-suit' module
+# output: "tmp/rubocop"
+# format: "html"
+
+AllCops:
+  Exclude:
+    - '**/db/schema.rb'
+
+Lint/HandleExceptions:
+  Exclude:
+    - '**/*_spec.rb'
+
+Lint/RescueException:
+  Exclude:
+    - '**/*_spec.rb'
+
+Style/AccessorMethodName:
+  Exclude:
+    - '**/*_spec.rb'
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Style/EmptyLinesAroundMethodBody:
+  Enabled: false
+
+Style/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+Style/EmptyLineBetweenDefs:
+  Enabled: false
+
+Style/FileName:
+  Enabled: false
+
+Style/RaiseArgs:
+  EnforcedStyle: compact
+
+Style/SingleLineMethods:
+  Exclude:
+    - '**/*_spec.rb'
+
+Style/SingleSpaceBeforeFirstArg:
+  Enabled: false
+
+Style/SpecialGlobalVars:
+  Exclude:
+    - '**/Gemfile'
+    - '**/*.gemspec'
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/TrivialAccessors:
+  Exclude:
+    - '**/*_spec.rb'

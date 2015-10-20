@@ -1,0 +1,37 @@
+---
+# Settings added by the 'hexx-suit' gem
+output: "tmp/yardstick/output.log"
+path: "lib/**/*.rb"
+rules:
+  ApiTag::Presence:
+    enabled: true
+    exclude: []
+  ApiTag::Inclusion:
+    enabled: true
+    exclude: []
+  ApiTag::ProtectedMethod:
+    enabled: true
+    exclude: []
+  ApiTag::PrivateMethod:
+    enabled: false
+    exclude: []
+  ExampleTag:
+    enabled: true
+    exclude: []
+  ReturnTag:
+    enabled: true
+    exclude: []
+  Summary::Presence:
+    enabled: true
+    exclude: []
+  Summary::Length:
+    enabled: true
+    exclude: []
+  Summary::Delimiter:
+    enabled: true
+    exclude: []
+  Summary::SingleLine:
+    enabled: true
+    exclude: []
+threshold: 100
+verbose: false

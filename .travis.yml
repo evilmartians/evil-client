@@ -1,0 +1,18 @@
+---
+language:     ruby
+bundler_args: --without metrics
+cache:        bundler
+script:       rake test:coverage:run
+rvm:
+  - '1.9.3'
+  - '2.2'
+  - ruby-head
+  - rbx-2 --1.9
+  - rbx-2 --2.2
+  - jruby-1.7-19mode
+  - jruby-9.0.0.0.pre2
+  - jruby-head
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-head
