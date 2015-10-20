@@ -1,17 +1,17 @@
 [WIP] Evil::Client
 ==================
 
-DSL для работы с REST-ресурсами удаленных API.
+DSL для работы с удаленными REST-ресурсами.
 
 [swagger]: http://swagger.io
 
-Installation
-------------
+Установка
+---------
 
 Add this line to your application's Gemfile:
 
 ```ruby
-Gemfile
+# Gemfile
 gem "evil-client"
 ```
 
@@ -27,85 +27,109 @@ Or add it manually:
 gem install evil-client
 ```
 
-Synopsis
---------
+Использование
+-------------
 
 ### Инициализация
 
-Инициализируется набором файлов swagger (в форматах `yaml` или `json`), описывающих различные удаленные API:
+При инициализации клиента необходимо указать его `base_url`.
 
 ```ruby
 require 'evil-client'
-dsl = Evil::Client.new("/config/users.json", "/config/sms.json")
+
+client = Evil::Client.new "127.0.0.1/v1"
+client.url! # => "127.0.0.1/v1"
 ```
+
+**Roadmap**: 
+
+- [ ] *Будет поддерживаться инициализация файлами спецификаций swagger, где каждая спецификация определяет свой собственный `base_url`.*
 
 ### Подготовка адреса
 
-Все методы, кроме `#to_url`, `#get`, `#post`, `#patch`, `#delete`, интерпретируются как части адреса:
+RESTful адрес запроса формируется цепочкой методов клиента. Все методы, не оканчивающиеся восклицательным знаком, интерпретируются как части адреса:
 
 ```ruby
-url = dsl.users
-url = dsl.users.id(1)
-url = dsl.users(1)
-url = dsl.users(1).sms
+client.users
+client.users[1]
+client.users[1].sms
 ```
 
-Метод `#to_url` финализирует адрес и проверяет его на соответствие документации.
+Квадратные скобки используются для передачи динамических параметров адреса.
 
-Проверка выполняется среди всех удаленных API в порядке их инициализации. Например, если `sms.json` и `users.json` содержат адрес `"/users/1"`, то при поиске адреса `dsl.users(1)` он будет взят из `users.json`, поскольку при инициализации он был указан первым.
+### Финализация адреса
 
-В случае ошибки (сформированный адрес не объявлен ни одним из API) выбрасывается исключение:
+Методы с восклицательным знаком: `#url!` `#get!`, `#post!`, `#patch!` и `#delete!` финализируют адрес запроса.
+
+Метод `#url!` возвращает строку адреса, включая `base_url`.
 
 ```ruby
-dsl.unknown.to_url
-# => #<Evil::Client::UrlError "The url '127.0.0.1/v1/unknown' doesn't match the documentation>">
+client.users[1].url!
+# => "127.0.0.1/v1/users/1"
+
+client.users[1].sms.url!
+# => "127.0.0.1/v1/users/1/sms"
 ```
 
-Эта проверка также автоматически выполняется при вызове любого метода отправки запроса.
+**Roadmap**:
 
-Помимо адреса, перед отправкой проверяется, что все переданные параметры соответствуют документации:
+- [ ] *При финализации адрес будет автоматически проверяться на соответствие (всем выбранным) API*.
+- [ ] *Адрес при финализации будет формироваться подходящим API (тем, которое имеет соответствующий адрес) с соответствующим `base_url`*.
+
+### Вызов (отправка) запроса
+
+Параметры запроса передаются в качестве атрибутов (хэш):
 
 ```ruby
-dsl.users(1).sms.post
-# => #<Evil::Client::RequestError "The text of SMS should be set as a [:sms][:text]">
+client.users[1].sms.get!
+client.users[1].sms.post! sms: { text: "Hello!" }, format: :json
 ```
 
-Необходимые параметры запроса передаются в виде аргументов:
+**Roadmap**:
+
+- [ ] *Перед отправкой параметры запроса будут проверяться на соответствие спецификации соответствюущего API*.
+
+### Получение и обработка ответа по-умолчанию
+
+Методы `#get!`, `#post!`, `#patch!`, `#delete!` возвращают расширенный хэш ([`Hashie::Mash`][mash]), извлеченный из тела ответа.
 
 ```ruby
-dsl.users(1).sms.post parameters: { sms: { text: "Hello!" } }, protocol: "https"
+results = client.users[1].sms.get!
+results.first.class # => Mash
+results.first.text  # => "Hello!"
 ```
 
-Возвращаемое значение анализирутся на соответствие документации. Если полученные данные не соответствуют ожиданиям (сервер вернул что-то странное), выбрасывается исключение. При этом как исходный запрос, так и полученный ответ доступны через методы исключения `#request` и `#responce`:
+В случае возврата ошибки, будет вызвано исключение с соответствующим кодом ошибки:
 
 ```ruby
-begin
-  dsl.users(1).sms.post text: "Hello"
-rescue Evil::Client::ResponceError => error
-  error.message
-  # => "The result of request doesn't contain required :id"
-  error.responce
-  # => {status: 200, sms: { text: "Hello" }
-  error.request
-  # => #<Evil::Client::Request @url='127.0.0.1/v1/users/1/sms'>
-end
+client.users[1].sms.get!
+# => #<ResponseError @status=404 ...>
 ```
 
-Результат запроса сериализуется в виде хэша:
+### Специфический разбор ответа
+
+Если метод вызывается с блоком, ему передается исходный ответ сервера (сырые данные), не преобразованные в хэш. Внутри блока пользователь может реализовать свою процедуру разбора данных. Результат разбора будет использоваться как возвращаемое значение метода:
 
 ```ruby
-dsl.users(1).sms.get
-# => { status: 200, parameters: { sms: [{ id: 1, text: "Hello!" }] } }
+client.users[1].sms.get! { |response| JSON.parse(response)[:status].to_i }
+# => 200
 ```
 
-Если метод вызван с блоком, сырой результат запроса после проверки передается в блок для дальнейшей обработки - например, инициализации доменной модели:
+В этом случае исключение не вызывается - обработка ошибок оставляется на усмотрение пользователя.
 
-```ruby
-dsl.users(1).sms.get do |responce|
-  Sms.new responce[:sms]
-end
-# => #<Sms @id=1, @text="Hello!">
-```
+**Roadmap**:
+
+- [ ] *Перед конвертацией сырых данных в структуру, ответ будет проверяться на соответствие спецификации API. Вызываемое исключение будет содержать описание исходного запроса и полученного ответа*
+
+Планы на будущее
+----------------
+
+* инициализация клиента файлами спецификаций swagger с разными `base_url`
+* валидация адресов по спецификациям swagger
+* валидация проверки запроса по соответствующей спецификации swagger
+* валидация проверки ответа сервера по соответствующей спецификации swagger 
+* использование спецификаций других форматов (помимо swagger): RABL, API blueprint и им подобных
+* (?) миграция на `rom-http`, либо реализация клиента как отдельного адаптера
 
 Tests
 -----
@@ -137,12 +161,9 @@ rake prepare
 Compatibility
 -------------
 
-Tested under rubies [compatible to MRI 1.9+](.travis.yml).
+Tested under rubies [compatible to MRI 2.2+](.travis.yml).
 
-Uses [RSpec] 3.0+ for testing and [hexx-suit] for dev/test tools collection.
-
-[RSpec]: http://rspec.org
-[hexx-suit]: https://github.com/nepalez/hexx-suit
+Uses [RSpec][rspec] 3.0+ for testing and [hexx-suit][hexx-suit] for dev/test tools collection.
 
 Contributing
 ------------
@@ -159,3 +180,7 @@ License
 -------
 
 @todo
+
+[mash]: https://github.com/intridea/hashie#mash
+[rspec]: http://rspec.org
+[hexx-suit]: https://github.com/nepalez/hexx-suit

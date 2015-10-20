@@ -30,8 +30,8 @@ module Evil
   # корректный (после проверки) набор данных для обработки,
   # например, преобразования в объект:
   #
-  #    client.users(1).sms.post(phone: "+710123456789", text: "Hello!") do |responce|
-  #      Sms.new(responce)
+  #    client.users(1).sms.post(phone: "+710123456789", text: "Hello!") do |response|
+  #      Sms.new(response)
   #    end
   #
   # @author nepalez <nepalez@evilmartians.com>
@@ -140,19 +140,19 @@ module Evil
     # Инициализируется объектом исходного запроса.
     #
     #    request  = Url.load("users.json").users(1).sms.get
-    #    responce = Responce.new(request)
+    #    response = Response.new(request)
     #
     # Метод [#call] проверяет соответствие ответа (в виде хэша)
     # требованиям документации и выбрасывает исключение в случае расхождений:
     #
-    #    responce.call(id: 1, pet_name: "Livingston")
-    #    # => <ResponceError "Unexpected key :pet_name">
+    #    response.call(id: 1, pet_name: "Livingston")
+    #    # => <ResponseError "Unexpected key :pet_name">
     #
     # При успешной проверке возвращает свой аргумент.
     #
     # @author nepalez <nepalez@evilmartians.com>
     #
-    class Responce
+    class Response
     end
   end # class Client
 end # module Evil
