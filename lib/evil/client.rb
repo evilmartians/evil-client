@@ -2,6 +2,7 @@
 
 require_relative "client/version"
 require_relative "client/errors"
+require_relative "client/url"
 
 # Поле имен для различных проектов EvilMartians
 module Evil
