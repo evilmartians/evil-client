@@ -6,7 +6,7 @@ require_relative "client/url"
 require_relative "client/api"
 require_relative "client/apis"
 
-# Поле имен для различных проектов EvilMartians
+# Поле имен для различных проектов Evil Martians
 module Evil
   # Клиент отвечает за формирование адреса и отправку запроса к удаленному API.
   #
