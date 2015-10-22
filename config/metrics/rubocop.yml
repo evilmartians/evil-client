@@ -28,6 +28,9 @@ Style/ClassAndModuleChildren:
 Style/Documentation:
   Enabled: false
 
+Style/DoubleNegation:
+  Enabled: false
+
 Style/EmptyLinesAroundBlockBody:
   Enabled: false
 
@@ -47,7 +50,7 @@ Style/FileName:
   Enabled: false
 
 Style/RaiseArgs:
-  EnforcedStyle: compact
+  EnforcedStyle: exploded
 
 Style/SingleLineMethods:
   Exclude:

@@ -18,7 +18,7 @@ describe Evil::Client::APIs do
       expect(subject).to be_kind_of described_class
       expect(subject.to_a).to eql [api]
     end
-  end # describe .with
+  end
 
   describe "#each" do
     context "with a block" do
@@ -37,7 +37,7 @@ describe Evil::Client::APIs do
         expect(subject.to_a).to eql [api]
       end
     end
-  end # describe #each
+  end
 
   describe "#api" do
     subject { apis.api address }
@@ -65,6 +65,5 @@ describe Evil::Client::APIs do
           .to raise_error Evil::Client::Errors::URLError, %r{'users/1/sms'}
       end
     end
-  end # describe #api
-
-end # describe Evil::Client::APIs
+  end
+end

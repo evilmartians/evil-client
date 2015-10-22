@@ -5,7 +5,7 @@ describe Evil::Client::Errors::URLError do
     subject { error }
 
     it { is_expected.to be_kind_of ::RuntimeError }
-  end # describe .new
+  end
 
   describe "#message" do
     subject { error.message }
@@ -14,12 +14,11 @@ describe Evil::Client::Errors::URLError do
       expect(subject)
         .to eql "The address 'unknown/address' cannot be resolved to url"
     end
-  end # describe #message
+  end
 
   describe "#address" do
     subject { error.address }
 
     it { is_expected.to eql "unknown/address" }
-  end # describe #address
-
-end # describe URLError
+  end
+end

@@ -6,7 +6,7 @@ describe Evil::Client::API do
     subject { api.base_url }
 
     it { is_expected.to eql base_url }
-  end # describe #base_url
+  end
 
   describe "#url" do
     subject { api.url(address) }
@@ -14,5 +14,5 @@ describe Evil::Client::API do
     let(:address) { "users/1/sms" }
 
     it { is_expected.to eql "127.0.0.1/v1/users/1/sms" }
-  end # describe #url
-end # describe Evil::Client::API
+  end
+end

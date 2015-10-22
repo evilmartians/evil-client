@@ -1,54 +1,73 @@
 class Evil::Client
   # Построитель адреса запроса.
   #
-  # Любой метод (объекта или класса) интерпретируется как часть адреса
-  # и возвращает обновленный объект с добавленной частью.
+  # Любой метод (объекта или класса) без восклицательных знаков интерпретируется
+  # как часть адреса и возвращает обновленный URL с добавленной частью.
   #
   # Метод [#call] (с алиасом +[]+) используется для вставки в адрес
-  # динамической части.
+  # динамической части (также возвращает обновленный URL).
   #
-  # Метод [#call!] без аргументов возвращает итоговую строку
+  # Метод [#url!] без аргументов возвращает итоговую строку
   # (не привязанную к +base_url+).
   #
-  #     URL.users[1].sms.call! # => "/users/1/sms"
+  #     URL.users[1].sms.url! # => "users/1/sms"
   #
   # @api private
   #
-  # @author nepalez <nepalez@evilmartians.com>
-  #
   class URL
-    def initialize
-      @parts = []
-    end
-
+    # Добавляет динамическую часть к адресу и возвращает обновленный адрес
+    #
+    # @param [#to_s] part
+    #
+    # @return [Evil::Client::URL]
+    #
     def call(part)
-      dup.tap do |instance|
-        instance.instance_eval { @parts = @parts + [part.to_s] }
-      end
+      self.class.new(@parts + [part])
     end
 
-    def call!
+    # Возвращает сформированную строку адреса
+    #
+    # @return [String]
+    #
+    def url!
       @parts.join("/")
+    end
+
+    protected
+
+    # Изменяет текущий объект путем добавления к нему части адреса
+    #
+    # @param [#to_s] part
+    #
+    # @return [Evil::Client::URL]
+    #
+    def call!(part)
+      @parts << part
+      self
     end
 
     private
 
     REGULAR = /^\w+$/
 
-    def self.method_missing(name, *)
-      new.send(name)
+    def initialize(parts = [])
+      @parts = parts
     end
 
-    def self.respond_to_missing?(name, *)
-      name[REGULAR] ? true : false
-    end
-
-    def method_missing(name, *)
-      name[REGULAR] ? call(name) : super
+    def method_missing(name, *args)
+      (name[REGULAR] && args.empty?) ? call(name) : super
     end
 
     def respond_to_missing?(name, *)
-      name[REGULAR] ? true : false
+      !!name[REGULAR]
     end
-  end # class URL
-end # class Evil::Client
+
+    def self.method_missing(*args)
+      new.public_send(*args)
+    end
+
+    def self.respond_to_missing?(name, *)
+      !!name[REGULAR]
+    end
+  end
+end

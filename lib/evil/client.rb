@@ -1,11 +1,3 @@
-# encoding: utf-8
-
-require_relative "client/version"
-require_relative "client/errors"
-require_relative "client/url"
-require_relative "client/api"
-require_relative "client/apis"
-
 # Поле имен для различных проектов Evil Martians
 module Evil
   # Клиент отвечает за формирование адреса и отправку запроса к удаленному API.
@@ -43,9 +35,12 @@ module Evil
   #    end
   #    # => 400
   #
-  # @author nepalez <nepalez@evilmartians.com>
-  #
   class Client
 
-  end # class Client
-end # module Evil
+    require_relative "client/errors"
+    require_relative "client/url"
+    require_relative "client/api"
+    require_relative "client/apis"
+
+  end
+end

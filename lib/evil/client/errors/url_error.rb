@@ -3,8 +3,6 @@ module Evil::Client::Errors
   # Исключение вызывается когда сформированный адрес
   # не может быть преобразован в url удаленного API
   #
-  # @author nepalez <nepalez@evilmartians.com>
-  #
   class URLError < RuntimeError
     # @!attribute [r] address
     #
@@ -20,6 +18,6 @@ module Evil::Client::Errors
       super "The address '#{address}' cannot be resolved to url"
       @address = address.to_s
     end
-  end # class URLError
+  end
 
-end # module Evil::Client::Errors
+end

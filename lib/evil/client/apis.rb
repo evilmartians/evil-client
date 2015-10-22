@@ -21,8 +21,6 @@ class Evil::Client
   #
   # @api private
   #
-  # @author nepalez <nepalez@evilmartians.com>
-  #
   class APIs
     include Enumerable, Errors
 
@@ -51,8 +49,8 @@ class Evil::Client
     #
     # @return [Enumerator<Evil::Client::API>]
     #
-    def each
-      block_given? ? @apis.each { |api| yield(api) } : to_enum
+    def each(&block)
+      @apis.each(&block)
     end
 
     # Находит и возвращает API, содержащий запрашиваемый адрес
@@ -60,12 +58,12 @@ class Evil::Client
     # @param [String] address
     #
     # @return [Evil::Client::API]
-    # 
+    #
     # @raise [Evil::Client::Errors::ULRError]
     #   если сформированный адрес не распознан <ни одним из объявленныx> API
     #
     def api(address)
-      detect { |api| api.url(address) } || fail(URLError.new address)
+      detect { |api| api.url(address) } || fail(URLError, address)
     end
-  end # class APIs
-end # class Evil::Client
+  end
+end

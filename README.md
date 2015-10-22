@@ -33,8 +33,6 @@ gem install evil-client
 При создании клиента необходимо указать его `base_url`.
 
 ```ruby
-require 'evil-client'
-
 client = Evil::Client.build base_url: "127.0.0.1/v1"
 client.url! # => "127.0.0.1/v1"
 ```
@@ -80,7 +78,7 @@ client.users[1].sms.url!
 
 ```ruby
 client.users[1].sms.get!
-client.users[1].sms.post! sms: { text: "Hello!" }, format: :json
+client.users[1].sms.post! text: "Hello!"
 ```
 
 **Roadmap**:
@@ -101,7 +99,7 @@ results.first.text  # => "Hello!"
 
 ```ruby
 begin
-  client.users[1].smss.get!
+  client.unknown.get!
 rescue Evil::Client::ResponseError => error
   error.status    # => 404
   error.response  # => #<Mash ...>
@@ -113,7 +111,7 @@ end
 Если метод вызывается с блоком, то в случае ошибки вместо вызова исключения ответ (response) передается в блок. Внутри блока пользователь может реализовать свою процедуру обработки ошибки. Метод вернет результат обработки:
 
 ```ruby
-client.userss.get! { |error_response| error_response.status.to_i }
+client.userss.get! { |error_response| error_response.status }
 # => 404
 ```
 

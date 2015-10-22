@@ -12,7 +12,7 @@ class Evil::Client
   #     api = API.load("users.json")
   #     api.url("/unknown") # => nil
   #
-  # @author nepalez <nepalez@evilmartians.com>
+  # @api private
   #
   class API
     # @!attribute [r] base
@@ -38,7 +38,9 @@ class Evil::Client
     # @return [String]
     #
     def url(address)
-      File.join(base_url, address)
+      File.join(base_url, address) # @todo: Решить про использование протокола!
+                                   # Можно было бы использовать URI.join,
+                                   # но URI требует указания протокола base_url
     end
-  end # class API
-end # class Evil::Client
+  end
+end
