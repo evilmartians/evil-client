@@ -19,10 +19,10 @@ describe Evil::Client::API do
 
       it "fails" do
         expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, /'http\:\/\/'/
+          .to raise_error Evil::Client::Errors::URLError, %r{'http://'}
       end
     end
-  end # describe .new
+  end
 
   describe "#base_url" do
     subject { api.base_url }

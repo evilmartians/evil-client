@@ -1,7 +1,7 @@
 describe Evil::Client::Registry do
 
   let(:registry) { described_class.new default: api }
-  let(:api)  { double :api }
+  let(:api) { double :api }
 
   before do
     allow(api).to receive(:uri) { |v| "127.0.0.1/#{v}" if v == "users/1/sms" }

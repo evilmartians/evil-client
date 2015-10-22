@@ -1,5 +1,5 @@
 describe Evil::Client::Errors::URLError do
-  let(:error) { described_class.new :"wrong" }
+  let(:error) { described_class.new :wrong }
 
   describe ".new" do
     subject { error }
