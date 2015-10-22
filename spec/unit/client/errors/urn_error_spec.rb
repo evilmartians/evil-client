@@ -1,4 +1,4 @@
-describe Evil::Client::Errors::URLError do
+describe Evil::Client::Errors::URNError do
   let(:error) { described_class.new :"unknown/address" }
 
   describe ".new" do
@@ -12,12 +12,12 @@ describe Evil::Client::Errors::URLError do
 
     it "returns a proper message" do
       expect(subject)
-        .to eql "The address 'unknown/address' cannot be resolved to url"
+        .to eql "The URN 'unknown/address' cannot be resolved to URI"
     end
   end
 
-  describe "#address" do
-    subject { error.address }
+  describe "#urn" do
+    subject { error.urn }
 
     it { is_expected.to eql "unknown/address" }
   end

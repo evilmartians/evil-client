@@ -4,7 +4,7 @@ describe Evil::Client::Registry do
   let(:api)  { double :api }
 
   before do
-    allow(api).to receive(:url) { |v| "127.0.0.1/#{v}" if v == "users/1/sms" }
+    allow(api).to receive(:uri) { |v| "127.0.0.1/#{v}" if v == "users/1/sms" }
     allow(Evil::Client::API).to receive(:new) { api }
   end
 
@@ -57,29 +57,29 @@ describe Evil::Client::Registry do
   end
 
   describe "#api" do
-    subject { registry.api url: url }
+    subject { registry.api urn: urn }
 
-    let(:url) { "users/1/sms" }
+    let(:urn) { "users/1/sms" }
 
-    it "returns api that has given url" do
+    it "returns api that has given urn" do
       expect(subject).to eql(api)
     end
 
-    context "when api doesn't resolve url" do
-      let(:url) { "users/1" }
+    context "when api doesn't resolve urn" do
+      let(:urn) { "users/1" }
 
       it "fails" do
         expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, %r{'users/1'}
+          .to raise_error Evil::Client::Errors::URNError, %r{'users/1'}
       end
     end
 
     context "when specified registry list is empty" do
-      subject { registry.api :unregistered, url: url }
+      subject { registry.api :unregistered, urn: urn }
 
       it "fails" do
         expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, %r{'users/1/sms'}
+          .to raise_error Evil::Client::Errors::URNError, %r{'users/1/sms'}
       end
     end
   end

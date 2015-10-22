@@ -1,60 +1,60 @@
-describe Evil::Client::URL do
+describe Evil::Client::URN do
 
-  let(:url) { described_class.new }
+  let(:urn) { described_class.new }
 
   # Instance methods
 
-  describe "#url!" do
-    subject { url.url! }
+  describe "#finalize!" do
+    subject { urn.finalize! }
 
     it { is_expected.to eql "" }
 
     context "when parts are set" do
-      let(:url) { described_class.new %w(foo bar baz) }
+      let(:urn) { described_class.new %w(foo bar baz) }
 
       it { is_expected.to eql "foo/bar/baz" }
     end
   end
 
   describe "#call" do
-    subject { url.call(:foo).call(1) }
+    subject { urn.call(:foo).call(1) }
 
     it "creates new instance" do
       expect(subject).to be_kind_of described_class
-      expect(subject).not_to eql url
+      expect(subject).not_to eql urn
     end
 
     it "adds part to path" do
-      expect(subject.url!).to eql "foo/1"
+      expect(subject.finalize!).to eql "foo/1"
     end
   end
 
   describe "#call!" do
-    subject { url.send(:call!, :foo).send(:call!, 1) }
+    subject { urn.send(:call!, :foo).send(:call!, 1) }
 
     it "returns the same instance" do
-      expect(subject).to eql url
+      expect(subject).to eql urn
     end
 
     it "adds part to path" do
-      expect(subject.url!).to eql "foo/1"
+      expect(subject.finalize!).to eql "foo/1"
     end
   end # describe #call!
 
   describe "#method_missing" do
-    subject { url.foo.bar.baz }
+    subject { urn.foo.bar.baz }
 
-    it "creates updated url" do
+    it "creates updated urn" do
       expect(subject).to be_kind_of described_class
-      expect(subject).not_to eql url
+      expect(subject).not_to eql urn
     end
 
     it "adds part to path" do
-      expect(subject.url!).to eql "foo/bar/baz"
+      expect(subject.finalize!).to eql "foo/bar/baz"
     end
 
     context "with bang" do
-      subject { url.foo! }
+      subject { urn.foo! }
 
       it "fails" do
         expect { subject }.to raise_error NoMethodError
@@ -62,7 +62,7 @@ describe Evil::Client::URL do
     end
 
     context "with arguments" do
-      subject { url.foo :bar }
+      subject { urn.foo :bar }
 
       it "fails" do
         expect { subject }.to raise_error NoMethodError
@@ -71,26 +71,28 @@ describe Evil::Client::URL do
   end
 
   describe "#respond_to?" do
+    subject { urn.respond_to? name }
+
     context "method defined in superclass" do
-      subject { url.respond_to? :class }
+      let(:name) { :class }
 
       it { is_expected.to eql true }
     end
 
     context "undefined method without special symbols" do
-      subject { url.respond_to? "foo_123" }
+      let(:name) { :foo_123 }
 
       it { is_expected.to eql true }
     end
 
     context "undefined method with bang" do
-      subject { url.respond_to? "foo!" }
+      let(:name) { :foo! }
 
       it { is_expected.to eql false }
     end
 
     context "undefined method with question" do
-      subject { url.respond_to? "foo?" }
+      let(:name) { :foo? }
 
       it { is_expected.to eql false }
     end
@@ -98,8 +100,8 @@ describe Evil::Client::URL do
 
   # Class methods
 
-  describe ".url!" do
-    subject { described_class.url! }
+  describe ".finalize!" do
+    subject { described_class.finalize! }
 
     it { is_expected.to eql "" }
   end
@@ -107,48 +109,50 @@ describe Evil::Client::URL do
   describe ".call" do
     subject { described_class.call(1) }
 
-    it "instantiates url" do
+    it "instantiates urn" do
       expect(subject).to be_kind_of described_class
     end
 
     it "adds part to path" do
-      expect(subject.url!).to eql "1"
+      expect(subject.finalize!).to eql "1"
     end
   end
 
   describe ".method_missing" do
     subject { described_class.foo }
 
-    it "instantiates url" do
+    it "instantiates urn" do
       expect(subject).to be_kind_of described_class
     end
 
     it "adds part to path" do
-      expect(subject.url!).to eql "foo"
+      expect(subject.finalize!).to eql "foo"
     end
   end
 
   describe ".respond_to?" do
+    subject { described_class.respond_to? name }
+
     context "method defined in superclass" do
-      subject { url.respond_to? :superclass }
+      let(:name) { :superclass }
 
       it { is_expected.to eql true }
     end
 
     context "undefined method without special symbols" do
-      subject { described_class.respond_to? "foo_123" }
+      let(:name) { :foo_123 }
+
+      it { is_expected.to eql true }
+    end
+
+    context "instance method with bang" do
+      let(:name) { :finalize! }
 
       it { is_expected.to eql true }
     end
 
     context "undefined method with bang" do
-      subject { described_class.respond_to? "foo!" }
-
-      it { is_expected.to eql false }
-    end
-
-    context "undefined method with question" do
-      subject { described_class.respond_to? "foo?" }
+      let(:name) { :foo_123! }
 
       it { is_expected.to eql false }
     end

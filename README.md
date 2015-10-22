@@ -34,7 +34,7 @@ gem install evil-client
 
 ```ruby
 client = Evil::Client.build base_url: "127.0.0.1/v1"
-client.url! # => "127.0.0.1/v1"
+client.uri! # => "127.0.0.1/v1"
 ```
 
 **Roadmap**: 
@@ -55,15 +55,15 @@ client.users[1].sms
 
 ### Финализация адреса
 
-Методы с восклицательным знаком: `#url!` `#get!`, `#post!`, `#patch!` и `#delete!` финализируют адрес запроса.
+Методы с восклицательным знаком: `#uri!` `#get!`, `#post!`, `#patch!` и `#delete!` финализируют адрес запроса.
 
-Метод `#url!` возвращает строку адреса, включая `base_url`.
+Метод `#uri!` возвращает строку адреса, включая `base_url`.
 
 ```ruby
-client.users[1].url!
+client.users[1].uri!
 # => "127.0.0.1/v1/users/1"
 
-client.users[1].sms.url!
+client.users[1].sms.uri!
 # => "127.0.0.1/v1/users/1/sms"
 ```
 

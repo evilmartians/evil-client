@@ -3,7 +3,7 @@ class Evil::Client
   #
   module Errors
 
-    require_relative "errors/url_error"
+    require_relative "errors/urn_error"
 
   end
 end

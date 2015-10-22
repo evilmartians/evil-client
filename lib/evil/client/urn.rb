@@ -1,35 +1,36 @@
 class Evil::Client
-  # Построитель адреса запроса.
+  # Построитель относительного имени ресурса (URN - unified resource name),
+  # который может относитсья к различным API
+  # @see https://ru.wikipedia.org/wiki/URN
   #
   # Любой метод (объекта или класса) без восклицательных знаков интерпретируется
-  # как часть адреса и возвращает обновленный URL с добавленной частью.
+  # как часть имени и возвращает обновленный URN с добавленной частью.
   #
   # Метод [#call] (с алиасом +[]+) используется для вставки в адрес
-  # динамической части (также возвращает обновленный URL).
+  # динамической части (также возвращает обновленный URN).
   #
-  # Метод [#url!] без аргументов возвращает итоговую строку
-  # (не привязанную к +base_url+).
+  # Метод [#finalize!] без аргументов возвращает итоговую строку URN
   #
-  #     URL.users[1].sms.url! # => "users/1/sms"
+  #     URN.users[1].sms.finalize! # => "users/1/sms"
   #
   # @api private
   #
-  class URL
+  class URN
     # Добавляет динамическую часть к адресу и возвращает обновленный адрес
     #
     # @param [#to_s] part
     #
-    # @return [Evil::Client::URL]
+    # @return [Evil::Client::URN]
     #
     def call(part)
       self.class.new(@parts + [part])
     end
 
-    # Возвращает сформированную строку адреса
+    # Возвращает сформированную строку адреса URN
     #
     # @return [String]
     #
-    def url!
+    def finalize!
       @parts.join("/")
     end
 
@@ -39,7 +40,7 @@ class Evil::Client
     #
     # @param [#to_s] part
     #
-    # @return [Evil::Client::URL]
+    # @return [Evil::Client::URN]
     #
     def call!(part)
       @parts << part
@@ -67,7 +68,7 @@ class Evil::Client
     end
 
     def self.respond_to_missing?(name, *)
-      !!name[REGULAR]
+      !!name[REGULAR] || instance_methods.include?(name)
     end
   end
 end

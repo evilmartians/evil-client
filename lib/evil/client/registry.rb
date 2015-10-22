@@ -17,19 +17,19 @@ class Evil::Client
   #
   # Метод [#api] возвращает <пока единственный> API.
   #
-  #     Registry.api url: "users/1/sms"
+  #     Registry.api urn: "users/1/sms"
   #
   # В дальнейшем этот метод будет выполнять поиск того из API, где определен
   # указанный адрес. API просматриваются в порядке, определенном при
   # инициализации. Если один и тот же адрес определен несколькими API,
   # то поиск может быть выполнен только среди указанного подмножества:
   #
-  #    Registry.api :users, :sms, url: "users/1"
+  #    Registry.api :users, :sms, urn: "users/1"
   #
   # Если адрес не найден, выбрасывается исключение:
   #
-  #    Registry.api url: "/unknown"
-  #    # => #<Evil::Client::Errors::URLError ...>
+  #    Registry.api urn: "/unknown"
+  #    # => #<Evil::Client::Errors::URNError ...>
   #
   # @api private
   #
@@ -49,6 +49,7 @@ class Evil::Client
       new default: API.new(base_url: base_url)
     end
 
+    # @!method initialize(apis)
     # Инициализирует коллекцию именованным набором <спецификаций к> API
     #
     # @param [Hash<Symbol, Evil::Client::API>] apis
@@ -72,22 +73,25 @@ class Evil::Client
     # @param [Symbol, Array<Symbol>] keys
     #
     # @return [Evil::Client::Registry]
-    # 
+    #
     def filter(*keys)
       keys.any? ? self.class.new(@apis.select { |k| keys.include? k }) : self
     end
 
-    # Находит и возвращает API, содержащий запрашиваемый адрес
+    # Находит и возвращает API, содержащий запрашиваемый URN
     #
-    # @param [String] url
+    # @param [Symbol, Array<Symbol>] keys
+    #   Имена API, среди которых ведется поиск URN
+    # @option options [String] :urn
+    #   Адрес URN, для которого ищется подходящий API
     #
-    # @return [Evil::Client::API]
+    # @return [Evil::Client::API] API, у которого есть искомый адрес
     #
     # @raise [Evil::Client::Errors::ULRError]
     #   если сформированный адрес не распознан <ни одним из объявленныx> API
     #
-    def api(*keys, url:)
-      filter(*keys).detect { |api| api.url(url) } || fail(URLError, url)
+    def api(*keys, urn:)
+      filter(*keys).detect { |api| api.uri(urn) } || fail(URNError, urn)
     end
   end
 end

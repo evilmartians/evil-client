@@ -8,11 +8,19 @@ describe Evil::Client::API do
     it { is_expected.to eql base_url }
   end
 
-  describe "#url" do
-    subject { api.url(address) }
+  describe "#uri" do
+    subject { api.uri(urn) }
 
-    let(:address) { "users/1/sms" }
+    let(:urn) { "users/1/sms" }
 
     it { is_expected.to eql "127.0.0.1/v1/users/1/sms" }
+  end
+
+  describe "#uri?" do
+    subject { api.uri?(urn) }
+
+    let(:urn) { "users/1/sms" }
+
+    it { is_expected.to eql true }
   end
 end

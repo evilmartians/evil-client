@@ -4,13 +4,13 @@ class Evil::Client
   # Сейчас он просто хранит [#base_url].
   #
   #     api = API.new base_url: "127.0.0.1/v1"
-  #     api.url("/users/1/sms") # => "127.0.0.1/v1/users/1/sms"
+  #     api.uri("/users/1/sms") # => "127.0.0.1/v1/users/1/sms"
   #
   # В дальнейшем он будет парсить и хранить спецификацию (swagger etc.)
-  # и проверять наличие адреса по спецификации перед привязкой к [#base_url].
+  # и проверять наличие URN по спецификации перед его привязкой к [#base_url].
   #
   #     api = API.load("users.json")
-  #     api.url("/unknown") # => nil
+  #     api.uri("/unknown") # => nil
   #
   # @api private
   #
@@ -31,16 +31,27 @@ class Evil::Client
       @base_url = base_url
     end
 
-    # Формирует полный url из переданной строки адреса
+    # Формирует полный URI (base_url + URN) из переданной строки URN
     #
-    # @param [String] address
+    # @param [String] urn
     #
     # @return [String]
     #
-    def url(address)
-      File.join(base_url, address) # @todo: Решить про использование протокола!
-                                   # Можно было бы использовать URI.join,
-                                   # но URI требует указания протокола base_url
+    def uri(urn)
+      File.join(base_url, urn) # @todo: Решить про использование протокола!
+                               # Можно было бы использовать URI.join,
+                               # но URI требует указания протокола base_url
+    end
+
+    # Предикат, проверяющий наличие URN у текущего API
+    # (добавлен для соответствия конвенции имен Rails)
+    #
+    # @param (see #uri)
+    #
+    # @return [Boolean]
+    #
+    def uri?(urn)
+      !!uri(urn)
     end
   end
 end

@@ -4,15 +4,20 @@ module Evil
   #
   # При создании клиента указывается +base_url+:
   #
-  #    client = Client.build base_url: "127.0.0.1/v1"
+  #    client = Client.with base_url: "127.0.0.1/v1"
+  #
+  # (В дальнейшем будет добавлен метод +Client.load+ для инициализации клиента
+  # из спецификаций swagger etc.):
+  #
+  #    client = Client.load users: "users.json", sms: "sms.json"
   #
   # Все методы без восклицательного знака интерпретируются как части адреса:
   #
   #    client.users[1].sms
   #
-  # Для получения строки адреса используется метод [#url!]:
+  # Для получения строки адреса используется метод [#urn!]:
   #
-  #    client.users[1].sms.url! # => "127.0.0.1/v1/users/1/sms"
+  #    client.users[1].sms.urn! # => "127.0.0.1/v1/users/1/sms"
   #
   # Методы [#get!], [#post!], [#patch!], [#delete!] формируют и отправляют
   # запрос с переданными параметрами, возвращают (синхронный) ответ сервера
@@ -23,6 +28,19 @@ module Evil
   #    response.id    # => 100
   #    response.phone # => "7101234567"
   #    response.text  # => "Hello!"
+  #
+  # По умолчанию полный urn ищется по всем зарегистрированным API
+  # (сейчас используется единственный API +base_url+).
+  # При необходимости указать API явно, финализирующие методы могут вызываться
+  # с его именем):
+  #
+  #    client.users(1).urn! :users
+  #    # => "users.com/v1/users/1"
+  #
+  #    client.users(1).urn! :sms
+  #    # => "sms.com/v1/users/1"
+  #
+  #    client.users(1).sms.post! :sms, phone: "7101234567", text: "Hello!"
   #
   # Перед возвращением проверяется статус ответа и в случае ошибки (4**, 5**)
   # выбрасывается исключение, содержащее ответ сервера.
@@ -38,7 +56,7 @@ module Evil
   class Client
 
     require_relative "client/errors"
-    require_relative "client/url"
+    require_relative "client/urn"
     require_relative "client/api"
     require_relative "client/registry"
 
