@@ -91,7 +91,8 @@ class Evil::Client
     #   если сформированный адрес не распознан <ни одним из объявленныx> API
     #
     def api(*keys, urn:)
-      filter(*keys).detect { |api| api.uri(urn) } || fail(URNError, urn)
+      filter(*keys).detect { |api| api.uri(urn) } ||
+        fail(URNError.new urn, keys)
     end
   end
 end
