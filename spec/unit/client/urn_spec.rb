@@ -29,6 +29,19 @@ describe Evil::Client::URN do
     end
   end
 
+  describe "#[]" do
+    subject { urn[:foo][1] }
+
+    it "creates new instance" do
+      expect(subject).to be_kind_of described_class
+      expect(subject).not_to eql urn
+    end
+
+    it "adds part to path" do
+      expect(subject.finalize!).to eql "foo/1"
+    end
+  end
+
   describe "#call!" do
     subject { urn.send(:call!, :foo).send(:call!, 1) }
 
@@ -39,7 +52,7 @@ describe Evil::Client::URN do
     it "adds part to path" do
       expect(subject.finalize!).to eql "foo/1"
     end
-  end # describe #call!
+  end
 
   describe "#method_missing" do
     subject { urn.foo.bar.baz }
@@ -108,6 +121,18 @@ describe Evil::Client::URN do
 
   describe ".call" do
     subject { described_class.call(1) }
+
+    it "instantiates urn" do
+      expect(subject).to be_kind_of described_class
+    end
+
+    it "adds part to path" do
+      expect(subject.finalize!).to eql "1"
+    end
+  end
+
+  describe ".[]" do
+    subject { described_class[1] }
 
     it "instantiates urn" do
       expect(subject).to be_kind_of described_class

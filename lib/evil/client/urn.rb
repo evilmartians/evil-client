@@ -25,6 +25,7 @@ class Evil::Client
     def call(part)
       self.class.new(@parts + [part])
     end
+    alias_method :[], :call
 
     # Возвращает сформированную строку адреса URN
     #
