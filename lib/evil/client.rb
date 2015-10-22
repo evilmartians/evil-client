@@ -40,7 +40,7 @@ module Evil
     require_relative "client/errors"
     require_relative "client/url"
     require_relative "client/api"
-    require_relative "client/apis"
+    require_relative "client/registry"
 
   end
 end
