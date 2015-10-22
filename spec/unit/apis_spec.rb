@@ -1,8 +1,24 @@
 describe Evil::Client::APIs do
-  let(:apis) { described_class.new api }
-  let(:api)  { double :api, url: "127.0.0.1/v1/users/1/sms" }
 
-  before { allow(Evil::Client::API).to receive(:new) { api } }
+  let(:apis) { described_class.new api }
+  let(:api)  { double :api }
+
+  before do
+    allow(api).to receive(:url) { |v| "127.0.0.1/#{v}" if v == "users/1/sms" }
+    allow(Evil::Client::API).to receive(:new) { api }
+  end
+
+  describe ".with" do
+    subject { described_class.with options }
+
+    let(:options) { { base_url: "127.0.0.1" } }
+
+    it "builds and wraps api with options given" do
+      expect(Evil::Client::API).to receive(:new).with(options)
+      expect(subject).to be_kind_of described_class
+      expect(subject.to_a).to eql [api]
+    end
+  end # describe .with
 
   describe "#each" do
     context "with a block" do
@@ -23,12 +39,22 @@ describe Evil::Client::APIs do
     end
   end # describe #each
 
-  describe "#url" do
-    subject { apis.url "users/1/sms" }
+  describe "#api" do
+    subject { apis.api address }
 
-    it "forwards call to api" do
-      expect(api).to receive(:url).with "users/1/sms"
-      expect(subject).to eql "127.0.0.1/v1/users/1/sms"
+    let(:address) { "users/1/sms" }
+
+    it "returns api that has given address" do
+      expect(subject).to eql(api)
+    end
+
+    context "when api doesn't resolve url" do
+      let(:address) { "users/1" }
+
+      it "fails" do
+        expect { subject }
+          .to raise_error Evil::Client::Errors::URLError, %r{'users/1'}
+      end
     end
 
     context "when no api specified" do
@@ -36,29 +62,9 @@ describe Evil::Client::APIs do
 
       it "fails" do
         expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, %r{users/1/sms}
+          .to raise_error Evil::Client::Errors::URLError, %r{'users/1/sms'}
       end
     end
+  end # describe #api
 
-    context "when api doesn't resolve url" do
-      let(:api) { double :api, url: nil }
-
-      it "fails" do
-        expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, %r{users/1/sms}
-      end
-    end
-  end # describe #url
-
-  describe ".with" do
-    subject { described_class.with options }
-
-    let(:options) { { base_url: "127.0.0.1/v1" } }
-
-    it "builds and wraps api with options given" do
-      expect(Evil::Client::API).to receive(:new).with(options)
-      expect(subject).to be_kind_of described_class
-      expect(subject.to_a).to eql [api]
-    end
-  end # describe .with
 end # describe Evil::Client::APIs

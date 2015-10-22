@@ -55,18 +55,17 @@ class Evil::Client
       block_given? ? @apis.each { |api| yield(api) } : to_enum
     end
 
-    # Преобразует сформированный адрес в полный url <одного из объявленных> API
+    # Находит и возвращает API, содержащий запрашиваемый адрес
     #
     # @param [String] address
     #
-    # @return [String]
-    #
+    # @return [Evil::Client::API]
+    # 
     # @raise [Evil::Client::Errors::ULRError]
     #   если сформированный адрес не распознан <ни одним из объявленныx> API
     #
-    def url(address)
-      result = map { |api| api.url(address) }.first
-      result || fail(URLError.new address)
+    def api(address)
+      detect { |api| api.url(address) } || fail(URLError.new address)
     end
   end # class APIs
 end # class Evil::Client
