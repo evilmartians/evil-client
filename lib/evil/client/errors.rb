@@ -4,6 +4,7 @@ class Evil::Client
   module Errors
 
     require_relative "errors/urn_error"
+    require_relative "errors/url_error"
 
   end
 end

@@ -15,6 +15,9 @@ class Evil::Client
   # @api private
   #
   class API
+
+    include Errors
+
     # @!attribute [r] base
     #
     # @return [String] базовый адрес RESTful API
@@ -29,6 +32,7 @@ class Evil::Client
     #
     def initialize(base_url:)
       @base_url = base_url
+      validate_base_url
     end
 
     # Формирует полный URI (base_url + URN) из переданной строки URN
@@ -38,9 +42,7 @@ class Evil::Client
     # @return [String]
     #
     def uri(urn)
-      File.join(base_url, urn) # @todo: Решить про использование протокола!
-                               # Можно было бы использовать URI.join,
-                               # но URI требует указания протокола base_url
+      URI.join("#{base_url}/", urn).to_s
     end
 
     # Предикат, проверяющий наличие URN у текущего API
@@ -52,6 +54,12 @@ class Evil::Client
     #
     def uri?(urn)
       !!uri(urn)
+    end
+
+    private
+
+    def validate_base_url
+      fail(URLError, base_url) unless URI(base_url).host
     end
   end
 end
