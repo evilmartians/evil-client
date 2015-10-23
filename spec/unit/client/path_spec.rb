@@ -1,27 +1,27 @@
-describe Evil::Client::URN do
+describe Evil::Client::Path do
 
-  let(:urn) { described_class.new }
+  let(:path) { described_class.new }
 
   # Instance methods
 
   describe "#finalize!" do
-    subject { urn.finalize! }
+    subject { path.finalize! }
 
     it { is_expected.to eql "" }
 
     context "when parts are set" do
-      let(:urn) { described_class.new %w(foo bar baz) }
+      let(:path) { described_class.new %w(foo bar baz) }
 
       it { is_expected.to eql "foo/bar/baz" }
     end
   end
 
   describe "#call" do
-    subject { urn.call(:foo).call(1) }
+    subject { path.call(:foo).call(1) }
 
     it "creates new instance" do
       expect(subject).to be_kind_of described_class
-      expect(subject).not_to eql urn
+      expect(subject).not_to eql path
     end
 
     it "adds part to path" do
@@ -30,11 +30,11 @@ describe Evil::Client::URN do
   end
 
   describe "#[]" do
-    subject { urn[:foo][1] }
+    subject { path[:foo][1] }
 
     it "creates new instance" do
       expect(subject).to be_kind_of described_class
-      expect(subject).not_to eql urn
+      expect(subject).not_to eql path
     end
 
     it "adds part to path" do
@@ -43,10 +43,10 @@ describe Evil::Client::URN do
   end
 
   describe "#call!" do
-    subject { urn.send(:call!, :foo).send(:call!, 1) }
+    subject { path.send(:call!, :foo).send(:call!, 1) }
 
     it "returns the same instance" do
-      expect(subject).to eql urn
+      expect(subject).to eql path
     end
 
     it "adds part to path" do
@@ -55,11 +55,11 @@ describe Evil::Client::URN do
   end
 
   describe "#method_missing" do
-    subject { urn.foo.bar.baz }
+    subject { path.foo.bar.baz }
 
-    it "creates updated urn" do
+    it "creates updated path" do
       expect(subject).to be_kind_of described_class
-      expect(subject).not_to eql urn
+      expect(subject).not_to eql path
     end
 
     it "adds part to path" do
@@ -67,7 +67,7 @@ describe Evil::Client::URN do
     end
 
     context "with bang" do
-      subject { urn.foo! }
+      subject { path.foo! }
 
       it "fails" do
         expect { subject }.to raise_error NoMethodError
@@ -75,7 +75,7 @@ describe Evil::Client::URN do
     end
 
     context "with arguments" do
-      subject { urn.foo :bar }
+      subject { path.foo :bar }
 
       it "fails" do
         expect { subject }.to raise_error NoMethodError
@@ -84,7 +84,7 @@ describe Evil::Client::URN do
   end
 
   describe "#respond_to?" do
-    subject { urn.respond_to? name }
+    subject { path.respond_to? name }
 
     context "method defined in superclass" do
       let(:name) { :class }
@@ -122,7 +122,7 @@ describe Evil::Client::URN do
   describe ".call" do
     subject { described_class.call(1) }
 
-    it "instantiates urn" do
+    it "instantiates path" do
       expect(subject).to be_kind_of described_class
     end
 
@@ -134,7 +134,7 @@ describe Evil::Client::URN do
   describe ".[]" do
     subject { described_class[1] }
 
-    it "instantiates urn" do
+    it "instantiates path" do
       expect(subject).to be_kind_of described_class
     end
 
@@ -146,7 +146,7 @@ describe Evil::Client::URN do
   describe ".method_missing" do
     subject { described_class.foo }
 
-    it "instantiates urn" do
+    it "instantiates path" do
       expect(subject).to be_kind_of described_class
     end
 

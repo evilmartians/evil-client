@@ -57,29 +57,29 @@ describe Evil::Client::Registry do
   end
 
   describe "#api" do
-    subject { registry.api urn: urn }
+    subject { registry.api path: path }
 
-    let(:urn) { "users/1/sms" }
+    let(:path) { "users/1/sms" }
 
-    it "returns api that has given urn" do
+    it "returns api that has given path" do
       expect(subject).to eql(api)
     end
 
-    context "when api doesn't resolve urn" do
-      let(:urn) { "users/1" }
+    context "when api doesn't resolve path" do
+      let(:path) { "users/1" }
 
       it "fails" do
         expect { subject }
-          .to raise_error Evil::Client::Errors::URNError, %r{'users/1'}
+          .to raise_error Evil::Client::Errors::PathError, %r{'users/1'}
       end
     end
 
     context "when specified registry list is empty" do
-      subject { registry.api :wrong, urn: urn }
+      subject { registry.api :wrong, path: path }
 
       it "fails" do
         expect { subject }.to raise_error \
-          Evil::Client::Errors::URNError, %r{\:wrong.+'users/1/sms'}
+          Evil::Client::Errors::PathError, %r{\:wrong.+'users/1/sms'}
       end
     end
   end

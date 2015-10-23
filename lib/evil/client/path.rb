@@ -1,33 +1,31 @@
 class Evil::Client
-  # Построитель относительного имени ресурса (URN - unified resource name),
-  # который может относитсья к различным API
-  # @see https://ru.wikipedia.org/wiki/URN
+  # Построитель относительного адреса, который может относитсья к различным API
   #
   # Любой метод (объекта или класса) без восклицательных знаков интерпретируется
-  # как часть имени и возвращает обновленный URN с добавленной частью.
+  # как часть имени и возвращает обновленный адрес с добавленной частью.
   #
   # Метод [#call] (с алиасом +[]+) используется для вставки в адрес
-  # динамической части (также возвращает обновленный URN).
+  # динамической части (также возвращает обновленный адрес).
   #
-  # Метод [#finalize!] без аргументов возвращает итоговую строку URN
+  # Метод [#finalize!] без аргументов возвращает итоговую строку адреса
   #
-  #     URN.users[1].sms.finalize! # => "users/1/sms"
+  #     Path.users[1].sms.finalize! # => "users/1/sms"
   #
   # @api private
   #
-  class URN
+  class Path
     # Добавляет динамическую часть к адресу и возвращает обновленный адрес
     #
     # @param [#to_s] part
     #
-    # @return [Evil::Client::URN]
+    # @return [Evil::Client::Path]
     #
     def call(part)
       self.class.new(@parts + [part])
     end
     alias_method :[], :call
 
-    # Возвращает сформированную строку адреса URN
+    # Возвращает сформированную строку адреса
     #
     # @return [String]
     #
@@ -41,7 +39,7 @@ class Evil::Client
     #
     # @param [#to_s] part
     #
-    # @return [Evil::Client::URN]
+    # @return [Evil::Client::Path]
     #
     def call!(part)
       @parts << part

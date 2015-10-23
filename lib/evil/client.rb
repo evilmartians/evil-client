@@ -42,7 +42,7 @@ module Evil
   class Client
 
     require_relative "client/errors"
-    require_relative "client/urn"
+    require_relative "client/path"
     require_relative "client/api"
     require_relative "client/registry"
 
@@ -57,27 +57,27 @@ module Evil
       new Registry.with(options)
     end
 
-    # Находит нужный API и формирует для него URI из [#urn!]
+    # Находит нужный API и формирует для него URI из [#path!]
     #
     # @param [Array<Symbol>] api_keys
-    #   Имена API среди которых ведется поиск URN (по умолчанию - по всем URN)
+    #   Имена API среди которых ведется поиск адреса (по умолчанию по всем API)
     #
     # @return [<type>] <description>
     #
     def uri!(*api_keys)
-      urn = urn!
-      @registry.api(*api_keys, urn: urn).uri(urn)
+      path = path!
+      @registry.api(*api_keys, path: path).uri(path)
     end
 
     private
 
     def initialize(registry)
       @registry = registry # коллекция удаленных API
-      @urn = URN           # ленивый построитель URN
+      @path = Path          # ленивый построитель адреса
     end
 
-    def urn!
-      @urn.finalize!
+    def path!
+      @path.finalize!
     end
 
     def update!(&block)
@@ -85,11 +85,11 @@ module Evil
     end
 
     def method_missing(name, *args)
-      update! { @urn = @urn.public_send(name, *args) }
+      update! { @path = @path.public_send(name, *args) }
     end
 
     def respond_to_missing?(name, *)
-      @urn.respond_to?(name)
+      @path.respond_to?(name)
     end
   end
 end

@@ -17,19 +17,19 @@ class Evil::Client
   #
   # Метод [#api] возвращает <пока единственный> API.
   #
-  #     Registry.api urn: "users/1/sms"
+  #     Registry.api path: "users/1/sms"
   #
   # В дальнейшем этот метод будет выполнять поиск того из API, где определен
   # указанный адрес. API просматриваются в порядке, определенном при
   # инициализации. Если один и тот же адрес определен несколькими API,
   # то поиск может быть выполнен только среди указанного подмножества:
   #
-  #    Registry.api :users, :sms, urn: "users/1"
+  #    Registry.api :users, :sms, path: "users/1"
   #
   # Если адрес не найден, выбрасывается исключение:
   #
-  #    Registry.api urn: "/unknown"
-  #    # => #<Evil::Client::Errors::URNError ...>
+  #    Registry.api path: "/unknown"
+  #    # => #<Evil::Client::Errors::PathError ...>
   #
   # @api private
   #
@@ -78,21 +78,21 @@ class Evil::Client
       keys.any? ? self.class.new(@apis.select { |k| keys.include? k }) : self
     end
 
-    # Находит и возвращает API, содержащий запрашиваемый URN
+    # Находит и возвращает API, содержащий запрашиваемый адрес
     #
     # @param [Symbol, Array<Symbol>] keys
-    #   Имена API, среди которых ведется поиск URN
-    # @option options [String] :urn
-    #   Адрес URN, для которого ищется подходящий API
+    #   Имена API, среди которых ведется поиск адреса
+    # @option options [String] :path
+    #   Адрес, для которого ищется подходящий API
     #
     # @return [Evil::Client::API] API, у которого есть искомый адрес
     #
     # @raise [Evil::Client::Errors::ULRError]
     #   если сформированный адрес не распознан <ни одним из объявленныx> API
     #
-    def api(*keys, urn:)
-      filter(*keys).detect { |api| api.uri(urn) } ||
-        fail(URNError.new urn, keys)
+    def api(*keys, path:)
+      filter(*keys).detect { |api| api.uri(path) } ||
+        fail(PathError.new path, keys)
     end
   end
 end

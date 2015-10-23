@@ -1,4 +1,4 @@
-describe Evil::Client::Errors::URNError do
+describe Evil::Client::Errors::PathError do
   let(:error) { described_class.new :"unknown/address" }
 
   describe ".new" do
@@ -33,8 +33,8 @@ describe Evil::Client::Errors::URNError do
     end
   end
 
-  describe "#urn" do
-    subject { error.urn }
+  describe "#path" do
+    subject { error.path }
 
     it { is_expected.to eql "unknown/address" }
   end

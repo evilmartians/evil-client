@@ -32,8 +32,8 @@ describe Evil::Client do
     end
 
     it "uses api keys to restrict APIs" do
-      expect { client.foo[1].bar.uri! :wrong }
-        .to raise_error Evil::Client::Errors::URNError, %r{\:wrong.+'foo/1/bar'}
+      expect { client.foo[1].bar.uri! :wrong }.to raise_error \
+        Evil::Client::Errors::PathError, %r{\:wrong.+'foo/1/bar'}
     end
   end
 
