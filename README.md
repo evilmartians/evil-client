@@ -16,8 +16,8 @@ This library is available as a gem `evil-client`.
 При создании клиента необходимо указать его `base_url`.
 
 ```ruby
-client = Evil::Client.build base_url: "127.0.0.1/v1"
-client.uri! # => "127.0.0.1/v1"
+client = Evil::Client.with base_url: "http://127.0.0.1/v1"
+client.uri! # => "http://127.0.0.1/v1"
 ```
 
 **Roadmap**: 
@@ -44,10 +44,10 @@ client.users[1].sms
 
 ```ruby
 client.users[1].uri!
-# => "127.0.0.1/v1/users/1"
+# => "http://127.0.0.1/v1/users/1"
 
 client.users[1].sms.uri!
-# => "127.0.0.1/v1/users/1/sms"
+# => "http://127.0.0.1/v1/users/1/sms"
 ```
 
 **Roadmap**:

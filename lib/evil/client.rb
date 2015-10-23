@@ -44,7 +44,6 @@ module Evil
     require_relative "client/errors"
     require_relative "client/path"
     require_relative "client/api"
-    require_relative "client/registry"
 
     # Инициализирует объект клиента для единственной API
     #
@@ -54,7 +53,7 @@ module Evil
     # @return [Evil::Client]
     #
     def self.with(options)
-      new Registry.with(options)
+      new API.new(options)
     end
 
     # Находит нужный API и формирует для него URI из [#path!]
@@ -64,16 +63,15 @@ module Evil
     #
     # @return [<type>] <description>
     #
-    def uri!(*api_keys)
-      path = path!
-      @registry.api(*api_keys, path: path).uri(path)
+    def uri!
+      @api.uri path!
     end
 
     private
 
-    def initialize(registry)
-      @registry = registry # коллекция удаленных API
-      @path = Path          # ленивый построитель адреса
+    def initialize(api)
+      @api  = api
+      @path = Path
     end
 
     def path!

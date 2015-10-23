@@ -15,10 +15,4 @@ describe Evil::Client::Errors::URLError do
         .to eql "Invalid URL 'wrong'. Both protocol and host must be defined."
     end
   end
-
-  describe "#url" do
-    subject { error.url }
-
-    it { is_expected.to eql "wrong" }
-  end
 end

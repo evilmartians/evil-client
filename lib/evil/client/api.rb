@@ -9,9 +9,6 @@ class Evil::Client
   # В дальнейшем он будет парсить и хранить спецификацию (swagger etc.)
   # и проверять наличие адреса по спецификации перед привязкой к [#base_url].
   #
-  #     api = API.load("users.json")
-  #     api.uri("/unknown") # => nil
-  #
   # @api private
   #
   class API
@@ -43,17 +40,6 @@ class Evil::Client
     #
     def uri(path)
       URI.join("#{base_url}/", path).to_s
-    end
-
-    # Предикат, проверяющий наличие адреса у текущего API
-    # (добавлен для соответствия конвенции имен Rails)
-    #
-    # @param (see #uri)
-    #
-    # @return [Boolean]
-    #
-    def uri?(path)
-      !!uri(path)
     end
 
     private

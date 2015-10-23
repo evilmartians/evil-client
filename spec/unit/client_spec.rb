@@ -1,12 +1,5 @@
 describe Evil::Client do
 
-  describe ".new" do
-    subject { described_class.new double(:registry) }
-
-    # just check it isn't fail because all its variables are hidded
-    it { is_expected.to be_kind_of described_class }
-  end
-
   let(:client) { described_class.with base_url: "http://localhost/v1" }
 
   describe ".with" do
@@ -29,11 +22,6 @@ describe Evil::Client do
     it "returns current uri after modification" do
       expect(client.foo[1].bar.uri!)
         .to eql "http://localhost/v1/foo/1/bar"
-    end
-
-    it "uses api keys to restrict APIs" do
-      expect { client.foo[1].bar.uri! :wrong }.to raise_error \
-        Evil::Client::Errors::PathError, %r{\:wrong.+'foo/1/bar'}
     end
   end
 
