@@ -21,16 +21,6 @@ describe Evil::Client do
     end
   end
 
-  describe "#urn!" do
-    it "returns empty string by default" do
-      expect(client.urn!).to eql ""
-    end
-
-    it "returns current urn after modification" do
-      expect(client.foo[1].bar.urn!).to eql "foo/1/bar"
-    end
-  end
-
   describe "#uri!" do
     it "returns base_url by default" do
       expect(client.uri!).to eql "http://localhost/v1/"
@@ -53,10 +43,6 @@ describe Evil::Client do
     it "returns new client instance" do
       expect(subject).to be_kind_of described_class
       expect(subject).not_to eql client
-    end
-
-    it "updates urn!" do
-      expect(subject.urn!).to eql "foo/1/bar"
     end
 
     it "behaves by default for methods with bang" do

@@ -1,29 +1,12 @@
 [WIP] Evil::Client
 ==================
 
-DSL для работы с удаленными REST-ресурсами.
+DSL для работы с REST-ресурсами.
 
 Установка
 ---------
 
-Add this line to your application's Gemfile:
-
-```ruby
-# Gemfile
-gem "evil-client"
-```
-
-Then execute:
-
-```
-bundle
-```
-
-Or add it manually:
-
-```
-gem install evil-client
-```
+This library is available as a gem `evil-client`.
 
 Использование
 -------------

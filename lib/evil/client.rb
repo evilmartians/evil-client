@@ -1,4 +1,3 @@
-# Поле имен для различных проектов Evil Martians
 module Evil
   # Клиент отвечает за формирование адреса и отправку запроса к удаленному API.
   #
@@ -15,9 +14,8 @@ module Evil
   #
   #    client.users[1].sms
   #
-  # Для получения строки адреса используются методы [#urn!] и [#uri!]:
+  # Для получения строки адреса используются метод [#uri!]:
   #
-  #    client.users[1].sms.urn! # => "users/1/sms"
   #    client.users[1].sms.uri! # => "127.0.0.1/v1/users/1/sms"
   #
   # Методы [#get!], [#post!], [#patch!], [#delete!] формируют и отправляют
@@ -29,19 +27,6 @@ module Evil
   #    response.id    # => 100
   #    response.phone # => "7101234567"
   #    response.text  # => "Hello!"
-  #
-  # По умолчанию полный urn ищется по всем зарегистрированным API
-  # (сейчас используется единственный API +base_url+).
-  # При необходимости указать API явно, финализирующие методы могут вызываться
-  # с его именем):
-  #
-  #    client.users(1).uri! :users
-  #    # => "www.users.com/v1/users/1"
-  #
-  #    client.users(1).uri! :sms
-  #    # => "www.sms.com/v1/users/1"
-  #
-  #    client.users(1).sms.post! :sms, phone: "7101234567", text: "Hello!"
   #
   # Перед возвращением проверяется статус ответа и в случае ошибки (4**, 5**)
   # выбрасывается исключение, содержащее ответ сервера.
@@ -72,14 +57,6 @@ module Evil
       new Registry.with(options)
     end
 
-    # Возвращает текущий URN
-    #
-    # @return [String]
-    #
-    def urn! # метод без воскл.знака зарезервирован для части адреса
-      @urn.finalize!
-    end
-
     # Находит нужный API и формирует для него URI из [#urn!]
     #
     # @param [Array<Symbol>] api_keys
@@ -97,6 +74,10 @@ module Evil
     def initialize(registry)
       @registry = registry # коллекция удаленных API
       @urn = URN           # ленивый построитель URN
+    end
+
+    def urn!
+      @urn.finalize!
     end
 
     def update!(&block)
