@@ -32,10 +32,9 @@ class Evil::Client
     #
     # @return [Evil::Client::Path]
     #
-    def call(part)
+    def [](part)
       self.class.new(@parts + [part])
     end
-    alias_method :[], :call
 
     # Returns the resulting path
     #
@@ -43,19 +42,6 @@ class Evil::Client
     #
     def finalize!
       @parts.join("/")
-    end
-
-    protected
-
-    # Изменяет текущий объект путем добавления к нему части адреса
-    #
-    # @param [#to_s] part
-    #
-    # @return [Evil::Client::Path]
-    #
-    def call!(part)
-      @parts << part
-      self
     end
 
     private
@@ -67,7 +53,7 @@ class Evil::Client
     end
 
     def method_missing(name, *args)
-      (name[REGULAR] && args.empty?) ? call(name) : super
+      (name[REGULAR] && args.empty?) ? self[name] : super
     end
 
     def respond_to_missing?(name, *)

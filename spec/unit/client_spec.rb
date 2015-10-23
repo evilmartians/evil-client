@@ -20,8 +20,8 @@ describe Evil::Client do
     end
 
     it "returns current uri after modification" do
-      expect(client.foo[1].bar.uri!)
-        .to eql "http://localhost/v1/foo/1/bar"
+      expect(client.foo["1-1"].bar.uri!)
+        .to eql "http://localhost/v1/foo/1-1/bar"
     end
   end
 

@@ -10,27 +10,14 @@ describe Evil::Client::Path do
     it { is_expected.to eql "" }
 
     context "when parts are set" do
-      let(:path) { described_class.new %w(foo bar baz) }
+      let(:path) { described_class.new %w(call bar baz) }
 
-      it { is_expected.to eql "foo/bar/baz" }
-    end
-  end
-
-  describe "#call" do
-    subject { path.call(:foo).call(1) }
-
-    it "creates new instance" do
-      expect(subject).to be_kind_of described_class
-      expect(subject).not_to eql path
-    end
-
-    it "adds part to path" do
-      expect(subject.finalize!).to eql "foo/1"
+      it { is_expected.to eql "call/bar/baz" }
     end
   end
 
   describe "#[]" do
-    subject { path[:foo][1] }
+    subject { path[:call][1] }
 
     it "creates new instance" do
       expect(subject).to be_kind_of described_class
@@ -38,24 +25,12 @@ describe Evil::Client::Path do
     end
 
     it "adds part to path" do
-      expect(subject.finalize!).to eql "foo/1"
-    end
-  end
-
-  describe "#call!" do
-    subject { path.send(:call!, :foo).send(:call!, 1) }
-
-    it "returns the same instance" do
-      expect(subject).to eql path
-    end
-
-    it "adds part to path" do
-      expect(subject.finalize!).to eql "foo/1"
+      expect(subject.finalize!).to eql "call/1"
     end
   end
 
   describe "#method_missing" do
-    subject { path.foo.bar.baz }
+    subject { path.call.bar.baz }
 
     it "creates updated path" do
       expect(subject).to be_kind_of described_class
@@ -63,11 +38,11 @@ describe Evil::Client::Path do
     end
 
     it "adds part to path" do
-      expect(subject.finalize!).to eql "foo/bar/baz"
+      expect(subject.finalize!).to eql "call/bar/baz"
     end
 
     context "with bang" do
-      subject { path.foo! }
+      subject { path.call! }
 
       it "fails" do
         expect { subject }.to raise_error NoMethodError
@@ -75,7 +50,7 @@ describe Evil::Client::Path do
     end
 
     context "with arguments" do
-      subject { path.foo :bar }
+      subject { path.call :bar }
 
       it "fails" do
         expect { subject }.to raise_error NoMethodError
@@ -93,19 +68,19 @@ describe Evil::Client::Path do
     end
 
     context "undefined method without special symbols" do
-      let(:name) { :foo_123 }
+      let(:name) { :call_123 }
 
       it { is_expected.to eql true }
     end
 
     context "undefined method with bang" do
-      let(:name) { :foo! }
+      let(:name) { :call! }
 
       it { is_expected.to eql false }
     end
 
     context "undefined method with question" do
-      let(:name) { :foo? }
+      let(:name) { :call? }
 
       it { is_expected.to eql false }
     end
@@ -117,18 +92,6 @@ describe Evil::Client::Path do
     subject { described_class.finalize! }
 
     it { is_expected.to eql "" }
-  end
-
-  describe ".call" do
-    subject { described_class.call(1) }
-
-    it "instantiates path" do
-      expect(subject).to be_kind_of described_class
-    end
-
-    it "adds part to path" do
-      expect(subject.finalize!).to eql "1"
-    end
   end
 
   describe ".[]" do
@@ -144,14 +107,14 @@ describe Evil::Client::Path do
   end
 
   describe ".method_missing" do
-    subject { described_class.foo }
+    subject { described_class.call }
 
     it "instantiates path" do
       expect(subject).to be_kind_of described_class
     end
 
     it "adds part to path" do
-      expect(subject.finalize!).to eql "foo"
+      expect(subject.finalize!).to eql "call"
     end
   end
 
@@ -165,7 +128,7 @@ describe Evil::Client::Path do
     end
 
     context "undefined method without special symbols" do
-      let(:name) { :foo_123 }
+      let(:name) { :call_123 }
 
       it { is_expected.to eql true }
     end
@@ -177,7 +140,7 @@ describe Evil::Client::Path do
     end
 
     context "undefined method with bang" do
-      let(:name) { :foo_123! }
+      let(:name) { :call_123! }
 
       it { is_expected.to eql false }
     end
