@@ -1,20 +1,32 @@
 class Evil::Client
-  # Построитель относительного адреса
+  # Relative paths builder
   #
-  # Любой метод (объекта или класса) без восклицательных знаков интерпретируется
-  # как часть имени и возвращает обновленный адрес с добавленной частью.
+  # Builds paths by chaining method in OO style.
   #
-  # Метод [#call] (с алиасом +[]+) используется для вставки в адрес
-  # динамической части (также возвращает обновленный адрес).
+  # Every instance or class method is treated as a part of relative path
+  # (you can use latin letters, digits and underscores only).
+  # It returns new instance with a corresponding part being added to the path.
   #
-  # Метод [#finalize!] без аргументов возвращает итоговую строку адреса
+  #     Path.users
+  #     # => <Path @parts=["users"]>
   #
-  #     Path.users[1].sms.finalize! # => "users/1/sms"
+  # Use brackets `[]` to insert dynamic parts or utf symbols to the path.
+  #
+  #     Path.users[1].sms
+  #     # => <Path @parts=["users", "1", "sms"]>
+  #
+  #     Path["духовные-скрепы"][1]
+  #     # => <Path @parts=["духовные-скрепы", "1"]>
+  #
+  # [#finalize!] returns the resulting path:
+  #
+  #     Path.users[1].sms.finalize!
+  #     # => "users/1/sms"
   #
   # @api private
   #
   class Path
-    # Добавляет динамическую часть к адресу и возвращает обновленный адрес
+    # Returns a new instance of the class with a dynamic part added to the path
     #
     # @param [#to_s] part
     #
@@ -25,7 +37,7 @@ class Evil::Client
     end
     alias_method :[], :call
 
-    # Возвращает сформированную строку адреса
+    # Returns the resulting path
     #
     # @return [String]
     #

@@ -9,8 +9,8 @@ describe Evil::Client::API do
       let(:base_url) { "127.0.0.1" }
 
       it "fails" do
-        expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, /'127\.0\.0\.1'/
+        expect { subject }.to raise_error \
+          Evil::Client::Errors::URLError, /'127\.0\.0\.1'/
       end
     end
 

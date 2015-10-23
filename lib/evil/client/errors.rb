@@ -1,6 +1,5 @@
 class Evil::Client
-  # Коллекция специфических исключений
-  #
+  # Collection of gem-specific exceptions
   module Errors
 
     require_relative "errors/path_error"

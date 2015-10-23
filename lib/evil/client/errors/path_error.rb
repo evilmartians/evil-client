@@ -1,10 +1,9 @@
 module Evil::Client::Errors
-  # Исключение вызывается когда адрес не поддерживается API
-  #
+  # Exception for the case API doesn't support given relative path
   class PathError < RuntimeError
-    # Инициализирует исключение для адреса, который не поддерживается API
+    # Initializes exception for unsupported path
     #
-    # @param [#to_s] path Ненайденный адрес
+    # @param [#to_s]
     #
     def initialize(path)
       super "Path '#{path}' cannot be resolved to URI"

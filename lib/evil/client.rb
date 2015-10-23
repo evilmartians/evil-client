@@ -1,43 +1,57 @@
+require "jsonclient"
+
 module Evil
-  # Клиент отвечает за формирование адреса и отправку запроса к удаленному API.
+  # The client prepares URI with method chaining, sends requests to remote API,
+  # validates and returns server responses.
   #
-  # При создании клиента указывается +base_url+:
+  # It is initialized with +base_url+:
   #
   #    client = Client.with base_url: "127.0.0.1/v1"
   #
-  # (В дальнейшем будет добавлен метод +Client.load+ для инициализации клиента
-  # из спецификаций swagger etc.):
-  #
-  #    client = Client.load users: "users.json", sms: "sms.json"
-  #
-  # Все методы без восклицательного знака интерпретируются как части адреса:
+  # All methods without bang are treated as parts of a request path, relative
+  # to +base_url+:
   #
   #    client.users[1].sms
   #
-  # Для получения строки адреса используются метод [#uri!]:
+  # Use [#uri!] method to check the full URI:
   #
   #    client.users[1].sms.uri! # => "127.0.0.1/v1/users/1/sms"
   #
-  # Методы [#get!], [#post!], [#patch!], [#delete!] формируют и отправляют
-  # синхронный запрос с переданными параметрами, возвращают ответ сервера
-  # в виде +Hashie::Mash+.
+  # Methods [#get!], [#post!], [#patch!], [#delete!] prepares and sends
+  # synchronous requests to the RESTful API, checks responces,
+  # and deserialize them to hash-like structures (+Hashie::Mash+).
+  #
+  # @see https://github.com/intridea/hashie 'hashie' gem for +Mash+ description
   #
   #    response = client.users(1).sms.post! phone: "7101234567", text: "Hello!"
+  #
   #    response.class # => Hashie::Mash
   #    response.id    # => 100
   #    response.phone # => "7101234567"
   #    response.text  # => "Hello!"
   #
-  # Перед возвращением проверяется статус ответа и в случае ошибки (4**, 5**)
-  # выбрасывается исключение, содержащее ответ сервера.
+  # In case API returns error response (4**, 5**) the exception is raised
+  # with error +status+ and +response+ attributes:
   #
-  # Если метод запроса вызывается с блоком, вместо обработки ошибочный ответ
-  # сервера передается в блок. Результат обработки возвращается методом:
+  #    begin
+  #      client.users[1].sms.post! text: "Hello!"
+  #    rescue Evil::Client::Error::ResponseError => error
+  #      error.status   # => 400
+  #      error.response # => returns the raw response from server,
+  #                     #    not serialized to +Mash+
+  #    end
+  #
+  # Alternatively you can provide the block for handling error responces.
+  # In this case the raw error response will be given to the block
+  # without raising any exception:
   #
   #    client.users(1).sms.post(phone: "7101234567") do |error_response|
   #      error_response.status
   #    end
   #    # => 400
+  #
+  # In case of successful response, +Mash+ structure will be returned
+  # as were shown above.
   #
   class Client
 
@@ -45,18 +59,18 @@ module Evil
     require_relative "client/path"
     require_relative "client/api"
 
-    # Инициализирует объект клиента для единственной API
+    # Initializes a client instance with API settings
     #
-    # @param [Hash] options Настройки API
-    # @options option (see Evil::Client::API#initialize)
+    # @param [Hash] settings
+    # @options settings (see Evil::Client::API#initialize)
     #
     # @return [Evil::Client]
     #
-    def self.with(options)
-      new API.new(options)
+    def self.with(settings)
+      new API.new(settings)
     end
 
-    # Находит нужный API и формирует для него URI из [#path!]
+    # Returns full URI that corresponds to the current path
     #
     # @param [Array<Symbol>] api_keys
     #   Имена API среди которых ведется поиск адреса (по умолчанию по всем API)

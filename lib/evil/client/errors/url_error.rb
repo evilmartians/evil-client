@@ -1,8 +1,7 @@
 module Evil::Client::Errors
-  # Исключение вызывается когда base_url некорректен
-  #
+  # Exception for the case API +base_url+ isn't valid
   class URLError < RuntimeError
-    # Инициализирует исключение для ошибочного URL
+    # Initializes exception for wrong URL
     #
     # @param [#to_s] url
     #

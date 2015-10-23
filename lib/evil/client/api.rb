@@ -1,13 +1,13 @@
 class Evil::Client
-  # Контейнер с настройками API
+  # Container for API settings
   #
-  # Сейчас он просто хранит [#base_url].
+  # For now it is only stores the [#base_url].
   #
   #     api = API.new base_url: "127.0.0.1/v1"
   #     api.uri("/users/1/sms") # => "127.0.0.1/v1/users/1/sms"
   #
-  # В дальнейшем он будет парсить и хранить спецификацию (swagger etc.)
-  # и проверять наличие адреса по спецификации перед привязкой к [#base_url].
+  # Later it will respond for loading and parsing API settings from a file
+  # of specification (swagger etc.).
   #
   # @api private
   #
@@ -17,22 +17,29 @@ class Evil::Client
 
     # @!attribute [r] base
     #
-    # @return [String] базовый адрес RESTful API
+    # @return [String] base url to a RESTful API
     #
     attr_reader :base_url
 
-    # @!method initialize(options)
-    # Инициализирует спецификацию удаленного API с указанными параметрами
+    # @!method initialize(settings)
+    # Initializes API specification with given settings
     #
-    # @param [<type>]
-    # @option options [String] :base_url
+    # @param [Hash] settings
+    # @option settings [String] :base_url
+    #   The base url of the API with required protocol and path
+    # @option settings [String] :request_id
+    #   The API client request id
+    #   If Rails is available it is set authomatically from [#default_id],
+    #   otherwise it should be assigned explicitly
+    #
+    # @raise [Evil::Client::Errors::URLError] in case of invalid path
     #
     def initialize(base_url:)
       @base_url = base_url
       validate_base_url
     end
 
-    # Формирует полный URI (base_url + адрес) из переданной строки адреса
+    # Prepares a full URI from given relative path
     #
     # @param [String] path
     #
