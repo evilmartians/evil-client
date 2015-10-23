@@ -2,4 +2,6 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "hexx-suit", "~> 2.3", platforms: :ruby
+group :metrics do # используется в .travis.yml
+  gem "hexx-suit", "~> 2.3", platforms: :ruby
+end
