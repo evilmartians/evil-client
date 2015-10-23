@@ -3,7 +3,7 @@ module Evil::Client::Errors
   class PathError < RuntimeError
     # Initializes exception for unsupported path
     #
-    # @param [#to_s]
+    # @param [#to_s] path
     #
     def initialize(path)
       super "Path '#{path}' cannot be resolved to URI"

@@ -76,9 +76,6 @@ module Evil
 
     # Returns full URI that corresponds to the current path
     #
-    # @param [Array<Symbol>] api_keys
-    #   Имена API среди которых ведется поиск адреса (по умолчанию по всем API)
-    #
     # @return [<type>] <description>
     #
     def uri!
