@@ -9,6 +9,9 @@ class Evil::Client
   # Later it will respond for loading and parsing API settings from a file
   # of specification (swagger etc.)
   #
+  # API knows how to convert relative path to URI and provide adapter
+  # (connection) to the described server via [#adapter] method.
+  #
   # @api private
   #
   class API
@@ -17,6 +20,12 @@ class Evil::Client
 
     # @api private
     class << self
+      # @!attribute [rw] logger
+      #
+      # @return [Object] Shared logger for all api-specific http connections
+      #
+      attr_accessor :logger
+
       # @!attribute [w] id_provider
       #
       # @return [#value] Storage for API client ID (to be set from Railtie)
@@ -73,6 +82,16 @@ class Evil::Client
     #
     def uri(path)
       URI.join("#{base_url}/", path).to_s
+    end
+
+    # Builds adapter (connection to server) from the current settings
+    #
+    # @return [JSONclient]
+    #
+    def adapter
+      http_client = JSONClient.new(base_url: base_url)
+      http_client.debug_dev = self.class.logger
+      http_client
     end
 
     private
