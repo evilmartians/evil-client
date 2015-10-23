@@ -75,11 +75,11 @@ describe Evil::Client::Registry do
     end
 
     context "when specified registry list is empty" do
-      subject { registry.api :unregistered, urn: urn }
+      subject { registry.api :wrong, urn: urn }
 
       it "fails" do
-        expect { subject }
-          .to raise_error Evil::Client::Errors::URNError, %r{'users/1/sms'}
+        expect { subject }.to raise_error \
+          Evil::Client::Errors::URNError, %r{\:wrong.+'users/1/sms'}
       end
     end
   end

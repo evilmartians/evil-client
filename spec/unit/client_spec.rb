@@ -45,6 +45,10 @@ describe Evil::Client do
       expect(subject).not_to eql client
     end
 
+    it "adds parts to uri" do
+      expect(subject.uri!).to eql "http://localhost/v1/foo/1/bar"
+    end
+
     it "behaves by default for methods with bang" do
       expect { client.foo! }.to raise_error NoMethodError
     end
