@@ -1,11 +1,11 @@
 Bundler.require
 
-begin    
-  require "hexx-suit"    
-  Hexx::Suit.load_metrics_for(self)    
-rescue LoadError   
-  require "hexx-rspec"   
-  Hexx::RSpec.load_metrics_for(self)   
+begin
+  require "hexx-suit"
+  Hexx::Suit.load_metrics_for(self)
+rescue LoadError
+  require "hexx-rspec"
+  Hexx::RSpec.load_metrics_for(self)
 end
 
 # Some mutations can provide infinite loops

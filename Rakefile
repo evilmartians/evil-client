@@ -2,12 +2,12 @@ Bundler.require
 
 Bundler::GemHelper.install_tasks
 
-begin    
-  require "hexx-suit"    
-  Hexx::Suit.install_tasks   
-rescue LoadError   
-  require "hexx-rspec"   
-  Hexx::RSpec.install_tasks    
+begin
+  require "hexx-suit"
+  Hexx::Suit.install_tasks
+rescue LoadError
+  require "hexx-rspec"
+  Hexx::RSpec.install_tasks
 end
 
 desc "Run specs and check coverage"

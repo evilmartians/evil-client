@@ -1,0 +1,15 @@
+languages:
+   Ruby: true
+engines:
+  bundler-audit:
+    enabled: true
+  rubocop:
+    enabled: true
+ratings:
+   paths:
+   - app/**
+   - lib/**
+   - "**.rb"
+   - "**.go"
+exclude_paths:
+- "spec/*"
