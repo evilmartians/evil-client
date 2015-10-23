@@ -1,6 +1,7 @@
 describe Evil::Client do
 
-  let(:client) { described_class.with base_url: "http://localhost/v1" }
+  let(:client)   { described_class.with settings }
+  let(:settings) { { base_url: "http://localhost/v1", request_id: "foobar" } }
 
   describe ".with" do
     subject { client }

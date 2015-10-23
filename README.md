@@ -13,16 +13,18 @@ This library is available as a gem `evil-client`.
 
 ### Инициализация
 
-При создании клиента необходимо указать его `base_url`.
+При создании клиента необходимо указать его `base_url` и `client_id`.
 
 ```ruby
-client = Evil::Client.with base_url: "http://127.0.0.1/v1"
+client = Evil::Client.with base_url: "http://127.0.0.1/v1", client_id: "82iudri"
 client.uri! # => "http://127.0.0.1/v1"
 ```
 
+При использовании в составе приложения Rails параметр `client_id` устанавливается автоматически из railtie `"evil.client.rails.request_id"`.
+
 **Roadmap**: 
 
-- [ ] *Будет поддерживаться инициализация файлами спецификаций swagger, где каждая спецификация определяет свой собственный `base_url`.*
+- [ ] *Будет поддерживаться инициализация файлами спецификаций swagger, где каждая спецификация определяет свой собственный `base_url` и `client_id`.*
 
 ### Подготовка адреса
 

@@ -7,7 +7,7 @@ class Evil::Client
   #     api.uri("/users/1/sms") # => "127.0.0.1/v1/users/1/sms"
   #
   # Later it will respond for loading and parsing API settings from a file
-  # of specification (swagger etc.).
+  # of specification (swagger etc.)
   #
   # @api private
   #
@@ -15,11 +15,34 @@ class Evil::Client
 
     include Errors
 
+    # @api private
+    class << self
+      # @!attribute [w] id_provider
+      #
+      # @return [#value] Storage for API client ID (to be set from Railtie)
+      #
+      attr_writer :id_provider
+
+      # API client ID set from Railtie
+      #
+      # @return [String]
+      #
+      def default_id
+        @id_provider && @id_provider.value
+      end
+    end
+
     # @!attribute [r] base
     #
     # @return [String] base url to a RESTful API
     #
     attr_reader :base_url
+
+    # @!attribute [r] request
+    #
+    # @return [String] request id of the API client
+    #
+    attr_reader :request_id
 
     # @!method initialize(settings)
     # Initializes API specification with given settings
@@ -34,9 +57,12 @@ class Evil::Client
     #
     # @raise [Evil::Client::Errors::URLError] in case of invalid path
     #
-    def initialize(base_url:)
-      @base_url = base_url
+    def initialize(settings)
+      @base_url   = settings.fetch(:base_url)
+      @request_id = settings.fetch(:request_id) { self.class.default_id }
+
       validate_base_url
+      validate_request_id
     end
 
     # Prepares a full URI from given relative path
@@ -53,6 +79,10 @@ class Evil::Client
 
     def validate_base_url
       fail(URLError, base_url) unless URI(base_url).host
+    end
+
+    def validate_request_id
+      fail(RequestIDError) unless request_id
     end
   end
 end

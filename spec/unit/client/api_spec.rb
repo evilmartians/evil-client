@@ -1,6 +1,20 @@
 describe Evil::Client::API do
-  let(:api)      { described_class.new base_url: base_url }
+
+  let(:klass)    { Class.new(described_class) }
+  let(:api)      { klass.new settings }
+  let(:settings) { { base_url: base_url, request_id: "foobar" } }
   let(:base_url) { "http://127.0.0.1/v1" }
+
+  describe ".id_provider=" do
+    subject { klass.id_provider = provider }
+    let(:provider) { double :provider, value: "foobar" }
+
+    it "sets provider for default id" do
+      expect { subject }
+        .to change { klass.default_id }
+        .to "foobar"
+    end
+  end
 
   describe ".new" do
     subject { api }
@@ -18,8 +32,16 @@ describe Evil::Client::API do
       let(:base_url) { "http://" }
 
       it "fails" do
-        expect { subject }
-          .to raise_error Evil::Client::Errors::URLError, %r{'http://'}
+        expect { subject }.to raise_error \
+          Evil::Client::Errors::URLError, %r{'http://'}
+      end
+    end
+
+    context "without request_id" do
+      before { settings.delete :request_id }
+
+      it "fails" do
+        expect { subject }.to raise_error Evil::Client::Errors::RequestIDError
       end
     end
   end
@@ -28,6 +50,21 @@ describe Evil::Client::API do
     subject { api.base_url }
 
     it { is_expected.to eql base_url }
+  end
+
+  describe "#request_id" do
+    subject { api.request_id }
+
+    it { is_expected.to eql "foobar" }
+
+    context "from default_id" do
+      before do
+        allow(klass).to receive(:default_id) { "foobar" }
+        settings.delete :request_id
+      end
+
+      it { is_expected.to eql "foobar" }
+    end
   end
 
   describe "#uri" do
