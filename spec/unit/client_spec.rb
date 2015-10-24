@@ -43,7 +43,7 @@ describe Evil::Client do
     end
   end
 
-  describe "#respond_to_missing?" do
+  describe "#respond_to?" do
     it "returns true for methods without bang" do
       expect(client).to respond_to :arbitrary_name
     end

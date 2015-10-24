@@ -17,6 +17,22 @@ describe Evil::Client::API do
   describe ".new" do
     subject { api }
 
+    it "instantiates api" do
+      expect(subject.base_url).to eql base_url
+      expect(subject.request_id).to eql "foobar"
+    end
+
+    context "without request_id" do
+      before do
+        allow(klass).to receive(:default_id) { "foobar" }
+        settings.delete :request_id
+      end
+
+      it "takes default id" do
+        expect(subject.request_id).to eql "foobar"
+      end
+    end
+
     context "without protocol in base url" do
       let(:base_url) { "127.0.0.1" }
 
@@ -42,27 +58,6 @@ describe Evil::Client::API do
         expect { subject }.to raise_error \
           Evil::Client::Errors::RequestIDError
       end
-    end
-  end
-
-  describe "#base_url" do
-    subject { api.base_url }
-
-    it { is_expected.to eql base_url }
-  end
-
-  describe "#request_id" do
-    subject { api.request_id }
-
-    it { is_expected.to eql "foobar" }
-
-    context "from default_id" do
-      before do
-        allow(klass).to receive(:default_id) { "foobar" }
-        settings.delete :request_id
-      end
-
-      it { is_expected.to eql "foobar" }
     end
   end
 

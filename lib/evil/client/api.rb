@@ -74,7 +74,7 @@ class Evil::Client
       validate_request_id
     end
 
-    # Builds adapter (connection to server) from the current settings
+    # API-specific adapter (connection to remote server)
     #
     # @return [JSONclient]
     #

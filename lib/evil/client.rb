@@ -77,6 +77,15 @@ module Evil
       new api
     end
 
+    # Initializes the client for remote API
+    #
+    # @param [Evil::Client::API] api
+    #
+    def initialize(api)
+      @api  = api
+      @path = Path
+    end
+
     # Returns full URI that corresponds to the current path
     #
     # @return [String]
