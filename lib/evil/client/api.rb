@@ -74,6 +74,18 @@ class Evil::Client
       validate_request_id
     end
 
+    # Builds adapter (connection to server) from the current settings
+    #
+    # @return [JSONclient]
+    #
+    def adapter
+      @adapter ||= begin
+        http_client = JSONClient.new(base_url: base_url)
+        http_client.debug_dev = self.class.logger
+        http_client
+      end
+    end
+
     # Prepares a full URI from given relative path
     #
     # @param [String] path
@@ -82,16 +94,6 @@ class Evil::Client
     #
     def uri(path)
       URI.join("#{base_url}/", path).to_s
-    end
-
-    # Builds adapter (connection to server) from the current settings
-    #
-    # @return [JSONclient]
-    #
-    def adapter
-      http_client = JSONClient.new(base_url: base_url)
-      http_client.debug_dev = self.class.logger
-      http_client
     end
 
     private

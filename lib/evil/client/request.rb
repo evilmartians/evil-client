@@ -44,9 +44,18 @@ class Evil::Client
     # @return [Symbol] Type of current request
     #
     attr_reader :type
-    attr_reader :uri
+
+    # @!attribute [r] path
+    #
+    # @return [String] path relative to API base url
+    #
+    attr_reader :path
+
+    # @!attribute [r] params
+    #
+    # @return [Hash] request parameters
+    #
     attr_reader :params
-    attr_reader :adapter
 
     # Initializes request by type, path and adapter with reference to api
     # and logger
@@ -64,24 +73,31 @@ class Evil::Client
       @api    = api
       @type   = type
       @path   = path
-      @uri    = api.uri(path)
       @params = params
-      validate
-      @adapter = JSONClient.new base_url: @api.base_url
     end
 
-    # Checks and calls the request, handles and returns the response
+    # The full URI of the request
+    #
+    # @return [String]
+    #
+    def uri
+      @uri ||= api.uri(path) || fail(PathError, path)
+    end
+
+    # Checks and calls the request, handles and returns its response
     #
     # @return [Hashie::Mash] The response body converted to extended hash
     #
     def call(&block)
-      handle_response __send__(type), &block
+      response = __send__(type)
+      return mash(response) if response.status < 400
+      block_given? ? yield(response) : fail(ResponseError, response)
     end
 
     private
 
-    def validate
-      fail(PathError, path) unless uri
+    def adapter
+      @adapter ||= api.adapter
     end
 
     def get
@@ -104,9 +120,9 @@ class Evil::Client
       { header: { "X-Request-Id" => api.request_id } }
     end
 
-    def handle(response)
-      return JSON(response.body) if response.status < 400
-      block_given? ? yield(response) : fail(ResponseError, response)
+    def mash(response)
+      body = JSON(response.body)
+      Hashie::Mash.new(body)
     end
   end
 end

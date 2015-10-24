@@ -10,9 +10,7 @@ describe Evil::Client::API do
     let(:provider) { double :provider, value: "foobar" }
 
     it "sets provider for default id" do
-      expect { subject }
-        .to change { klass.default_id }
-        .to "foobar"
+      expect { subject }.to change { klass.default_id }.to "foobar"
     end
   end
 
@@ -41,7 +39,8 @@ describe Evil::Client::API do
       before { settings.delete :request_id }
 
       it "fails" do
-        expect { subject }.to raise_error Evil::Client::Errors::RequestIDError
+        expect { subject }.to raise_error \
+          Evil::Client::Errors::RequestIDError
       end
     end
   end
