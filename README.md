@@ -100,6 +100,8 @@ client.userss.get! { |error_response| error_response.status }
 # => 404
 ```
 
+Формат ответа сервера (`error_response`) см. в [документации к гему 'httpclient'][client-message].
+
 **Roadmap**:
 
 - [ ] *Перед конвертацией сырых данных в структуру, ответ будет проверяться на соответствие спецификации API. Вызываемое исключение будет содержать описание исходного запроса и полученного ответа*
@@ -167,3 +169,4 @@ License
 [rspec]: http://rspec.org
 [hexx-suit]: https://github.com/nepalez/hexx-suit
 [swagger]: http://swagger.io
+[client-message]: http://www.rubydoc.info/gems/httpclient/HTTP/Message

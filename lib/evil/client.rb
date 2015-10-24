@@ -1,3 +1,4 @@
+require "hashie"
 require "jsonclient"
 
 module Evil
