@@ -29,15 +29,27 @@ class Evil::Client
   #    end
   #    # => 403
   #
+  # @api private
+  #
   class Request
 
+    # @!attribute [r] api
+    #
+    # @return [Evil::Client::API] API to which request should be sent
+    #
     attr_reader :api
+
+    # @!attribute [r] type
+    #
+    # @return [Symbol] Type of current request
+    #
     attr_reader :type
     attr_reader :uri
     attr_reader :params
     attr_reader :adapter
 
-    # Initializes request by type, path and adapter
+    # Initializes request by type, path and adapter with reference to api
+    # and logger
     #
     # @param [Evil::Client::API] api
     #   The API to which the request should be sent

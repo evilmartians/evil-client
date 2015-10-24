@@ -57,6 +57,8 @@ module Evil
   # In case of successful response, +Mash+ structure will be returned
   # as were shown above.
   #
+  # @api public
+  #
   class Client
 
     require_relative "client/errors"
@@ -77,7 +79,7 @@ module Evil
 
     # Returns full URI that corresponds to the current path
     #
-    # @return [<type>] <description>
+    # @return [String]
     #
     def uri!
       @api.uri path!

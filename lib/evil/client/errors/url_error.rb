@@ -1,5 +1,8 @@
 module Evil::Client::Errors
   # Exception for the case API +base_url+ isn't valid
+  #
+  # @api public
+  #
   class URLError < RuntimeError
     # Initializes exception for wrong URL
     #
