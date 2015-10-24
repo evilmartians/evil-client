@@ -64,6 +64,7 @@ module Evil
     require_relative "client/errors"
     require_relative "client/path"
     require_relative "client/api"
+    require_relative "client/request"
 
     # Initializes a client instance with API settings
     #
