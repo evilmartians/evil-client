@@ -1,11 +1,12 @@
 describe Evil::Client::Request do
 
   let(:request) { described_class.new api, type, path, data }
+  let(:api)     { double(:api, adapter: double, request_id: "bazqux") }
+  let(:type)    { :get }
+  let(:path)    { "foo/bar" }
+  let(:data)    { { foo: :bar } }
 
-  let(:api)  { double(:api, adapter: double) }
-  let(:type) { :get }
-  let(:path) { "foo/bar" }
-  let(:data) { { foo: :bar } }
+  before { allow(api).to receive(:uri) { |path| "localhost/#{path}" } }
 
   describe ".new" do
     subject { request }
@@ -27,24 +28,10 @@ describe Evil::Client::Request do
   describe "#uri" do
     subject { request.uri }
   
-    context "when path exists" do
-      before { allow(api).to receive(:uri) { |path| "localhost/#{path}" } }
-  
-      it { is_expected.to eql "localhost/foo/bar" }
-    end
-
-    context "when path is absent" do
-      before { allow(api).to receive(:uri) { nil } }
-
-      it "fails" do
-        expect { subject }.to raise_error \
-          Evil::Client::Errors::PathError, %r{'foo/bar'}
-      end
-    end
+    it { is_expected.to eql "localhost/foo/bar" }
   end
 
   describe "#params" do
-    before  { allow(api).to receive(:request_id) { "bazqux" } }
     subject { request.params }
 
     context "for get request" do
@@ -92,5 +79,26 @@ describe Evil::Client::Request do
     subject { request.validate }
 
     it { is_expected.to eql request }
+
+    context "when path is absent" do
+      before { allow(api).to receive(:uri) { nil } }
+
+      it "fails" do
+        expect { subject }.to raise_error \
+          Evil::Client::Errors::PathError, %r{'foo/bar'}
+      end
+    end
+  end
+
+  describe "#to_a" do
+    subject { request.to_a }
+
+    it "returns array to be sent to connection" do
+      expect(subject).to eql [
+        "get",
+        "localhost/foo/bar",
+        { header: { "X-Request-Id" => "bazqux" }, query: { foo: :bar } }
+      ]
+    end
   end
 end

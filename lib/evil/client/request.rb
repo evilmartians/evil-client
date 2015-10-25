@@ -84,7 +84,7 @@ class Evil::Client
     # @return [String]
     #
     def uri
-      @uri ||= api.uri(path) || fail(PathError, path)
+      @uri ||= api.uri(path)
     end
 
     # Request parameters
@@ -102,11 +102,20 @@ class Evil::Client
     #
     # @return [self] itself
     #
-    # @raise [Evil::Client::Errors::RequestError]
-    #   when the request doesn't satisfies API specification
+    # @raise [Evil::Client::Errors::PathError]
+    #   when [#path] doesn't satisfies API
     #
     def validate
+      fail(PathError, path) unless uri
       self
+    end
+
+    # Array representation of the request to be sent to connection
+    #
+    # @return [Array]
+    # 
+    def to_a
+      [type, uri, params]
     end
 
     private
