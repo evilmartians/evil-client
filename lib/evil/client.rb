@@ -1,15 +1,14 @@
-require "hashie"
 require "jsonclient"
 
 module Evil
   # The client prepares URI with method chaining, sends requests to remote API,
   # validates and returns server responses.
   #
-  # It is initialized with +base_url+ and optional +client_id+:
+  # It is initialized with +base_url+ and optional +request_id+:
   #
-  #    client = Client.with base_url: "127.0.0.1/v1", client_id: "s30f@sa#2fep"
+  #    client = Client.with base_url: "127.0.0.1/v1", request_id: "s30f@sa#2fep"
   #
-  # When the gem is used inside Rails app, the client_id is taken
+  # When the gem is used inside Rails app, the request_id is taken
   # from railtie "evil.client.rails.request_id".
   #
   # All methods without bang are treated as parts of a request path, relative
@@ -65,6 +64,7 @@ module Evil
     require_relative "client/path"
     require_relative "client/api"
     require_relative "client/request"
+    require_relative "client/response"
 
     # Initializes a client instance with API settings
     #
