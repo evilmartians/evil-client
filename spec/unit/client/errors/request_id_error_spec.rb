@@ -12,7 +12,7 @@ describe Evil::Client::Errors::RequestIDError do
 
     it "returns a proper message" do
       expect(subject).to eql \
-        "Request ID should be set for API. Either use Rails, or set it manually"
+        "Request ID should be set. Either use Rails, or set it manually"
     end
   end
 end

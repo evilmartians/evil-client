@@ -7,7 +7,7 @@ module Evil::Client::Errors
     # Initializes the exception w/o parameters
     def initialize
       super \
-        "Request ID should be set for API. Either use Rails, or set it manually"
+        "Request ID should be set. Either use Rails, or set it manually"
     end
   end
 end

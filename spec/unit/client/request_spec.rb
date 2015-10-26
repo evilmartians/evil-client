@@ -1,84 +1,56 @@
 describe Evil::Client::Request do
 
-  let(:request) { described_class.new api, type, path, data }
-  let(:api)     { double(:api, adapter: double, request_id: "bazqux") }
-  let(:type)    { :get }
-  let(:path)    { "foo/bar" }
-  let(:data)    { { foo: :bar } }
+  let(:klass) { Class.new(described_class) }
+  before      { klass.id_provider = double(:provider, value: "default_id") }
 
-  before { allow(api).to receive(:uri) { |path| "localhost/#{path}" } }
+  let(:api) { double(:api, adapter: double) }
+  before    { allow(api).to receive(:uri) { |path| "localhost/#{path}" } }
 
-  describe ".new" do
-    subject { request }
-  
-    it "instantiates request" do
-      expect(subject.api).to  eql api
-      expect(subject.type).to eql "get"
-      expect(subject.path).to eql path
-      expect(subject.data).to eql data
+  let(:request)  { klass.new api, type, path, data }
+  let(:type)     { :get }
+  let(:path)     { "foo/bar" }
+  let(:data)     { { foo: :bar } }
+
+  describe ".id_provider=" do
+    subject { klass.id_provider = provider }
+
+    let(:provider) { double :provider, value: "new_default_id" }
+
+    it "sets provider for default id" do
+      expect { subject }
+        .to change { klass.default_id }
+        .from("default_id")
+        .to("new_default_id")
     end
   end
 
-  describe "#adapter" do
-    subject { request.adapter }
+  describe ".new" do
+    before  { klass.id_provider = nil }
+    subject { request }
 
-    it { is_expected.to eql api.adapter }
+    context "without id" do
+      it "fails" do
+        expect { subject }.to raise_error Evil::Client::Errors::RequestIDError
+      end
+    end
+
+    context "with custom id" do
+      before { data.update(request_id: "custom_id") }
+
+      it { is_expected.to be_kind_of described_class }
+    end
+  end
+
+  describe "#type" do
+    subject { request.type }
+
+    it { is_expected.to eql "get" }
   end
 
   describe "#uri" do
     subject { request.uri }
   
     it { is_expected.to eql "localhost/foo/bar" }
-  end
-
-  describe "#params" do
-    subject { request.params }
-
-    context "for get request" do
-      let(:type) { "get" }
-
-      it "returns proper parameters" do
-        expect(subject).to eql \
-          header: { "X-Request-Id" => "bazqux" },
-          query: { foo: :bar }
-      end
-    end
-
-    context "for post request" do
-      let(:type) { "post" }
-
-      it "returns proper parameters" do
-        expect(subject).to eql \
-          header: { "X-Request-Id" => "bazqux" },
-          body: { foo: :bar }
-      end
-    end
-
-    context "for patch request" do
-      let(:type) { "patch" }
-
-      it "returns proper parameters" do
-        expect(subject).to eql \
-          header: { "X-Request-Id" => "bazqux" },
-          body: { foo: :bar, _method: "patch" }
-      end
-    end
-
-    context "for delete request" do
-      let(:type) { "delete" }
-
-      it "returns proper parameters" do
-        expect(subject).to eql \
-          header: { "X-Request-Id" => "bazqux" },
-          body: { foo: :bar, _method: "delete" }
-      end
-    end
-  end
-
-  describe "#validate" do
-    subject { request.validate }
-
-    it { is_expected.to eql request }
 
     context "when path is absent" do
       before { allow(api).to receive(:uri) { nil } }
@@ -90,6 +62,58 @@ describe Evil::Client::Request do
     end
   end
 
+  describe "#params" do
+    subject { request.params }
+
+    context "for get request" do
+      it "returns proper parameters" do
+        expect(subject).to eql \
+          header: { "X-Request-Id" => "default_id" },
+          query: { foo: :bar }
+      end
+    end
+
+    context "for post request" do
+      let(:type) { "post" }
+
+      it "returns proper parameters" do
+        expect(subject).to eql \
+          header: { "X-Request-Id" => "default_id" },
+          body: { foo: :bar }
+      end
+    end
+
+    context "for patch request" do
+      let(:type) { "patch" }
+
+      it "returns proper parameters" do
+        expect(subject).to eql \
+          header: { "X-Request-Id" => "default_id" },
+          body: { foo: :bar, _method: "patch" }
+      end
+    end
+
+    context "for delete request" do
+      let(:type) { "delete" }
+
+      it "returns proper parameters" do
+        expect(subject).to eql \
+          header: { "X-Request-Id" => "default_id" },
+          body: { foo: :bar, _method: "delete" }
+      end
+    end
+
+    context "when request_id is set explicitly" do
+      before { data.update request_id: "custom_id" }
+
+      it "returns proper parameters" do
+        expect(subject).to eql \
+          header: { "X-Request-Id" => "custom_id" },
+          query: { foo: :bar }
+      end
+    end
+  end
+
   describe "#to_a" do
     subject { request.to_a }
 
@@ -97,7 +121,7 @@ describe Evil::Client::Request do
       expect(subject).to eql [
         "get",
         "localhost/foo/bar",
-        { header: { "X-Request-Id" => "bazqux" }, query: { foo: :bar } }
+        { header: { "X-Request-Id" => "default_id" }, query: { foo: :bar } }
       ]
     end
   end

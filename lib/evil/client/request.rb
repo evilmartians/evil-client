@@ -1,10 +1,9 @@
 require "json"
 
 class Evil::Client
-  # Structure describing a prepared request to API
+  # Structure describing a request to API
   #
   # Knows how to prepare request from relative path and some data.
-  # Eventually it will also validate requests against the API specification.
   #
   # Initialized by relative address, request type and parameters,
   # with reference to API specification:
@@ -19,38 +18,29 @@ class Evil::Client
   #     #      header: { "X-Request-Id" => "foobarbaz" },
   #     #      body: { text: "Hello", _method: "patch" }
   #     #    }
-  #     request.valid?
-  #     # => true
   #
-  # @api private
+  # @api public
   #
   class Request
 
     include Errors
 
-    # @!attribute [r] api
-    #
-    # @return [Evil::Client::API] API to which request should be sent
-    #
-    attr_reader :api
+    # @api private
+    class << self
+      # @!attribute [w] id_provider
+      #
+      # @return [#value] Storage for API client ID (to be set from Railtie)
+      #
+      attr_writer :id_provider
 
-    # @!attribute [r] type
-    #
-    # @return [Symbol] Type of current request
-    #
-    attr_reader :type
-
-    # @!attribute [r] path
-    #
-    # @return [String] path relative to API base url
-    #
-    attr_reader :path
-
-    # @!attribute [r] data
-    #
-    # @return [Hash] data to be sent to API
-    #
-    attr_reader :data
+      # API request ID given from Railtie
+      #
+      # @return [String]
+      #
+      def default_id
+        @id_provider && @id_provider.value
+      end
+    end
 
     # Initializes request by type, path and adapter with reference to api
     # and logger
@@ -63,28 +53,29 @@ class Evil::Client
     #   The relative path to the API's base_url
     # @param [Hash] data
     #   The data to be send to the API
+    # @option data [String] :request_id
+    #   Optional request id (when used outside of Rails)
     #
-    def initialize(api, type, path, **data)
-      @api  = api
+    def initialize(api, type, path, request_id: nil, **data)
+      @api = api
       @type = type.to_s
       @path = path
+      @request_id = request_id || self.class.default_id || fail(RequestIDError)
       @data = data
     end
 
-    # Adapter used by [#api] to send the request
+    # @!attribute [r] type
     #
-    # @return [JSONClient]
+    # @return [Symbol] Type of current request
     #
-    def adapter
-      @adapter ||= api.adapter
-    end
+    attr_reader :type
 
     # The full URI of the request
     #
     # @return [String]
     #
     def uri
-      @uri ||= api.uri(path)
+      @uri ||= @api.uri(@path) || fail(PathError, @path)
     end
 
     # Request parameters
@@ -94,20 +85,8 @@ class Evil::Client
     def params
       @params ||= begin
         key = (type.eql? "get") ? :query : :body
-        { key => data.merge(send_method) }.merge(headers)
+        { key => @data.merge(send_method) }.merge(headers)
       end
-    end
-
-    # Validates the request
-    #
-    # @return [self] itself
-    #
-    # @raise [Evil::Client::Errors::PathError]
-    #   when [#path] doesn't satisfies API
-    #
-    def validate
-      fail(PathError, path) unless uri
-      self
     end
 
     # Array representation of the request to be sent to connection
@@ -121,7 +100,7 @@ class Evil::Client
     private
 
     def headers
-      { header: { "X-Request-Id" => api.request_id } }
+      { header: { "X-Request-Id" => @request_id } }
     end
 
     def send_method
