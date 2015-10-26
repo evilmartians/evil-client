@@ -80,7 +80,9 @@ class Evil::Client
       end
     end
 
-    # Array representation of the request to be sent to connection
+    # Array representation of the request to be sent to adapter
+    #
+    # @see [Evil::Client::Adapter#call]
     #
     # @return [Array]
     # 

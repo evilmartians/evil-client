@@ -15,15 +15,6 @@ class Evil::Client
 
     include Errors
 
-    # @api private
-    class << self
-      # @!attribute [rw] logger
-      #
-      # @return [Object] Shared logger for all api-specific http connections
-      #
-      attr_accessor :logger
-    end
-
     # @!attribute [r] base
     #
     # @return [String] base url to a RESTful API
@@ -36,28 +27,12 @@ class Evil::Client
     # @param [Hash] settings
     # @option settings [String] :base_url
     #   The base url of the API with required protocol and path
-    # @option settings [String] :request_id
-    #   The API client request id
-    #   If Rails is available it is set authomatically from [#default_id],
-    #   otherwise it should be assigned explicitly
     #
     # @raise [Evil::Client::Errors::URLError] in case of invalid path
     #
-    def initialize(settings)
-      @base_url = settings.fetch(:base_url)
+    def initialize(base_url:)
+      @base_url = base_url
       validate_base_url
-    end
-
-    # API-specific adapter (connection to remote server)
-    #
-    # @return [JSONclient]
-    #
-    def adapter
-      @adapter ||= begin
-        http_client = JSONClient.new(base_url: base_url)
-        http_client.debug_dev = self.class.logger
-        http_client
-      end
     end
 
     # Prepares a full URI from given relative path

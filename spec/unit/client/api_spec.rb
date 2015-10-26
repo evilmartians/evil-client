@@ -2,7 +2,7 @@ describe Evil::Client::API do
 
   let(:klass)    { Class.new(described_class) }
   let(:api)      { klass.new settings }
-  let(:settings) { { base_url: base_url, request_id: "foobar" } }
+  let(:settings) { { base_url: base_url } }
   let(:base_url) { "http://127.0.0.1/v1" }
 
   describe ".new" do
@@ -37,24 +37,5 @@ describe Evil::Client::API do
     let(:urn) { "users/1/sms" }
 
     it { is_expected.to eql "http://127.0.0.1/v1/users/1/sms" }
-  end
-
-  describe "#adapter" do
-    before  { klass.logger = logger }
-    subject { api.adapter }
-
-    let(:logger) { double :logger }
-
-    it "builds JSONClient" do
-      expect(subject).to be_kind_of JSONClient
-    end
-
-    it "sets base_url" do
-      expect(subject.base_url).to eql base_url
-    end
-
-    it "assigns current logger" do
-      expect(subject.debug_dev).to eql logger
-    end
   end
 end

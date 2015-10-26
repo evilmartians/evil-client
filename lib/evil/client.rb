@@ -22,13 +22,13 @@ module Evil
   #
   # Methods [#get!], [#post!], [#patch!], [#delete!] prepares and sends
   # synchronous requests to the RESTful API, checks responces,
-  # and deserialize them to hash-like structures (+Hashie::Mash+).
+  # and deserialize them to hash-like [Evil::Client::Response].
   #
   # @see https://github.com/intridea/hashie 'hashie' gem for +Mash+ description
   #
   #    response = client.users(1).sms.post! phone: "7101234567", text: "Hello!"
   #
-  #    response.class # => Hashie::Mash
+  #    response.class # => Evil::Client::Response
   #    response.id    # => 100
   #    response.phone # => "7101234567"
   #    response.text  # => "Hello!"
@@ -39,9 +39,8 @@ module Evil
   #    begin
   #      client.users[1].sms.post! text: "Hello!"
   #    rescue Evil::Client::Error::ResponseError => error
-  #      error.status   # => 400
-  #      error.response # => returns the raw response from server,
-  #                     #    not serialized to +Mash+
+  #      error.content # => returns the raw message received from server,
+  #                    #    (::HTTP::Message)
   #    end
   #
   # Alternatively you can provide the block for handling error responces.
@@ -65,6 +64,8 @@ module Evil
     require_relative "client/api"
     require_relative "client/request"
     require_relative "client/response"
+    require_relative "client/adapter"
+    require_relative "client/rails" if defined? ::Rails
 
     # Initializes a client instance with API settings
     #
@@ -78,15 +79,6 @@ module Evil
       new api
     end
 
-    # Initializes the client for remote API
-    #
-    # @param [Evil::Client::API] api
-    #
-    def initialize(api)
-      @api  = api
-      @path = Path
-    end
-
     # Returns full URI that corresponds to the current path
     #
     # @return [String]
@@ -98,8 +90,12 @@ module Evil
     private
 
     def initialize(api)
-      @api  = api
       @path = Path
+      @api  = api
+    end
+
+    def adapter!
+      @adapter = Adapter.for_api(api)
     end
 
     def path!

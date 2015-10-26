@@ -8,6 +8,7 @@ class Evil::Client
     require_relative "errors/path_error"
     require_relative "errors/request_id_error"
     require_relative "errors/url_error"
+    require_relative "errors/response_error"
 
   end
 end
