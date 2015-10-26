@@ -1,15 +1,11 @@
-require "json"
-
 class Evil::Client
-  # Structure describing a request to API
+  # Data structure describing a request to remote server
   #
   # Knows how to prepare request from relative path and some data.
   #
-  # Initialized by relative address, request type and parameters,
-  # with reference to API specification:
+  # Initialized by request type, uri and hash of data:
   #
-  #     api     = API.new base_url: "http://my_api.com/v1"
-  #     request = Request.new(api, "users/1/sms", :patch, text: "Hello")
+  #     request = Request.new("get", "http://localhost/users/1/sms", text: "Hi")
   #
   #     request.uri
   #     # => "http://my_api.com/v1/users/1/sms"
@@ -42,41 +38,36 @@ class Evil::Client
       end
     end
 
-    # Initializes request by type, path and adapter with reference to api
-    # and logger
+    # @!method initialize(type, uri, data)
+    # Initializes request by type, uri and data
     #
-    # @param [Evil::Client::API] api
-    #   The API to which the request should be sent
     # @param [Symbol] type
     #   The type of the request (+:get+, +:post+, +:patch+, +:delete+)
-    # @param [String] path
-    #   The relative path to the API's base_url
+    # @param [String] uri
+    #   The full URI of the request
     # @param [Hash] data
     #   The data to be send to the API
     # @option data [String] :request_id
     #   Optional request id (when used outside of Rails)
     #
-    def initialize(api, type, path, request_id: nil, **data)
-      @api = api
+    def initialize(type, uri, request_id: nil, **data)
       @type = type.to_s
-      @path = path
+      @uri = uri || fail(PathError, @path)
       @request_id = request_id || self.class.default_id || fail(RequestIDError)
       @data = data
     end
 
     # @!attribute [r] type
     #
-    # @return [Symbol] Type of current request
+    # @return [String] Type of current request
     #
     attr_reader :type
 
-    # The full URI of the request
+    # @!attribute [r] uri
     #
-    # @return [String]
+    # @return [String] The full URI of the request
     #
-    def uri
-      @uri ||= @api.uri(@path) || fail(PathError, @path)
-    end
+    attr_reader :uri
 
     # Request parameters
     #

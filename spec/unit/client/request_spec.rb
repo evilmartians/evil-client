@@ -3,13 +3,10 @@ describe Evil::Client::Request do
   let(:klass) { Class.new(described_class) }
   before      { klass.id_provider = double(:provider, value: "default_id") }
 
-  let(:api) { double(:api, adapter: double) }
-  before    { allow(api).to receive(:uri) { |path| "localhost/#{path}" } }
-
-  let(:request)  { klass.new api, type, path, data }
-  let(:type)     { :get }
-  let(:path)     { "foo/bar" }
-  let(:data)     { { foo: :bar } }
+  let(:request) { klass.new type, uri, data }
+  let(:type)    { :get }
+  let(:uri)     { "http://localhost/users/1/sms" }
+  let(:data)    { { foo: :bar } }
 
   describe ".id_provider=" do
     subject { klass.id_provider = provider }
@@ -25,19 +22,29 @@ describe Evil::Client::Request do
   end
 
   describe ".new" do
-    before  { klass.id_provider = nil }
     subject { request }
 
+    context "with custom id" do
+      before { klass.id_provider = nil }
+      before { data.update(request_id: "custom_id") }
+
+      it { is_expected.to be_kind_of described_class }
+    end
+
     context "without id" do
+      before { klass.id_provider = nil }
+
       it "fails" do
         expect { subject }.to raise_error Evil::Client::Errors::RequestIDError
       end
     end
 
-    context "with custom id" do
-      before { data.update(request_id: "custom_id") }
+    context "without uri" do
+      let(:uri) { nil }
 
-      it { is_expected.to be_kind_of described_class }
+      it "fails" do
+        expect { subject }.to raise_error Evil::Client::Errors::PathError
+      end
     end
   end
 
@@ -50,16 +57,7 @@ describe Evil::Client::Request do
   describe "#uri" do
     subject { request.uri }
   
-    it { is_expected.to eql "localhost/foo/bar" }
-
-    context "when path is absent" do
-      before { allow(api).to receive(:uri) { nil } }
-
-      it "fails" do
-        expect { subject }.to raise_error \
-          Evil::Client::Errors::PathError, %r{'foo/bar'}
-      end
-    end
+    it { is_expected.to eql uri }
   end
 
   describe "#params" do
@@ -120,7 +118,7 @@ describe Evil::Client::Request do
     it "returns array to be sent to connection" do
       expect(subject).to eql [
         "get",
-        "localhost/foo/bar",
+        "http://localhost/users/1/sms",
         { header: { "X-Request-Id" => "default_id" }, query: { foo: :bar } }
       ]
     end
