@@ -11,7 +11,7 @@ module Evil
   # When the gem is used inside Rails app, the request_id is taken
   # from railtie "evil.client.rails.request_id".
   #
-  # All methods without bang are treated as parts of a request path, relative
+  # All methods without `!` are treated as parts of a request path, relative
   # to +base_url+:
   #
   #    client.users[1].sms
@@ -22,9 +22,7 @@ module Evil
   #
   # Methods [#get!], [#post!], [#patch!], [#delete!] prepares and sends
   # synchronous requests to the RESTful API, checks responces,
-  # and deserialize them to hash-like [Evil::Client::Response].
-  #
-  # @see https://github.com/intridea/hashie 'hashie' gem for +Mash+ description
+  # and deserializes them to hash-like [Evil::Client::Response].
   #
   #    response = client.users(1).sms.post! phone: "7101234567", text: "Hello!"
   #
@@ -79,27 +77,87 @@ module Evil
       new api
     end
 
-    # Returns full URI that corresponds to the current path
-    #
-    # @return [String]
-    #
-    def uri!
-      @api.uri path!
-    end
+    private_class_method :new
 
-    private
-
+    # Initializes a client instance with API specification
+    #
+    # @param [Evil::Client::API]
+    #
     def initialize(api)
       @path = Path
       @api  = api
     end
 
-    def adapter!
-      @adapter = Adapter.for_api(api)
+    # Returns full URI that corresponds to the current path
+    #
+    # @return [String]
+    #
+    def uri!
+      path = @path.finalize!
+      @api.uri path
     end
 
-    def path!
-      @path.finalize!
+    # Sends GET request to the current [#uri!] with given parameters
+    #
+    # @param [Hash] params
+    #
+    # @return [Evil::Client::Response] Deserialized body of the successful response
+    #
+    # @yield block if the server responded with error (status 4** or 5**)
+    # @yieldparam [HTTP::Message] The raw response from the server
+    #
+    # @see http://www.rubydoc.info/gems/httpclient/HTTP/Message
+    #   Docs for HTTP::Message format
+    #
+    def get!(**data)
+      call! :get, data
+    end
+
+    # Sends POST request to the current [#uri!] with given parameters
+    #
+    # @param [Hash] params
+    #
+    # @return [Evil::Client::Response] Deserialized body of the successful response
+    #
+    # @yield      (see #get!)
+    # @yieldparam (see #get!)
+    #
+    def post!(**data)
+      call! :post, data
+    end
+
+    # Sends PATCH request to the current [#uri!] with given parameters
+    #
+    # @param [Hash] params
+    #
+    # @return [Evil::Client::Response] Deserialized body of the successful response
+    #
+    # @yield      (see #get!)
+    # @yieldparam (see #get!)
+    #
+    def patch!(**data)
+      call! :patch, data
+    end
+
+    # Sends DELETE request to the current [#uri!] with given parameters
+    #
+    # @param [Hash] params
+    #
+    # @return [Evil::Client::Response] Deserialized body of the successful response
+    #
+    # @yield      (see #get!)
+    # @yieldparam (see #get!)
+    #
+    def delete!(**data)
+      call! :delete, data
+    end
+
+    private
+
+    def call!(type, data)
+      request = Request.new(type, uri!, data)
+      @adapter ||= Adapter.for_api(api)
+      @adapter.call request
     end
 
     def update!(&block)

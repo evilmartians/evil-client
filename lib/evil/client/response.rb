@@ -4,6 +4,8 @@ require "json"
 class Evil::Client
   # Data structure describing the content of successful response
   #
+  # @see https://github.com/intridea/hashie 'hashie' gem for +Mash+ description
+  #
   # @api public
   #
   class Response < Hashie::Mash
