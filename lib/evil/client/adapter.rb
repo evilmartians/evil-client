@@ -4,8 +4,9 @@ class Evil::Client
   # Sends the request to remote API and processes the response
   #
   # It is responsible for:
-  # * building `Response` from a raw successful server response
-  # * handling server error responses
+  # * sending requests to the server
+  # * deserializing a response body
+  # * handling error responses
   #
   # @api private
   #
@@ -46,8 +47,7 @@ class Evil::Client
     # @param [Evil::Client::Request] request
     # @param [Proc] error_handler Custom handler of error responses
     #
-    # @return [Evil::Client::Response]
-    #   The body of raw server response converted to extended hash
+    # @return [Object] Deserialized body of a server response
     #
     # @yield block when API responds with error (status 4** or 5**)
     # @yieldparam [HTTP::Message] The raw message from the server
@@ -83,7 +83,7 @@ class Evil::Client
     alias_method :delete, :post
 
     def handle(request, raw_response)
-      return Response.new(raw_response) if raw_response.status < 400
+      return Helpers.deserialize(raw_response) if raw_response.status < 400
       fail ResponseError.new(request, raw_response) unless block_given?
       yield(raw_response)
     end

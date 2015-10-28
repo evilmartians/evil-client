@@ -22,11 +22,10 @@ module Evil
   #
   # Methods [#get!], [#post!], [#patch!], [#delete!] prepares and sends
   # synchronous requests to the RESTful API, checks responces,
-  # and deserializes them to hash-like [Evil::Client::Response].
+  # and deserializes their bodies.
   #
   #    response = client.users(1).sms.post! phone: "7101234567", text: "Hello!"
   #
-  #    response.class # => Evil::Client::Response
   #    response.id    # => 100
   #    response.phone # => "7101234567"
   #    response.text  # => "Hello!"
@@ -58,10 +57,10 @@ module Evil
   class Client
 
     require_relative "client/errors"
+    require_relative "client/helpers"
     require_relative "client/path"
     require_relative "client/api"
     require_relative "client/request"
-    require_relative "client/response"
     require_relative "client/adapter"
     require_relative "client/rails" if defined? ::Rails
 
@@ -101,7 +100,7 @@ module Evil
     #
     # @param [Hash] params
     #
-    # @return [Evil::Client::Response] Deserialized body of the successful response
+    # @return [Object] Deserialized body of the successful response
     #
     # @yield block if the server responded with error (status 4** or 5**)
     # @yieldparam [HTTP::Message] The raw response from the server
@@ -115,10 +114,8 @@ module Evil
 
     # Sends POST request to the current [#uri!] with given parameters
     #
-    # @param [Hash] params
-    #
-    # @return [Evil::Client::Response] Deserialized body of the successful response
-    #
+    # @param      (see #get!)
+    # @return     (see #get!)
     # @yield      (see #get!)
     # @yieldparam (see #get!)
     #
@@ -128,10 +125,8 @@ module Evil
 
     # Sends PATCH request to the current [#uri!] with given parameters
     #
-    # @param [Hash] params
-    #
-    # @return [Evil::Client::Response] Deserialized body of the successful response
-    #
+    # @param      (see #get!)
+    # @return     (see #get!)
     # @yield      (see #get!)
     # @yieldparam (see #get!)
     #
@@ -141,10 +136,8 @@ module Evil
 
     # Sends DELETE request to the current [#uri!] with given parameters
     #
-    # @param [Hash] params
-    #
-    # @return [Evil::Client::Response] Deserialized body of the successful response
-    #
+    # @param      (see #get!)
+    # @return     (see #get!)
     # @yield      (see #get!)
     # @yieldparam (see #get!)
     #
