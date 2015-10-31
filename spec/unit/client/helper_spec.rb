@@ -1,4 +1,4 @@
-describe Evil::Client::Helpers do
+describe Evil::Client::Helper do
   describe ".hashify" do
     subject { described_class.hashify(data) }
 

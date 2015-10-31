@@ -11,6 +11,9 @@ class Evil::Client
   # @api private
   #
   class Adapter
+
+    include Errors
+
     # @api private
     class << self
       # @!attribute [rw] logger
@@ -58,7 +61,7 @@ class Evil::Client
     #   when API responds with error and no block given
     #
     def call(request, &error_handler)
-      raw_response = __send__(*request.to_a)
+      raw_response = connection.public_send(*request.to_a)
       handle(request, raw_response, &error_handler)
     end
 
@@ -66,26 +69,19 @@ class Evil::Client
 
     def connection
       @connection ||= begin
-        json_client = JSONClient.new(base_url: @base_url)
+        json_client = HTTPClient.new(base_url: @base_url)
         json_client.debug_dev = @logger
         json_client
       end
     end
 
-    def get(uri, params)
-      connection.get_content(uri, params)
-    end
-
-    def post(uri, params)
-      connection.post_content(uri, params)
-    end
-    alias_method :patch, :post
-    alias_method :delete, :post
-
     def handle(request, raw_response)
-      return Helpers.deserialize(raw_response) if raw_response.status < 400
-      fail ResponseError.new(request, raw_response) unless block_given?
-      yield(raw_response)
+      if raw_response.status < 400
+        Helper.deserialize(raw_response.content)
+      else
+        fail ResponseError.new(request, raw_response) unless block_given?
+        yield(raw_response)
+      end
     end
   end
 end

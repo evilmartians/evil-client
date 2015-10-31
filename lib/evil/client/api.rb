@@ -42,7 +42,7 @@ class Evil::Client
     # @return [String]
     #
     def uri(path)
-      URI.join("#{base_url}/", path).to_s
+      path.empty? ? base_url : URI.join("#{base_url}/", path).to_s
     end
 
     private

@@ -57,12 +57,14 @@ module Evil
   class Client
 
     require_relative "client/errors"
-    require_relative "client/helpers"
+    require_relative "client/helper"
     require_relative "client/path"
     require_relative "client/api"
     require_relative "client/request"
     require_relative "client/adapter"
     require_relative "client/rails" if defined? ::Rails
+
+    private_class_method :new
 
     # Initializes a client instance with API settings
     #
@@ -75,8 +77,6 @@ module Evil
       api = API.new(settings)
       new api
     end
-
-    private_class_method :new
 
     # Initializes a client instance with API specification
     #
@@ -108,8 +108,8 @@ module Evil
     # @see http://www.rubydoc.info/gems/httpclient/HTTP/Message
     #   Docs for HTTP::Message format
     #
-    def get!(**data)
-      call! :get, data
+    def get!(**data, &error_handler)
+      call! :get, data, &error_handler
     end
 
     # Sends POST request to the current [#uri!] with given parameters
@@ -119,8 +119,8 @@ module Evil
     # @yield      (see #get!)
     # @yieldparam (see #get!)
     #
-    def post!(**data)
-      call! :post, data
+    def post!(**data, &error_handler)
+      call! :post, data, &error_handler
     end
 
     # Sends PATCH request to the current [#uri!] with given parameters
@@ -130,8 +130,8 @@ module Evil
     # @yield      (see #get!)
     # @yieldparam (see #get!)
     #
-    def patch!(**data)
-      call! :patch, data
+    def patch!(**data, &error_handler)
+      call! :patch, data, &error_handler
     end
 
     # Sends DELETE request to the current [#uri!] with given parameters
@@ -141,16 +141,16 @@ module Evil
     # @yield      (see #get!)
     # @yieldparam (see #get!)
     #
-    def delete!(**data)
-      call! :delete, data
+    def delete!(**data, &error_handler)
+      call! :delete, data, &error_handler
     end
 
     private
 
-    def call!(type, data)
+    def call!(type, data, &error_handler)
       request = Request.new(type, uri!, data)
       @adapter ||= Adapter.for_api(api)
-      @adapter.call request
+      @adapter.call request, &error_handler
     end
 
     def update!(&block)

@@ -11,7 +11,7 @@ module Evil::Client::Errors
     #
     def initialize(request, raw_response)
       @request  = request
-      @response = response
+      @response = raw_response
 
       super "#{request.type.upcase} request to #{request.uri}" \
             " with params #{request.params}" \

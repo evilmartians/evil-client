@@ -76,28 +76,36 @@ class Evil::Client
     def params
       @params ||= begin
         key = (type.eql? "get") ? :query : :body
-        { key => @data.merge(send_method) }.merge(headers)
+        { key => @data.merge(send_method) }.merge(header: headers)
       end
     end
 
-    # Array representation of the request to be sent to adapter
+    # Returns a standard array representation of the request
     #
     # @see [Evil::Client::Adapter#call]
     #
     # @return [Array]
     # 
     def to_a
-      [type, uri, params]
+      [request_type, uri, params]
     end
 
     private
 
     def headers
-      { header: { "X-Request-Id" => @request_id } }
+      {
+        "X-Request-Id" => @request_id,
+        "Content-Type" => "application/json; charset=utf-8",
+        "Accept"       => "application/json"
+      }
+    end
+
+    def request_type
+      @request_type ||= type.eql?("get") ? "get" : "post"
     end
 
     def send_method
-      %w(get post).include?(type) ? {} : { _method: type }
+      @send_method ||= %w(get post).include?(type) ? {} : { _method: type }
     end
   end
 end

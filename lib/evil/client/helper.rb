@@ -5,7 +5,7 @@ class Evil::Client
   #
   # @api private
   #
-  module Helpers
+  module Helper
     # Deserializes a JSON string to the nested structure of arrays and hashies
     #
     # @param [String] string
@@ -13,7 +13,8 @@ class Evil::Client
     # @return [Object]
     # 
     def self.deserialize(string)
-      hashify(JSON string)
+      data = JSON string rescue nil
+      hashify(data)
     end
 
     # Serializes data so that every hash is converted to extended hashie
