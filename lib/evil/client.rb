@@ -4,12 +4,9 @@ module Evil
   # The client prepares URI with method chaining, sends requests to remote API,
   # validates and returns server responses.
   #
-  # It is initialized with +base_url+ and optional +request_id+:
+  # It is initialized with +base_url+
   #
-  #    client = Client.with base_url: "127.0.0.1/v1", request_id: "s30f@sa#2fep"
-  #
-  # When the gem is used inside Rails app, the request_id is taken
-  # from railtie "evil.client.rails.request_id".
+  #    client = Client.with base_url: "127.0.0.1/v1"
   #
   # All methods without `!` are treated as parts of a request path, relative
   # to +base_url+:
