@@ -46,7 +46,7 @@ module Evil
   #    end
   #    # => 400
   #
-  # In case of successful response, +Mash+ structure will be returned
+  # In case of successful response, +Hashie::Mash+ structure will be returned
   # as were shown above.
   #
   # @api public
