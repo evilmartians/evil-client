@@ -1,6 +1,0 @@
----
-output: tmp/coverage
-filters: # The list of paths to be excluded from coverage checkup
-- "spec/"
-- "config/"
-groups: []
