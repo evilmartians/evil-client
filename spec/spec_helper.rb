@@ -1,4 +1,5 @@
 Bundler.require
+require 'webmock/rspec'
 
 begin
   require "hexx-suit"
@@ -14,6 +15,3 @@ if ENV["MUTANT"]
     config.around { |example| Timeout.timeout(0.5, &example) }
   end
 end
-
-# Fake remote API for requests
-require "support/fake_api"
