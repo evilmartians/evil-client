@@ -1,4 +1,4 @@
-class Evil::Client
+module Evil::Client::Rails
   # Rails-specific provider for API client's request ID
   #
   # @api private

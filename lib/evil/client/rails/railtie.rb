@@ -7,7 +7,7 @@ module Evil::Client::Rails
     # Sets request ID
     initializer "evil.client.rails.request_id" do |app|
       app.middleware.use RequestID
-      Evil::Client::Request.id_provider = Rails::RequestID
+      Evil::Client::Request.id_provider = RequestID
     end
 
     # Sets logger for Rails dev/test environment
