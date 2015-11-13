@@ -80,8 +80,16 @@ module Evil
     # @param [Evil::Client::API]
     #
     def initialize(api)
-      @path = Path
+      @path = Path.new
       @api  = api
+    end
+
+    # Adds part to the URI
+    #
+    # @return [Evil::Client] updated client
+    #
+    def [](value)
+      update! { @path = @path[value] }
     end
 
     # Returns full URI that corresponds to the current path
@@ -89,13 +97,13 @@ module Evil
     # @return [String]
     #
     def uri!
-      path = @path.finalize!
-      @api.uri path
+      @api.uri @path.to_s
     end
 
     private
 
-    CALL_METHOD = %r{^\w+\!$}.freeze
+    CALL_METHOD = /^[a-z]+\!$/.freeze
+    PATH_METHOD = /^\w+$/.freeze
 
     def call!(type, data, &error_handler)
       request = Request.new(type, uri!, data)
@@ -110,13 +118,13 @@ module Evil
     def method_missing(name, *args, &block)
       if name[CALL_METHOD]
         call!(name[0..-2].to_sym, *args, &block)
-      else
-        update! { @path = @path.public_send(name, *args) }
+      elsif name[PATH_METHOD]
+        self[name]
       end
     end
 
     def respond_to_missing?(name, *)
-      @path.respond_to?(name) || name[CALL_METHOD]
+      name[PATH_METHOD] || name[CALL_METHOD]
     end
   end
 end

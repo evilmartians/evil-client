@@ -37,12 +37,12 @@ class Evil::Client
 
     # Prepares a full URI from given relative path
     #
-    # @param [String] path
+    # @param [#to_s] path
     #
     # @return [String]
     #
     def uri(path)
-      path.empty? ? base_url : URI.join("#{base_url}/", path).to_s
+      path.to_s.empty? ? base_url : URI.join("#{base_url}/", path).to_s
     end
 
     private
