@@ -6,16 +6,6 @@ class Evil::Client
   # @api private
   #
   module Helper
-    # Deserializes a JSON string to the nested structure of arrays and hashies
-    #
-    # @param [String, nil] string
-    #
-    # @return [Object]
-    # 
-    def self.deserialize(string)
-      hashify(JSON string) if string && !string.empty?
-    end
-
     # Serializes data so that every hash is converted to extended hashie
     #
     # @example
