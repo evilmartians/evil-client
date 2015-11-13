@@ -73,11 +73,16 @@ client.users[1].uri!
 
 ### Sending requests
 
-Use methods `#get!`, `#post!`, `#patch!` и `#delete!` to send a corresponding request to the remote API. Request parameters can be provided as method options:
+Use methods ending with bangs (`#get!`, `#post!`, etc.) to send a corresponding request to the remote API.
+
+Every request except for `#get!` and `#post!` (for example, `#patch!` or `#foo!`) is sent as POST with "_method" parameter.
+
+Other parameters of the request can be provided as method options:
 
 ```ruby
 client.users[1].sms.get!
 client.users[1].sms.post! text: "Hello!"
+client.users[1].sms.foo! text: "Hi!" # the same as .post!(_method: :foo, text "Hi!")
 ```
 
 **Roadmap**:
@@ -86,7 +91,7 @@ client.users[1].sms.post! text: "Hello!"
 
 ### Receiving Responses and Handling Errors
 
-Methods `#get!`, `#post!`, `#patch!`, `#delete!` returns a hash-like structures, exctracted from a body of successful response:
+Requests return a hash-like structures, exctracted from a body of successful response:
 
 ```ruby
 result = client.users[1].get!

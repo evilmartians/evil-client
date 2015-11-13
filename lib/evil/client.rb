@@ -93,56 +93,9 @@ module Evil
       @api.uri path
     end
 
-    # Sends GET request to the current [#uri!] with given parameters
-    #
-    # @param [Hash] params
-    #
-    # @return [Object] Deserialized body of the successful response
-    #
-    # @yield block if the server responded with error (status 4** or 5**)
-    # @yieldparam [HTTP::Message] The raw response from the server
-    #
-    # @see http://www.rubydoc.info/gems/httpclient/HTTP/Message
-    #   Docs for HTTP::Message format
-    #
-    def get!(**data, &error_handler)
-      call! :get, data, &error_handler
-    end
-
-    # Sends POST request to the current [#uri!] with given parameters
-    #
-    # @param      (see #get!)
-    # @return     (see #get!)
-    # @yield      (see #get!)
-    # @yieldparam (see #get!)
-    #
-    def post!(**data, &error_handler)
-      call! :post, data, &error_handler
-    end
-
-    # Sends PATCH request to the current [#uri!] with given parameters
-    #
-    # @param      (see #get!)
-    # @return     (see #get!)
-    # @yield      (see #get!)
-    # @yieldparam (see #get!)
-    #
-    def patch!(**data, &error_handler)
-      call! :patch, data, &error_handler
-    end
-
-    # Sends DELETE request to the current [#uri!] with given parameters
-    #
-    # @param      (see #get!)
-    # @return     (see #get!)
-    # @yield      (see #get!)
-    # @yieldparam (see #get!)
-    #
-    def delete!(**data, &error_handler)
-      call! :delete, data, &error_handler
-    end
-
     private
+
+    CALL_METHOD = %r{^\w+\!$}.freeze
 
     def call!(type, data, &error_handler)
       request = Request.new(type, uri!, data)
@@ -154,12 +107,16 @@ module Evil
       dup.tap { |client| client.instance_eval(&block) }
     end
 
-    def method_missing(name, *args)
-      update! { @path = @path.public_send(name, *args) }
+    def method_missing(name, *args, &block)
+      if name[CALL_METHOD]
+        call!(name[0..-2].to_sym, *args, &block)
+      else
+        update! { @path = @path.public_send(name, *args) }
+      end
     end
 
     def respond_to_missing?(name, *)
-      @path.respond_to?(name)
+      @path.respond_to?(name) || name[CALL_METHOD]
     end
   end
 end

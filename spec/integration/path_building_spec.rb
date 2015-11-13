@@ -16,9 +16,4 @@ describe "remote path building" do
   it "responds to any method without bang" do
     expect(client).to respond_to :foo
   end
-
-  it "doesn't respond to undefined methods with ! or ?" do
-    expect(client).not_to respond_to :foo!
-    expect(client).not_to respond_to :foo?
-  end
 end
