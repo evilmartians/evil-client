@@ -61,8 +61,9 @@ class Evil::Client
     #   when API responds with error and no block given
     #
     def call(request, &error_handler)
-      raw_response = connection.public_send(*request.to_a)
-      handle(request, raw_response, &error_handler)
+      response = send_request(request)
+      return response.content if response.success?
+      handle_error(request, response, &error_handler)
     end
 
     private
@@ -75,12 +76,16 @@ class Evil::Client
       end
     end
 
-    def handle(request, raw_response)
-      if raw_response.status < 400
-        Helper.deserialize(raw_response.content)
+    def send_request(request)
+      raw_response = connection.public_send(*request.to_a)
+      Response.new(raw_response)
+    end
+
+    def handle_error(request, response)
+      if block_given?
+        yield(response)
       else
-        fail ResponseError.new(request, raw_response) unless block_given?
-        yield(raw_response)
+        fail ResponseError.new(request, response)
       end
     end
   end

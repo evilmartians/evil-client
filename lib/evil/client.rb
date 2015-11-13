@@ -58,6 +58,7 @@ module Evil
     require_relative "client/path"
     require_relative "client/api"
     require_relative "client/request"
+    require_relative "client/response"
     require_relative "client/adapter"
     require_relative "client/rails" if defined? ::Rails
 

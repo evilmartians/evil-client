@@ -40,7 +40,7 @@ describe "sending delete request", :fake_api do
     let(:body)   { nil }
 
     it "returns nil" do
-      expect(subject).to be_nil
+      expect(subject).to eq ""
     end
   end
 
