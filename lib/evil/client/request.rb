@@ -75,7 +75,7 @@ class Evil::Client
     #
     def params
       @params ||= begin
-        key = (type.eql? "get") ? :query : :body
+        key = (type == "get") ? :query : :body
         { key => @data.merge(send_method) }.merge(header: headers)
       end
     end
@@ -101,7 +101,7 @@ class Evil::Client
     end
 
     def request_type
-      @request_type ||= type.eql?("get") ? "get" : "post"
+      @request_type ||= (type == "get") ? "get" : "post"
     end
 
     def send_method
