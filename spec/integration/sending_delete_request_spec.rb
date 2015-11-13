@@ -1,4 +1,4 @@
-describe "sending post request", :fake_api do
+describe "sending delete request", :fake_api do
   subject { client.users[1].sms.delete! params }
 
   let(:client)  { Evil::Client.with base_url: "http://example.com/" }
