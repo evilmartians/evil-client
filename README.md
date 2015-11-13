@@ -112,6 +112,15 @@ rescue Evil::Client::ResponseError => error
 end
 ```
 
+### Safe Requests
+
+Methods `try_get!`, `try_post!` etc. send a corresponding request and return `false` in case of error responses:
+
+```ruby
+client.unknown.try_get!
+# => false
+```
+
 ### Custom Error Handling
 
 If you need more customized error handling, call methods `#get!` etc. with a block. The block should take one argument where raw error message will be given. The raw message is reseived in a form of [`HTTP::Message`][client-message].

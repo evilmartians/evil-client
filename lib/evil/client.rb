@@ -103,6 +103,7 @@ module Evil
     private
 
     CALL_METHOD = /^[a-z]+\!$/.freeze
+    SAFE_METHOD = /^try_[a-z]+\!$/.freeze
     PATH_METHOD = /^\w+$/.freeze
 
     def call!(type, data, &error_handler)
@@ -116,15 +117,17 @@ module Evil
     end
 
     def method_missing(name, *args, &block)
-      if name[CALL_METHOD]
-        call!(name[0..-2].to_sym, *args, &block)
-      elsif name[PATH_METHOD]
+      if name[PATH_METHOD]
         self[name]
+      elsif name[CALL_METHOD]
+        call!(name[0..-2].to_sym, *args, &block)
+      elsif name[SAFE_METHOD]
+        call!(name[4..-2].to_sym, *args) { false }
       end
     end
 
     def respond_to_missing?(name, *)
-      name[PATH_METHOD] || name[CALL_METHOD]
+      name[/#{CALL_METHOD}|#{SAFE_METHOD}|#{PATH_METHOD}/]
     end
   end
 end
