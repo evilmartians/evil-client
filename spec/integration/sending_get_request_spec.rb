@@ -33,11 +33,11 @@ describe "sending get request", :fake_api do
   end
 
   context "when server responded without body" do
-    let(:status) { [304, "Not changed"] }
+    let(:status) { [200, "Ok"] }
     let(:body)   { nil }
 
     it "returns nil" do
-      expect(subject).to eq ""
+      expect(subject).to be_nil
     end
   end
 
@@ -77,13 +77,14 @@ describe "sending get request", :fake_api do
   end
 
   context "when server responded with error and block handler was provided" do
-    subject { client.users[1].sms.get!(params) { |response| response.status } }
+    subject { client.users[1].sms.get!(params, &handler) }
 
-    let(:status) { [404, "Not found"] }
-    let(:body)   { nil }
+    let(:status)  { [404, "Not found"] }
+    let(:body)    { nil }
+    let(:handler) { proc { |response| [response.status, response.content] } }
 
-    it "returns block result" do
-      expect(subject).to eql 404
+    it "sends raw response to the handler and returns the result" do
+      expect(subject).to eql [404, ""]
     end
   end
 

@@ -22,15 +22,20 @@ class Evil::Client
 
     # The content of the response
     #
-    # In case of successful response, deserializes the content and
-    # converts all hashes to the extended hashes (Hashie::Mash)
-    #
-    # @return [Object]
+    # @return [String] in case of error response
+    # @return [nil] in case of empty response
+    # @return [Hashie::Mash, Array<Hashie::Mash>] in case of non-empty response
     #
     def content
       @content ||= begin
         source = __getobj__.content
-        (error? || source.empty?) ? source : Helper.hashify(JSON source)
+        if error?
+          source
+        elsif source.empty?
+          nil
+        else
+          Helper.hashify(JSON source)
+        end
       end
     end
   end
