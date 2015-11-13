@@ -54,7 +54,6 @@ module Evil
   class Client
 
     require_relative "client/errors"
-    require_relative "client/helper"
     require_relative "client/path"
     require_relative "client/api"
     require_relative "client/request"

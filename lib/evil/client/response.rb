@@ -1,3 +1,5 @@
+require "hashie/mash"
+
 class Evil::Client
   # Describes a server response
   #
@@ -34,7 +36,7 @@ class Evil::Client
         elsif source.empty?
           nil
         else
-          Helper.hashify(JSON source)
+          JSON source, object_class: Hashie::Mash
         end
       end
     end
