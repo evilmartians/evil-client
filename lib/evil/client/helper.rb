@@ -19,9 +19,9 @@ class Evil::Client
     # Serializes data so that every hash is converted to extended hashie
     #
     # @example
-    #   data   = [{ foo: { bar: [baz: { foo: :qux }] } }]
+    #   data   = [{ foo: :bar }]
     #   hashie = Helpers.hashify data
-    #   hashie.foo.bar[:baz].foo # => :qux
+    #   hashie.first.foo # => :bar
     #
     # @param [Object] data
     #
@@ -29,7 +29,7 @@ class Evil::Client
     # 
     def self.hashify(data)
       if data.is_a? Hash
-        Hashie::Mash.new data.keys.zip(hashify data.values).to_h
+        Hashie::Mash.new data
       elsif data.is_a? Array
         data.map(&method(:hashify))
       else
