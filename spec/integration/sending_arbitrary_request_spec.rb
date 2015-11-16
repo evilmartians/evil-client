@@ -25,21 +25,17 @@ describe "sending arbitrary request", :fake_api do
     )
   end
 
-  it "takes request_id from env" do
-    ENV["HTTP_X_REQUEST_ID"] = "foobar"
-
+  it "ignores request_id when it hasn't been set" do
     subject
-    expect(request).to have_been_made_with_header \
-      "X-Request-Id",
-      "foobar"
+    expect(request).not_to have_been_made_with_header "X-Request-Id"
   end
 
-  it "generates request_id by default" do
-    ENV["HTTP_X_REQUEST_ID"] = nil
-
-    subject
-    expect(request).to have_been_made_with_header "X-Request-Id", /\w{32}/
-  end
+  # it "takes request_id from 'HTTP_X_REQUEST_ID' rack env" do
+  #   # Stub rack env here
+  #
+  #   subject
+  #   expect(request).to have_been_made_with_headers "X-Request-Id" => "foobar"
+  # end
 
   context "when server responded with success" do
     let(:status)  { [200, "Ok"] }

@@ -21,17 +21,15 @@ class Evil::Client
 
     include Errors
 
-    # Gets/sets a provider of the request_id
+    # Defines a middleware env key to take a request id from
     #
-    # A provider extracts id from a corresponding environment via +#call+ method
-    #
-    # @return [#call]
+    # @return [String]
     #
     # @api private
     #
-    def self.request_id_provider(provider = nil)
-      @provider = provider if provider
-      @provider || proc { ENV["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16) }
+    def self.request_id(key = nil)
+      @request_id = key if key
+      @request_id.to_s || "HTTP_X_REQUEST_ID"
     end
 
     # @!method initialize(type, uri, data)
@@ -82,16 +80,17 @@ class Evil::Client
 
     private
 
+    DEFAULT_HEADERS = {
+      "Content-Type" => "application/json; charset=utf-8",
+      "Accept"       => "application/json"
+    }.freeze
+
     def headers
-      {
-        "X-Request-Id" => request_id,
-        "Content-Type" => "application/json; charset=utf-8",
-        "Accept"       => "application/json"
-      }
+      DEFAULT_HEADERS.merge(request_id ? { "X-Request-Id" => request_id } : {})
     end
     
     def request_id
-      @request_id ||= self.class.request_id_provider.call
+      @request_id ||= RequestID.value
     end
 
     def request_type

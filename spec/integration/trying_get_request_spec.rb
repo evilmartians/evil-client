@@ -3,29 +3,16 @@ describe "trying get request", :fake_api do
 
   let(:client)  { Evil::Client.with base_url: "http://example.com/" }
   let(:params)  { { visible: true } }
-  let(:request) do
-    a_request(:get, "http://example.com/users/1/sms?visible=true")
-      .with(headers: {
-        "Accept"       => "application/json",
-        "Content-Type" => "application/json; charset=utf-8",
-        "X-Request-Id" => "foobar"
-      })
-  end
+  let(:request) { a_request(:get, "http://example.com/users/1/sms?sum=1") }
 
   before do
-    ENV["HTTP_X_REQUEST_ID"] = "foobar"
     stub_request(:get, %r{example.com/users/1/sms})
-      .to_return(status: status, body: body, headers: {})
+      .to_return(status: status, headers: {}, body: body)
   end
 
   context "when server responded with success" do
     let(:status) { [200, "Ok"] }
     let(:body)   { "{\"id\":1,\"text\":\"Hello!\"}" }
-
-    it "sends a proper request" do
-      subject
-      expect(request).to have_been_made
-    end
 
     it "deserializes response body to hashie" do
       expect(subject.id).to   eql 1
