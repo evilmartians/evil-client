@@ -21,17 +21,6 @@ class Evil::Client
 
     include Errors
 
-    # Defines a middleware env key to take a request id from
-    #
-    # @return [String]
-    #
-    # @api private
-    #
-    def self.request_id(key = nil)
-      @request_id = key if key
-      @request_id.to_s || "HTTP_X_REQUEST_ID"
-    end
-
     # @!method initialize(type, uri, data)
     # Initializes request by type, uri and data
     #
