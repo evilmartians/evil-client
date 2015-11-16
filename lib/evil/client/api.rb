@@ -1,16 +1,13 @@
 class Evil::Client
-  # Контейнер с настройками API
+  # Container for API settings
   #
-  # Сейчас он просто хранит [#base_url].
+  # For now it is only stores the [#base_url].
   #
   #     api = API.new base_url: "127.0.0.1/v1"
   #     api.uri("/users/1/sms") # => "127.0.0.1/v1/users/1/sms"
   #
-  # В дальнейшем он будет парсить и хранить спецификацию (swagger etc.)
-  # и проверять наличие URN по спецификации перед его привязкой к [#base_url].
-  #
-  #     api = API.load("users.json")
-  #     api.uri("/unknown") # => nil
+  # Eventually it will respond for loading and parsing API settings from a file
+  # of specification (swagger etc.), validation of requests and responses.
   #
   # @api private
   #
@@ -20,40 +17,32 @@ class Evil::Client
 
     # @!attribute [r] base
     #
-    # @return [String] базовый адрес RESTful API
+    # @return [String] base url to a RESTful API
     #
     attr_reader :base_url
 
-    # @!method initialize(options)
-    # Инициализирует спецификацию удаленного API с указанными параметрами
+    # @!method initialize(settings)
+    # Initializes API specification with given settings
     #
-    # @param [<type>]
-    # @option options [String] :base_url
+    # @param [Hash] settings
+    # @option settings [String] :base_url
+    #   The base url of the API with required protocol and path
+    #
+    # @raise [Evil::Client::Errors::URLError] in case of invalid path
     #
     def initialize(base_url:)
       @base_url = base_url
       validate_base_url
     end
 
-    # Формирует полный URI (base_url + URN) из переданной строки URN
+    # Prepares a full URI from given relative path
     #
-    # @param [String] urn
+    # @param [#to_s] path
     #
     # @return [String]
     #
-    def uri(urn)
-      URI.join("#{base_url}/", urn).to_s
-    end
-
-    # Предикат, проверяющий наличие URN у текущего API
-    # (добавлен для соответствия конвенции имен Rails)
-    #
-    # @param (see #uri)
-    #
-    # @return [Boolean]
-    #
-    def uri?(urn)
-      !!uri(urn)
+    def uri(path)
+      path.to_s.empty? ? base_url : URI.join("#{base_url}/", path).to_s
     end
 
     private

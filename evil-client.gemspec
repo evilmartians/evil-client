@@ -12,6 +12,10 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = Dir["README.md", "LICENSE", "CHANGELOG.md"]
 
   gem.required_ruby_version = ">= 2.2"
+
+  gem.add_runtime_dependency "hashie"
   gem.add_runtime_dependency "httpclient", "~> 2.6"
-  gem.add_development_dependency "hexx-rspec", "~> 0.5"
+
+  gem.add_development_dependency "guard-rspec"
+  gem.add_development_dependency "webmock"
 end

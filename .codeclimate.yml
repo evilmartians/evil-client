@@ -1,0 +1,11 @@
+languages:
+   Ruby: true
+engines:
+  rubocop:
+    enabled: true
+ratings:
+   paths:
+   - lib/**
+   - "**.rb"
+exclude_paths:
+- "spec/*"

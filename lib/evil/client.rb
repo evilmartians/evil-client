@@ -1,95 +1,135 @@
+require "jsonclient"
+
 module Evil
-  # Клиент отвечает за формирование адреса и отправку запроса к удаленному API.
+  # The client prepares URI with method chaining, sends requests to remote API,
+  # validates and returns server responses.
   #
-  # При создании клиента указывается +base_url+:
+  # It is initialized with +base_url+
   #
   #    client = Client.with base_url: "127.0.0.1/v1"
   #
-  # (В дальнейшем будет добавлен метод +Client.load+ для инициализации клиента
-  # из спецификаций swagger etc.):
-  #
-  #    client = Client.load users: "users.json", sms: "sms.json"
-  #
-  # Все методы без восклицательного знака интерпретируются как части адреса:
+  # All methods without `!` are treated as parts of a request path, relative
+  # to +base_url+:
   #
   #    client.users[1].sms
   #
-  # Для получения строки адреса используются метод [#uri!]:
+  # Use [#uri!] method to check the full URI:
   #
   #    client.users[1].sms.uri! # => "127.0.0.1/v1/users/1/sms"
   #
-  # Методы [#get!], [#post!], [#patch!], [#delete!] формируют и отправляют
-  # синхронный запрос с переданными параметрами, возвращают ответ сервера
-  # в виде +Hashie::Mash+.
+  # Methods [#get!], [#post!], [#patch!], [#delete!] prepares and sends
+  # synchronous requests to the RESTful API, checks responces,
+  # and deserializes their bodies.
   #
   #    response = client.users(1).sms.post! phone: "7101234567", text: "Hello!"
-  #    response.class # => Hashie::Mash
+  #
   #    response.id    # => 100
   #    response.phone # => "7101234567"
   #    response.text  # => "Hello!"
   #
-  # Перед возвращением проверяется статус ответа и в случае ошибки (4**, 5**)
-  # выбрасывается исключение, содержащее ответ сервера.
+  # In case API returns error response (4**, 5**) the exception is raised
+  # with error +status+ and +response+ attributes:
   #
-  # Если метод запроса вызывается с блоком, вместо обработки ошибочный ответ
-  # сервера передается в блок. Результат обработки возвращается методом:
+  #    begin
+  #      client.users[1].sms.post! text: "Hello!"
+  #    rescue Evil::Client::Error::ResponseError => error
+  #      error.content # => returns the raw message received from server,
+  #                    #    (::HTTP::Message)
+  #    end
+  #
+  # Alternatively you can provide the block for handling error responces.
+  # In this case the raw error response will be given to the block
+  # without raising any exception:
   #
   #    client.users(1).sms.post(phone: "7101234567") do |error_response|
   #      error_response.status
   #    end
   #    # => 400
   #
+  # In case of successful response, +Hashie::Mash+ structure will be returned
+  # as were shown above.
+  #
+  # @api public
+  #
   class Client
 
     require_relative "client/errors"
-    require_relative "client/urn"
+    require_relative "client/path"
     require_relative "client/api"
-    require_relative "client/registry"
+    require_relative "client/request_id"
+    require_relative "client/request"
+    require_relative "client/response"
+    require_relative "client/adapter"
 
-    # Инициализирует объект клиента для единственной API
+    require_relative "client/rails" if defined? ::Rails
+
+    private_class_method :new
+
+    # Initializes a client instance with API settings
     #
-    # @param [Hash] options Настройки API
-    # @options option (see Evil::Client::API#initialize)
+    # @param [Hash] settings
+    # @options settings (see Evil::Client::API#initialize)
     #
     # @return [Evil::Client]
     #
-    def self.with(options)
-      new Registry.with(options)
+    def self.with(settings)
+      api = API.new(settings)
+      new api
     end
 
-    # Находит нужный API и формирует для него URI из [#urn!]
+    # Initializes a client instance with API specification
     #
-    # @param [Array<Symbol>] api_keys
-    #   Имена API среди которых ведется поиск URN (по умолчанию - по всем URN)
+    # @param [Evil::Client::API]
     #
-    # @return [<type>] <description>
+    def initialize(api)
+      @path = Path.new
+      @api  = api
+    end
+
+    # Adds part to the URI
     #
-    def uri!(*api_keys)
-      urn = urn!
-      @registry.api(*api_keys, urn: urn).uri(urn)
+    # @return [Evil::Client] updated client
+    #
+    def [](value)
+      update! { @path = @path[value] }
+    end
+
+    # Returns full URI that corresponds to the current path
+    #
+    # @return [String]
+    #
+    def uri!
+      @api.uri @path.to_s
     end
 
     private
 
-    def initialize(registry)
-      @registry = registry # коллекция удаленных API
-      @urn = URN           # ленивый построитель URN
-    end
+    CALL_METHOD = /^[a-z]+\!$/.freeze
+    SAFE_METHOD = /^try_[a-z]+\!$/.freeze
+    PATH_METHOD = /^\w+$/.freeze
 
-    def urn!
-      @urn.finalize!
+    def call!(type, data, &error_handler)
+      request = Request.new(type, uri!, data)
+      @adapter ||= Adapter.for_api(api)
+      @adapter.call request, &error_handler
     end
 
     def update!(&block)
       dup.tap { |client| client.instance_eval(&block) }
     end
 
-    def method_missing(name, *args)
-      update! { @urn = @urn.public_send(name, *args) }
+    def method_missing(name, *args, &block)
+      if name[PATH_METHOD]
+        self[name]
+      elsif name[CALL_METHOD]
+        call!(name[0..-2].to_sym, *args, &block)
+      elsif name[SAFE_METHOD]
+        call!(name[4..-2].to_sym, *args) { false }
+      end
     end
 
     def respond_to_missing?(name, *)
-      @urn.respond_to?(name)
+      name[/#{CALL_METHOD}|#{SAFE_METHOD}|#{PATH_METHOD}/]
     end
   end
 end

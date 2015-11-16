@@ -1,142 +1,148 @@
 [WIP] Evil::Client
 ==================
 
-DSL для работы с REST-ресурсами.
+DSL for dealing with remote REST APIs
 
-Установка
----------
+Setup
+-----
 
-This library is available as a gem `evil-client`.
+The library is available as a gem `evil-client`.
 
-Использование
--------------
+Usage
+-----
 
-### Инициализация
+### Configuring
 
-При создании клиента необходимо указать его `base_url`.
+Inside Rails application, define a request ID for a remote API:
 
 ```ruby
-client = Evil::Client.build base_url: "127.0.0.1/v1"
-client.uri! # => "127.0.0.1/v1"
+@todo
+```
+
+### Initialization
+
+Initialize a new client with `base_url` of a remote API:
+
+```ruby
+client = Evil::Client.with base_url: "http://127.0.0.1/v1"
+client.uri! # => "http://127.0.0.1/v1"
 ```
 
 **Roadmap**: 
 
-- [ ] *Будет поддерживаться инициализация файлами спецификаций swagger, где каждая спецификация определяет свой собственный `base_url`.*
+- [ ] *A client will be initialized by loading swagger specification as well.*
+- [ ] *It will be configurable for using several APIs at once.*
 
-### Подготовка адреса
+### Path building
 
-RESTful адрес запроса формируется цепочкой методов клиента. Все методы, не оканчивающиеся восклицательным знаком, интерпретируются как части адреса:
+Use method chain to build RESTful address relative to API root url. Any method whose name doesn't contain `!` or `?` adds a corresponding part to the address. Use brackets `[]` to add a dynamic part of the addres, or a part with dashes:
 
 ```ruby
 client.users
 client.users[1]
 client.users[1].sms
+client['vip-users'][1].sms
 ```
 
-Квадратные скобки используются для передачи динамических параметров адреса.
+### Path finalization
 
-### Финализация адреса
-
-Методы с восклицательным знаком: `#uri!` `#get!`, `#post!`, `#patch!` и `#delete!` финализируют адрес запроса.
-
-Метод `#uri!` возвращает строку адреса, включая `base_url`.
+The `#uri!` method call returns the absolute URI:
 
 ```ruby
 client.users[1].uri!
-# => "127.0.0.1/v1/users/1"
+# => "http://127.0.0.1/v1/users/1"
 
-client.users[1].sms.uri!
-# => "127.0.0.1/v1/users/1/sms"
+client.['vip-users'][1].sms.uri!
+# => "http://127.0.0.1/v1/vip-users/1/sms"
+```
+
+The method doesn't mutate client - you can keep building address. Bangs are used to distinguish parts of address (without bangs) from other instance methods:
+
+```ruby
+client.users.uri.uri!
+# => "http://127.0.0.1/v1/users/uri"
+client.users[1].uri!
+# => "http://127.0.0.1/v1/users/1"
 ```
 
 **Roadmap**:
 
-- [ ] *При финализации адрес будет автоматически проверяться на соответствие (всем выбранным) API*.
-- [ ] *Адрес при финализации будет формироваться подходящим API (тем, которое имеет соответствующий адрес) с соответствующим `base_url`*.
+- [ ] *The finalization will check the path agains API specification (swagger etc.)*.
+- [ ] *It will look for an address inside several API*.
+- [ ] *It will be possible to select API explicitly by its registered name*.
 
-### Вызов (отправка) запроса
+### Sending requests
 
-Параметры запроса передаются в качестве атрибутов (хэш) методам `#get!`, `#post!`, `#patch!` и `#delete!`:
+Use methods ending with bangs (`#get!`, `#post!`, etc.) to send a corresponding request to the remote API.
+
+Every request except for `#get!` and `#post!` (for example, `#patch!` or `#foo!`) is sent as POST with "_method" parameter.
+
+Other parameters of the request can be provided as method options:
 
 ```ruby
 client.users[1].sms.get!
 client.users[1].sms.post! text: "Hello!"
+client.users[1].sms.foo! text: "Hi!" # the same as .post!(_method: :foo, text "Hi!")
 ```
 
 **Roadmap**:
 
-- [ ] *Перед отправкой параметры запроса будут проверяться на соответствие спецификации соответствюущего API*.
+- [ ] *Before sending the request will be validated against a corresponding API specification (swagger etc.)*.
 
-### Получение и обработка ответа по-умолчанию
+### Receiving Responses and Handling Errors
 
-Методы `#get!`, `#post!`, `#patch!`, `#delete!` возвращают расширенный хэш ([`Hashie::Mash`][mash]), извлеченный из тела ответа.
+Requests return a hash-like structures, exctracted from a body of successful response:
 
 ```ruby
-results = client.users[1].sms.get!
-results.first.class # => Mash
-results.first.text  # => "Hello!"
+result = client.users[1].get!
+result.id   # => 1
+result.text # => "Hello!"
 ```
 
-Перед преобразованием в +Mash+ проверяется статус ответа. В случае ошибки (статусы 4**, 5**), вызывается исключение с соответствующим статусом, а также данными ответа:
+In case of error response (with status 4** or 5**), an exception is raised with error +status+ and +response+ attributes.
+Both the source `request` and the hash-like response are available as exception methods:
 
 ```ruby
 begin
   client.unknown.get!
 rescue Evil::Client::ResponseError => error
   error.status    # => 404
-  error.response  # => #<Mash ...>
+  error.request   # => #<Request @type="get" @uri="http://127.0.0.1/v1/users/1"
+  error.response  # => #<Response ...>
 end
 ```
 
-### Специфический разбор ответа
+### Safe Requests
 
-Если метод вызывается с блоком, то в случае ошибки вместо вызова исключения ответ (response) передается в блок. Внутри блока пользователь может реализовать свою процедуру обработки ошибки. Метод вернет результат обработки:
+Methods `try_get!`, `try_post!` etc. send a corresponding request and return `false` in case of error responses:
 
 ```ruby
-client.userss.get! { |error_response| error_response.status }
+client.unknown.try_get!
+# => false
+```
+
+### Custom Error Handling
+
+If you need more customized error handling, call methods `#get!` etc. with a block. The block should take one argument where raw error message will be given. The raw message is reseived in a form of [`HTTP::Message`][client-message].
+
+Inside a block you're free to define your own procedure for error handling. The whole method will return the result of the block:
+
+```ruby
+client.wrong_address.get! { |error_response| error_response.status }
 # => 404
 ```
 
 **Roadmap**:
 
-- [ ] *Перед конвертацией сырых данных в структуру, ответ будет проверяться на соответствие спецификации API. Вызываемое исключение будет содержать описание исходного запроса и полученного ответа*
+- [ ] *A successful responses will also be validated against a corresponding API spec (swagger etc.)*
 
-Планы на будущее
-----------------
+Roadmap
+-------
 
-* инициализация клиента json файлами спецификаций swagger с разными `base_url`
-* валидация адресов по спецификациям swagger
-* валидация проверки запроса по соответствующей спецификации swagger
-* валидация проверки ответа сервера по соответствующей спецификации swagger 
-* использование спецификаций других стандартов (помимо swagger: RAМL, API blueprint и т.п.) и форматов (json, yaml...)
-
-Tests
------
-
-Для запуска тестов используйте:
-
-```
-rake
-```
-
-Для мутационного тестирования:
-
-```
-rake exhort
-```
-
-или (останавливается при первой непокрытой тестами мутации):
-
-```
-rake mutant
-```
-
-Запуск всех метрик перед коммитом:
-
-```
-rake prepare
-```
+* client instantiation with several APIs with different `base_url`
+* client instantiation from API specifications (swagger)
+* client response and request validation using an API specifications (swagger)
+* usage of other specification formats (RAML, blueprint etc.)
 
 Compatibility
 -------------
@@ -159,9 +165,10 @@ Contributing
 License
 -------
 
-@todo
+See the [MIT LICENSE](LICENSE).
 
 [mash]: https://github.com/intridea/hashie#mash
 [rspec]: http://rspec.org
 [hexx-suit]: https://github.com/nepalez/hexx-suit
 [swagger]: http://swagger.io
+[client-message]: http://www.rubydoc.info/gems/httpclient/HTTP/Message
