@@ -21,39 +21,29 @@ class Evil::Client
 
     include Errors
 
+    # Gets/sets a provider of the request_id
+    #
+    # A provider extracts id from a corresponding environment via +#call+ method
+    #
+    # @return [#call]
+    #
     # @api private
-    class << self
-      # @!attribute [w] id_provider
-      #
-      # @return [#value] Storage for API client ID (to be set from Railtie)
-      #
-      attr_writer :id_provider
-
-      # API request ID given from Railtie
-      #
-      # @return [String]
-      #
-      def default_id
-        @id_provider && @id_provider.value
-      end
+    #
+    def self.request_id_provider(provider = nil)
+      @provider = provider if provider
+      @provider || proc { ENV["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16) }
     end
 
     # @!method initialize(type, uri, data)
     # Initializes request by type, uri and data
     #
-    # @param [Symbol] type
-    #   The type of the request (+:get+, +:post+, +:patch+, +:delete+)
-    # @param [String] uri
-    #   The full URI of the request
-    # @param [Hash] data
-    #   The data to be send to the API
-    # @option data [String] :request_id
-    #   Optional request id (when used outside of Rails)
+    # @param [Symbol] type The type of the request
+    # @param [String] uri  The full URI of the request
+    # @param [Hash]   data The data to be send to the API
     #
-    def initialize(type, uri, request_id: nil, **data)
+    def initialize(type, uri, **data)
       @type = type.to_s
       @uri = uri || fail(PathError, @path)
-      @request_id = request_id || self.class.default_id || fail(RequestIDError)
       @data = data
     end
 
@@ -94,10 +84,14 @@ class Evil::Client
 
     def headers
       {
-        "X-Request-Id" => @request_id,
+        "X-Request-Id" => request_id,
         "Content-Type" => "application/json; charset=utf-8",
         "Accept"       => "application/json"
       }
+    end
+    
+    def request_id
+      @request_id ||= self.class.request_id_provider.call
     end
 
     def request_type

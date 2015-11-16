@@ -4,10 +4,10 @@ module Evil::Client::Rails
   # @api private
   #
   class Railtie < Rails::Railtie
-    # Sets request ID
+    # Uses a railtie as a request ID provider
     initializer "evil.client.request_id" do |app|
       app.middleware.use RequestID
-      Evil::Client::Request.id_provider = RequestID
+      Evil::Client::Request.request_id_provider RequestID
     end
 
     # Sets logger for Rails dev/test environment

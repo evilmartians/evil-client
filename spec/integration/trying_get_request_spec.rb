@@ -2,7 +2,7 @@ describe "trying get request", :fake_api do
   subject { client.users[1].sms.try_get! params }
 
   let(:client)  { Evil::Client.with base_url: "http://example.com/" }
-  let(:params)  { { visible: true, request_id: "foobar" } }
+  let(:params)  { { visible: true } }
   let(:request) do
     a_request(:get, "http://example.com/users/1/sms?visible=true")
       .with(headers: {
@@ -13,6 +13,7 @@ describe "trying get request", :fake_api do
   end
 
   before do
+    ENV["HTTP_X_REQUEST_ID"] = "foobar"
     stub_request(:get, %r{example.com/users/1/sms})
       .to_return(status: status, body: body, headers: {})
   end

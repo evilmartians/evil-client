@@ -136,34 +136,10 @@ client.wrong_address.get! { |error_response| error_response.status }
 
 - [ ] *A successful responses will also be validated against a corresponding API spec (swagger etc.)*
 
-Usage outside of Rails
-----------------------
-
-When using the gem outside of Rails, you have to define a client's `:request_id` explicitly for every single request:
-
-```ruby
-client.users[1].get! request_id: "some_id"
-```
-
-Alternatively you can configure the `Adapter` class by setting `.id_provider`. It accepts objects that respond to `#value` and returns a string:
-
-```ruby
-# Suppose you defined a provider of request id
-provider.value => # "custom_id"
-
-# Assign it to Adapter class:
-Evil::Client::Adapter.id_provider = id_provider
-
-# Then every request will take request id by sending #value method call to provider
-# Both calls are equal:
-client.get!
-client.get! request_id: "some_id"
-```
-
 Roadmap
 -------
 
-* client instantiation with several APIs with different `base_url` and `request_id` settings.
+* client instantiation with several APIs with different `base_url`
 * client instantiation from API specifications (swagger)
 * client response and request validation using an API specifications (swagger)
 * usage of other specification formats (RAML, blueprint etc.)

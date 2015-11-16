@@ -1,2 +1,3 @@
 Bundler.require
-require 'webmock/rspec'
+
+require_relative 'support/request_matchers'

@@ -6,7 +6,7 @@ module Evil::Client::Rails
   class RequestID
     KEY = "action_dispatch.request_id".freeze
 
-    def self.value
+    def self.call
       Thread.current[KEY]
     end
 

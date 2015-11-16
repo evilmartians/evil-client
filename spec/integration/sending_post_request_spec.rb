@@ -2,32 +2,48 @@ describe "sending post request", :fake_api do
   subject { client.users[1].sms.post! params }
 
   let(:client)  { Evil::Client.with base_url: "http://example.com/" }
-  let(:params)  { { text: "Hello", request_id: "foobar" } }
-  let(:request) do
-    a_request(:post, "http://example.com/users/1/sms")
-      .with(
-        headers: {
-          "Accept"       => "application/json",
-          "Content-Type" => "application/json; charset=utf-8",
-          "X-Request-Id" => "foobar"
-        },
-        body: "text=Hello"
-      )
-  end
+  let(:params)  { { text: "Hello" } }
+  let(:request) { a_request(:post, "http://example.com/users/1/sms") }
+  let(:status)  { [200, "Ok"] }
+  let(:body)    { nil }
 
   before do
     stub_request(:post, %r{example.com/users/1/sms})
       .to_return(status: status, body: body, headers: {})
   end
 
-  context "when server responded with success" do
-    let(:status) { [200, "Ok"] }
-    let(:body)   { "{\"id\":1,\"text\":\"Hello\"}" }
+  it "sends a proper request" do
+    subject
+    expect(request).to have_been_made_with_body "text=Hello"
+  end
 
-    it "sends a proper request" do
-      subject
-      expect(request).to have_been_made
-    end
+  it "defines JSON type in headers" do
+    subject
+    expect(request).to have_been_made_with_headers(
+      "Accept"       => "application/json",
+      "Content-Type" => "application/json; charset=utf-8",
+    )
+  end
+
+  it "takes request_id from env" do
+    ENV["HTTP_X_REQUEST_ID"] = "foobar"
+
+    subject
+    expect(request).to have_been_made_with_header \
+      "X-Request-Id",
+      "foobar"
+  end
+
+  it "generates request_id by default" do
+    ENV["HTTP_X_REQUEST_ID"] = nil
+
+    subject
+    expect(request).to have_been_made_with_header "X-Request-Id", /\w{32}/
+  end
+
+  context "when server responded with success" do
+    let(:status)  { [200, "Ok"] }
+    let(:body)    { "{\"id\":1,\"text\":\"Hello\"}" }
 
     it "deserializes response body to hashie" do
       expect(subject.id).to   eql 1
@@ -63,18 +79,11 @@ describe "sending post request", :fake_api do
       end
     end
 
-    it "stores the original Evil::Client::Request request in exception" do
+    it "raises error with #status, #request, and #response" do
       expect { subject }.to raise_error do |error|
-        expect(error.request.to_a).to eql [
-          "post",
-          "http://example.com/users/1/sms",
-          body: { text: "Hello" },
-          header: {
-            "Accept"       => "application/json",
-            "Content-Type" => "application/json; charset=utf-8",
-            "X-Request-Id" => "foobar"
-          }
-        ]
+        expect(error.status).to eql 404
+        expect(error).to respond_to :request
+        expect(error).to respond_to :response
       end
     end
   end
@@ -88,17 +97,6 @@ describe "sending post request", :fake_api do
 
     it "sends raw response to the handler and returns the result" do
       expect(subject).to eql [404, ""]
-    end
-  end
-
-  context "when no request_id was provided by request" do
-    before { params.delete :request_id }
-
-    let(:status) { [200, "Ok"] }
-    let(:body)   { nil }
-
-    it "raises RequestIDError" do
-      expect { subject }.to raise_error Evil::Client::Errors::RequestIDError
     end
   end
 end
