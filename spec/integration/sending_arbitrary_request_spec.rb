@@ -30,13 +30,6 @@ describe "sending arbitrary request", :fake_api do
     expect(request).not_to have_been_made_with_header "X-Request-Id"
   end
 
-  # it "takes request_id from 'HTTP_X_REQUEST_ID' rack env" do
-  #   # Stub rack env here
-  #
-  #   subject
-  #   expect(request).to have_been_made_with_headers "X-Request-Id" => "foobar"
-  # end
-
   context "when server responded with success" do
     let(:status)  { [200, "Ok"] }
     let(:body)    { "{\"id\":1,\"text\":\"Hello\"}" }
