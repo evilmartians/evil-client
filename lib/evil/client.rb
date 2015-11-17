@@ -1,5 +1,6 @@
 require "jsonclient"
 
+# Namespace for evilmartians projects
 module Evil
   # The client prepares URI with method chaining, sends requests to remote API,
   # validates and returns server responses.
@@ -79,7 +80,7 @@ module Evil
 
     # Initializes a client instance with API specification
     #
-    # @param [Evil::Client::API]
+    # @param [Evil::Client::API] api
     #
     def initialize(api)
       @path = Path.new
@@ -87,6 +88,8 @@ module Evil
     end
 
     # Adds part to the URI
+    #
+    # @param [#to_s] value
     #
     # @return [Evil::Client] updated client
     #
