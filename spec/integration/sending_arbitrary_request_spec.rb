@@ -25,6 +25,14 @@ describe "sending arbitrary request", :fake_api do
     )
   end
 
+  it "takes request id from Rack via RequestID using key 'HTTP_X_REQUEST_ID'" do
+    rack_app = proc { |_env| subject }
+    rack_env = { 'HTTP_X_REQUEST_ID' => "foo" }
+    Evil::Client::RequestID.new(rack_app).call(rack_env)
+
+    expect(request).to have_been_made_with_headers "X-Request-Id" => "foo"
+  end
+
   it "ignores request_id when it hasn't been set" do
     subject
     expect(request).not_to have_been_made_with_header "X-Request-Id"

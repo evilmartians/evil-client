@@ -6,11 +6,13 @@ class Evil::Client
   class RequestID
     # @api private
     class << self
-      # @!attribute [rw] key
+      # Rack environment key for extracting [#value] from
       #
-      # @return [String] Rack environment key for the [#value] of request_id
+      # @return [String]
       #
-      attr_accessor :key
+      def key
+        @key || "HTTP_X_REQUEST_ID"
+      end
 
       # Subclasses the middleware with a specific Rack env [#key]
       #
@@ -19,7 +21,7 @@ class Evil::Client
       # @return [Class]
       # 
       def with(custom_key)
-        Class.new(self) { self.key = custom_key.to_s }
+        Class.new(self) { @key = custom_key.to_s }
       end
 
       # Provides access to a request_id extracted from Rack env by [#key]
@@ -37,7 +39,7 @@ class Evil::Client
     #
     def initialize(app)
       @app = app
-      @key = self.class.key || "HTTP_X_REQUEST_ID"
+      @key = self.class.key
     end
 
     # Calls the middleware to extract a request id from Rack environment
