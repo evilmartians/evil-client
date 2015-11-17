@@ -33,7 +33,7 @@ module Evil::Client::Errors
     # The status of the response
     #
     # @return [Integer]
-    # 
+    #
     def status
       @status ||= response.status
     end

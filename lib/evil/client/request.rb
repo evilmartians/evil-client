@@ -62,7 +62,7 @@ class Evil::Client
     # @see [Evil::Client::Adapter#call]
     #
     # @return [Array]
-    # 
+    #
     def to_a
       [request_type, uri, params]
     end
@@ -77,7 +77,7 @@ class Evil::Client
     def headers
       DEFAULT_HEADERS.merge(request_id ? { "X-Request-Id" => request_id } : {})
     end
-    
+
     def request_id
       @request_id ||= RequestID.value
     end

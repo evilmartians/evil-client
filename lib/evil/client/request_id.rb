@@ -19,7 +19,7 @@ class Evil::Client
       # @param [#to_s] custom_key
       #
       # @return [Class]
-      # 
+      #
       def with(custom_key)
         Class.new(self) { @key = custom_key.to_s }
       end

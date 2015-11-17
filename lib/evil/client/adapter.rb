@@ -39,7 +39,7 @@ class Evil::Client
     # @param [Hash] options
     # @option options [String] :base_url
     # @option options [String] :logger
-    # 
+    #
     def initialize(base_url:, **options)
       @base_url = base_url
       @logger   = options.fetch(:logger) { self.class.logger }

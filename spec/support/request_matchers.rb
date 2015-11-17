@@ -1,4 +1,4 @@
-require 'webmock/rspec'
+require "webmock/rspec"
 
 NotEmpty = Class.new
 
@@ -7,7 +7,7 @@ RSpec::Matchers.define :have_been_made_with_header do |key, value = NotEmpty|
     request = actual.with do |req|
       header = req.headers[key.to_s]
 
-      if value == NotEmpty then
+      if value == NotEmpty
         expect(header).not_to be_nil
         expect(header).not_to be_empty
       elsif value.is_a? Regexp

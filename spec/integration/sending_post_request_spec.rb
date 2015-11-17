@@ -21,7 +21,7 @@ describe "sending post request", :fake_api do
     subject
     expect(request).to have_been_made_with_headers(
       "Accept"       => "application/json",
-      "Content-Type" => "application/json; charset=utf-8",
+      "Content-Type" => "application/json; charset=utf-8"
     )
   end
 
@@ -32,7 +32,7 @@ describe "sending post request", :fake_api do
 
   it "takes request id from Rack via RequestID using key 'HTTP_X_REQUEST_ID'" do
     rack_app = proc { |_env| subject }
-    rack_env = { 'HTTP_X_REQUEST_ID' => "foo" }
+    rack_env = { "HTTP_X_REQUEST_ID" => "foo" }
     Evil::Client::RequestID.new(rack_app).call(rack_env)
 
     expect(request).to have_been_made_with_headers "X-Request-Id" => "foo"
