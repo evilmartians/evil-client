@@ -55,7 +55,6 @@ module Evil
   class Client
 
     require_relative "client/errors"
-    require_relative "client/path"
     require_relative "client/api"
     require_relative "client/request_id"
     require_relative "client/request"
@@ -83,8 +82,8 @@ module Evil
     # @param [Evil::Client::API] api
     #
     def initialize(api)
-      @path = Path.new
-      @api  = api
+      @api = api
+      @request = Request.new(api.base_url)
     end
 
     # Adds part to the URI
@@ -94,7 +93,8 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def [](value)
-      update! { @path = @path[value] }
+      request = @request
+      update! { @request = request.with_path(value) }
     end
 
     # Returns full URI that corresponds to the current path
@@ -102,7 +102,7 @@ module Evil
     # @return [String]
     #
     def uri!
-      @api.uri @path.to_s
+      @request.path
     end
 
     private
@@ -111,10 +111,14 @@ module Evil
     SAFE_METHOD = /^try_[a-z]+\!$/.freeze
     PATH_METHOD = /^\w+$/.freeze
 
-    def call!(type, data = {}, &error_handler)
-      request = Request.new(type, uri!, data)
-      @adapter ||= Adapter.for_api(api)
-      @adapter.call request, &error_handler
+    def call!(type, data, &error_handler)
+      str_type = type.to_s
+      if str_type == "get"
+        request = @request.with_query(data).with_type(str_type)
+      else
+        request = @request.with_body(data).with_type(str_type)
+      end
+      Adapter.for_api(api).call request, &error_handler
     end
 
     def update!(&block)

@@ -4,7 +4,7 @@ describe "remote path building" do
   let(:path)   { client.users[1]["vip-only"] }
 
   it "builds absolute uri for API base url" do
-    expect(client.uri!).to   eql "http://localhost/v1/"
+    expect(client.uri!).to   eql "http://localhost/v1"
     expect(path.uri!).to     eql "http://localhost/v1/users/1/vip-only"
     expect(path.sms.uri!).to eql "http://localhost/v1/users/1/vip-only/sms"
   end

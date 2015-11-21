@@ -77,7 +77,7 @@ class Evil::Client
     end
 
     def send_request(request)
-      raw_response = connection.public_send(*request.to_a)
+      raw_response = connection.request(*request.to_a)
       Response.new(raw_response)
     end
 
