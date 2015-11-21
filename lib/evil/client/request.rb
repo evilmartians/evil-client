@@ -7,20 +7,18 @@ class Evil::Client
   #
   class Request
 
-    # @!method initialize(type, uri, data)
-    # Initializes request by type, uri and data
+    # Initializes request with base url
     #
-    # @param [Symbol] type The type of the request
-    # @param [String] base_url The base url
+    # @param [String] base_url
     #
     def initialize(base_url)
-      @path = base_url.to_s.sub(/[\/]+$/, "")
+      @path = base_url.to_s.sub(%r{/+$}, "")
     end
 
     # The type of the request
     #
     # @return ["get", "post"]
-    # 
+    #
     attr_reader :type
 
     # The request path
@@ -34,14 +32,12 @@ class Evil::Client
     # @return [Hash<String, String>]
     #
     def headers
-      @headers ||= begin
-        hash = {
-          "Content-Type" => "application/json; charset=utf-8",
-          "Accept"       => "application/json"
-        }
-        hash.update("X-Request-Id" => request_id) if request_id
-        hash
-      end
+      @headers ||=
+        if request_id
+          DEFAULT_HEADERS.merge("X-Request-Id" => request_id)
+        else
+          DEFAULT_HEADERS
+        end
     end
 
     # The request body
@@ -63,7 +59,7 @@ class Evil::Client
     # The hash of request parameters
     #
     # @return [Hash]
-    # 
+    #
     def params
       hash = { header: headers }
       hash.update(query: query) unless query.empty?
@@ -78,9 +74,9 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_path(*parts)
-      new_parts = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
-      new_path  = [path, *new_parts].join("/")
-      
+      paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
+      new_path = [path, *paths].join("/")
+
       update { @path = new_path }
     end
 
@@ -91,9 +87,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_headers(values)
-      new_values  = values.map(&:to_s).zip(values.values.map(&:to_s)).to_h
       new_headers = headers.merge(values)
-
       update { @headers = new_headers }
     end
 
@@ -104,9 +98,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_query(values)
-      new_values = values.map(&:to_s).zip(values.values.map(&:to_s)).to_h
-      new_query  = query.merge(values)
-
+      new_query = query.merge(values)
       update { @query = new_query }
     end
 
@@ -117,9 +109,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_body(values)
-      new_values = values.map(&:to_s).zip(values.values.map(&:to_s)).to_h
-      new_body   = body.merge(values)
-
+      new_body = body.merge(values)
       update { @body = new_body }
     end
 
@@ -154,6 +144,11 @@ class Evil::Client
     end
 
     private
+
+    DEFAULT_HEADERS = {
+      "Content-Type" => "application/json; charset=utf-8",
+      "Accept"       => "application/json"
+    }.freeze
 
     def request_id
       @request_id ||= RequestID.value

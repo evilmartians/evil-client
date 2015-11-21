@@ -93,8 +93,40 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def [](value)
+      with_path(value)
+    end
+
+    # Adds part to the URI
+    #
+    # @param (see Evil::Client::Request#with_path)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def with_path(*parts)
       request = @request
-      update! { @request = request.with_path(value) }
+      update! { @request = request.with_path(*parts) }
+    end
+
+    # Adds parameters to the query
+    #
+    # @param (see Evil::Client::Request#with_query)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def with_query(query)
+      request = @request
+      update! { @request = request.with_query(query) }
+    end
+
+    # Adds headers
+    #
+    # @param (see Evil::Client::Request#with_headers)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def with_headers(headers)
+      request = @request
+      update! { @request = request.with_headers(headers) }
     end
 
     # Returns full URI that corresponds to the current path
@@ -127,7 +159,7 @@ module Evil
 
     def method_missing(name, *args, &block)
       if name[PATH_METHOD]
-        self[name]
+        args.empty? ? self[name] : super
       elsif name[CALL_METHOD]
         call!(name[0..-2].to_sym, *args, &block)
       elsif name[SAFE_METHOD]

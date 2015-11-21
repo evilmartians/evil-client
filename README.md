@@ -28,7 +28,7 @@ client = Evil::Client.with base_url: "http://127.0.0.1/v1"
 client.uri! # => "http://127.0.0.1/v1"
 ```
 
-**Roadmap**: 
+**Roadmap**:
 
 - [ ] *A client will be initialized by loading swagger specification as well.*
 - [ ] *It will be configurable for using several APIs at once.*
