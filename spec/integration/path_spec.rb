@@ -1,5 +1,5 @@
 describe "path" do
-  before { stub_request(:get, %r{localhost}) }
+  before { stub_request :any, %r{localhost} }
 
   let(:client) do
     Evil::Client
@@ -13,11 +13,11 @@ describe "path" do
   end
 
   it "builds absolute uri for API base url" do
-    expect(client.uri!).to eql "http://localhost/v1/users/1/sms/3"
+    expect(client.uri).to eql "http://localhost/v1/users/1/sms/3"
   end
 
   it "is used by request" do
-    client.get!
+    client.get
 
     expect(a_request(:get, "http://localhost/v1/users/1/sms/3"))
       .to have_been_made

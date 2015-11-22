@@ -1,5 +1,5 @@
 describe "header", :fake_api do
-  before { stub_request(:get, %r{localhost}) }
+  before { stub_request :any, %r{localhost} }
 
   let(:request) { a_request(:get, "http://localhost") }
   subject do
@@ -7,7 +7,7 @@ describe "header", :fake_api do
       .with(base_url: "http://localhost/")
       .headers("Foo" => :bar)
       .headers("Bar" => :baz)
-      .get!
+      .get
   end
 
   it "includes default headers" do

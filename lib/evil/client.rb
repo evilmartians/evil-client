@@ -79,24 +79,40 @@ module Evil
     #
     # @return [String]
     #
-    def uri!
+    def uri
       @request.path
+    end
+
+    # Calls a request with type, data, and error handler
+    #
+    # @param [String] type
+    # @param [Hash] data
+    # @param [Proc] error_hanlder
+    #
+    # @return (see Evil::Client::Adapter#call)
+    # @yieldparam (see Evil::Client::Adapter#call)
+    #
+    def call(type, **data, &error_handler)
+      with    = (type == "get") ? :with_query : :with_body
+      request = @request.send(with, data).with_type(type)
+      
+      adapter.call(request, &error_handler)
+    end
+
+    # Calls a request and returns false in case of error response
+    #
+    # @param (see #call)
+    #
+    # @return (see #call)
+    # @return [false] in case of error response
+    #
+    def try_call(type, **data)
+      call(type, **data) { false }
     end
 
     private
 
-    CALL_METHOD = /^[a-z]+\!$/.freeze
-    SAFE_METHOD = /^try_[a-z]+\!$/.freeze
-
-    def call(type, **data, &error_handler)
-      str_type = type.to_s
-      if str_type == "get"
-        request = @request.with_query(data)
-      else
-        request = @request.with_body(data)
-      end
-      adapter.call request.with_type(str_type), &error_handler
-    end
+    CALL_METHOD = /^(try_)?(get|post|patch|put|delete)$/.freeze
 
     def adapter
       @adapter ||= Adapter.for_api(@api)
@@ -107,15 +123,14 @@ module Evil
     end
 
     def method_missing(name, *args, &block)
-      if name[CALL_METHOD]
-        call(name[0..-2].to_sym, *args, &block)
-      elsif name[SAFE_METHOD]
-        call(name[4..-2].to_sym, *args) { false }
-      end
+      return super unless respond_to? name
+      _, try, type = name.to_s.match(CALL_METHOD).to_a
+
+      send("#{try}call", type, *args, &block)
     end
 
     def respond_to_missing?(name, *)
-      name[/#{CALL_METHOD}|#{SAFE_METHOD}/]
+      name[CALL_METHOD]
     end
   end
 end

@@ -1,18 +1,18 @@
 describe "try request", :fake_api do
-  subject { Evil::Client.with(base_url: "http://example.com").try_get! }
+  subject { Evil::Client.with(base_url: "http://localhost").try_get }
 
   before do
-    stub_request(:get, %r{example.com})
+    stub_request(:any, %r{localhost})
       .to_return(status: status, headers: {}, body: body)
   end
 
   context "when server responded with success" do
     let(:status) { [200, "Ok"] }
-    let(:body)   { "{\"id\":1,\"text\":\"Hello!\"}" }
+    let(:body)   { "{\"id\":1,\"text\":\"Hello\"}" }
 
     it "deserializes response body to hashie" do
       expect(subject.id).to   eql 1
-      expect(subject.text).to eql "Hello!"
+      expect(subject.text).to eql "Hello"
     end
   end
 

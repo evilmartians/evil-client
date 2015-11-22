@@ -5,11 +5,11 @@ describe "handling response", :fake_api do
   let(:body)    { nil }
 
   before do
-    stub_request(:get, %r{localhost})
+    stub_request(:any, %r{localhost})
       .to_return(status: status, body: body, headers: {})
   end
 
-  subject { client.get! }
+  subject { client.get }
 
   context "with success" do
     let(:status)  { [200, "Ok"] }
@@ -59,7 +59,7 @@ describe "handling response", :fake_api do
   end
 
   context "with error and block handler was provided" do
-    subject { client.get!(&handler) }
+    subject { client.get(&handler) }
 
     let(:status)  { [404, "Not found"] }
     let(:body)    { nil }
