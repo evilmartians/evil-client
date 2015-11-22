@@ -17,7 +17,7 @@ describe "try request", :fake_api do
   end
 
   context "when server responded without body" do
-    let(:status) { [200, "Ok"] }
+    let(:status) { [204, "Ok"] }
     let(:body)   { nil }
 
     it "returns nil" do
