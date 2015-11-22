@@ -1,12 +1,8 @@
-describe "trying get request", :fake_api do
-  subject { client.users[1].sms.try_get! params }
-
-  let(:client)  { Evil::Client.with base_url: "http://example.com/" }
-  let(:params)  { { visible: true } }
-  let(:request) { a_request(:get, "http://example.com/users/1/sms?sum=1") }
+describe "try request", :fake_api do
+  subject { Evil::Client.with(base_url: "http://example.com").try_get! }
 
   before do
-    stub_request(:get, %r{example.com/users/1/sms})
+    stub_request(:get, %r{example.com})
       .to_return(status: status, headers: {}, body: body)
   end
 
@@ -30,8 +26,6 @@ describe "trying get request", :fake_api do
   end
 
   context "when server responded with error" do
-    subject { client.users[1].sms.try_get!(params) }
-
     let(:status) { [404, "Not found"] }
     let(:body)   { nil }
 

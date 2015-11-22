@@ -1,44 +1,17 @@
-describe "sending post request", :fake_api do
-  subject { client.users[1].sms.post! params }
-
-  let(:client)  { Evil::Client.with base_url: "http://example.com/" }
-  let(:params)  { { text: "Hello" } }
-  let(:request) { a_request(:post, "http://example.com/users/1/sms") }
+describe "handling response", :fake_api do
+  let(:client)  { Evil::Client.with(base_url: "http://localhost") }
+  let(:request) { a_request(:get, "http://localhost") }
   let(:status)  { [200, "Ok"] }
   let(:body)    { nil }
 
   before do
-    stub_request(:post, %r{example.com/users/1/sms})
+    stub_request(:get, %r{localhost})
       .to_return(status: status, body: body, headers: {})
   end
 
-  it "sends a proper request" do
-    subject
-    expect(request).to have_been_made_with_body "text=Hello"
-  end
+  subject { client.get! }
 
-  it "defines JSON type in headers" do
-    subject
-    expect(request).to have_been_made_with_headers(
-      "Accept"       => "application/json",
-      "Content-Type" => "application/json; charset=utf-8"
-    )
-  end
-
-  it "ignores request_id when it hasn't been set" do
-    subject
-    expect(request).not_to have_been_made_with_header "X-Request-Id"
-  end
-
-  it "takes request id from Rack via RequestID using key 'HTTP_X_REQUEST_ID'" do
-    rack_app = proc { |_env| subject }
-    rack_env = { "HTTP_X_REQUEST_ID" => "foo" }
-    Evil::Client::RequestID.new(rack_app).call(rack_env)
-
-    expect(request).to have_been_made_with_headers "X-Request-Id" => "foo"
-  end
-
-  context "when server responded with success" do
+  context "with success" do
     let(:status)  { [200, "Ok"] }
     let(:body)    { "{\"id\":1,\"text\":\"Hello\"}" }
 
@@ -48,8 +21,8 @@ describe "sending post request", :fake_api do
     end
   end
 
-  context "when server responded without body" do
-    let(:status) { [200, "Ok"] }
+  context "without body" do
+    let(:status) { [204, "Ok"] }
     let(:body)   { nil }
 
     it "returns nil" do
@@ -57,7 +30,7 @@ describe "sending post request", :fake_api do
     end
   end
 
-  context "when server responded with error and no handler was provided" do
+  context "with error and no handler was provided" do
     let(:status) { [404, "Not found"] }
     let(:body)   { nil }
 
@@ -85,8 +58,8 @@ describe "sending post request", :fake_api do
     end
   end
 
-  context "when server responded with error and block handler was provided" do
-    subject { client.users[1].sms.post!(params, &handler) }
+  context "with error and block handler was provided" do
+    subject { client.get!(&handler) }
 
     let(:status)  { [404, "Not found"] }
     let(:body)    { nil }

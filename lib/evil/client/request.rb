@@ -87,7 +87,8 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_headers(values)
-      new_headers = headers.merge(values)
+      str_values  = values.map { |k, v| [k.to_s, v.to_s] }.to_h
+      new_headers = headers.merge(str_values)
       update { @headers = new_headers }
     end
 
