@@ -4,21 +4,21 @@ describe "request", :fake_api do
   let(:client) { Evil::Client.with(base_url: "http://localhost") }
 
   context "in GET request" do
-    before  { client.get baz: :qux }
+    before  { client.get "baz" => "qux" }
     subject { a_request(:get, "http://localhost?baz=qux") }
 
     it { is_expected.to have_been_made_with_body "" }
   end
 
   context "in POST request" do
-    before  { client.post baz: :qux }
+    before  { client.post "baz" => "qux" }
     subject { a_request(:post, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body("baz=qux") }
   end
 
   context "in PATCH request" do
-    before  { client.patch baz: :qux }
+    before  { client.patch "baz" => "qux" }
     subject { a_request(:post, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/baz=qux/) }
@@ -26,7 +26,7 @@ describe "request", :fake_api do
   end
 
   context "in PUT request" do
-    before  { client.put baz: :qux }
+    before  { client.put "baz" => "qux" }
     subject { a_request(:post, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/baz=qux/) }
@@ -34,7 +34,7 @@ describe "request", :fake_api do
   end
 
   context "in DELETE request" do
-    before  { client.delete baz: :qux }
+    before  { client.delete "baz" => "qux" }
     subject { a_request(:post, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/baz=qux/) }
@@ -42,7 +42,7 @@ describe "request", :fake_api do
   end
 
   context "in FOO (arbitrary) request" do
-    before  { client.request :foo, baz: :qux }
+    before  { client.request :foo, "baz" => "qux" }
     subject { a_request(:post, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/baz=qux/) }
