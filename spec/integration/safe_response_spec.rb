@@ -41,6 +41,7 @@ describe "safe response", :fake_api do
     let(:body)   { "{\"text\":\"Bang!\"}" }
 
     it "returns error hashie" do
+      expect(subject).to be_error
       expect(subject.text).to eql "Bang!"
       expect(subject.meta.http_code).to eql 404
     end
