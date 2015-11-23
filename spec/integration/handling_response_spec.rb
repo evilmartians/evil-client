@@ -25,8 +25,9 @@ describe "handling response", :fake_api do
     let(:status) { [204, "Ok"] }
     let(:body)   { nil }
 
-    it "returns nil" do
-      expect(subject).to be_nil
+    it "returns empty hashie" do
+      expect(subject).to be_kind_of Hashie::Mash
+      expect(subject).to be_empty
     end
   end
 
@@ -62,11 +63,12 @@ describe "handling response", :fake_api do
     subject { client.get(&handler) }
 
     let(:status)  { [404, "Not found"] }
-    let(:body)    { nil }
-    let(:handler) { proc { |response| [response.status, response.content] } }
+    let(:body)    { "Bang!" }
+    let(:handler) { proc { |response| response.content } }
 
     it "sends raw response to the handler and returns the result" do
-      expect(subject).to eql [404, ""]
+      expect(subject.error).to eql "Bang!"
+      expect(subject.meta.http_code).to eql 404
     end
   end
 end

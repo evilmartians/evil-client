@@ -24,21 +24,25 @@ class Evil::Client
 
     # The content of the response
     #
-    # @return [String] in case of error response
-    # @return [nil] in case of empty response
     # @return [Hashie::Mash, Array<Hashie::Mash>] in case of non-empty response
+    # @return [nil] in case of empty response
     #
     def content
       @content ||= begin
-        source = __getobj__.content
-        if error?
-          source
-        elsif source.empty?
-          nil
-        else
-          JSON source, object_class: Hashie::Mash
-        end
+        hash = extract_content
+        hash.update(meta: { http_code: __getobj__.status }) if error?
+        Hashie::Mash.new hash
       end
+    end
+
+    private
+
+    def extract_content
+      source = __getobj__.content
+      (source.empty? && success?) ? {} : JSON(source)
+    rescue => error
+      raise error unless error? # only error is allowed to be non-JSON
+      { error: source }
     end
   end
 end

@@ -20,8 +20,9 @@ describe "try request", :fake_api do
     let(:status) { [204, "Ok"] }
     let(:body)   { nil }
 
-    it "returns nil" do
-      expect(subject).to be_nil
+    it "returns empty hashie" do
+      expect(subject).to be_kind_of Hashie::Mash
+      expect(subject).to be_empty
     end
   end
 
