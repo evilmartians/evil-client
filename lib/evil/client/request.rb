@@ -1,59 +1,136 @@
 class Evil::Client
   # Data structure describing a request to remote server
   #
-  # Knows how to prepare request from relative path and some data.
-  #
-  # Initialized by request type, uri and hash of data:
-  #
-  #     request = Request.new("get", "http://localhost/users/1/sms", text: "Hi")
-  #
-  #     request.uri
-  #     # => "http://my_api.com/v1/users/1/sms"
-  #     request.params
-  #     # => {
-  #     #      header: { "X-Request-Id" => "foobarbaz" },
-  #     #      body: { text: "Hello", _method: "patch" }
-  #     #    }
+  # Contains method to return a copy of the request updated with some data
   #
   # @api public
   #
   class Request
 
-    include Errors
-
-    # @!method initialize(type, uri, data)
-    # Initializes request by type, uri and data
+    # Initializes request with base url
     #
-    # @param [Symbol] type The type of the request
-    # @param [String] uri  The full URI of the request
-    # @param [Hash]   data The data to be send to the API
+    # @param [String] base_url
     #
-    def initialize(type, uri, **data)
-      @type = type.to_s
-      @uri = uri || fail(PathError, @path)
-      @data = data
+    def initialize(base_url)
+      @path = base_url.to_s.sub(%r{/+$}, "")
     end
 
-    # @!attribute [r] type
+    # The type of the request
     #
-    # @return [String] Type of current request
+    # @return ["get", "post"]
     #
     attr_reader :type
 
-    # @!attribute [r] uri
+    # The request path
     #
-    # @return [String] The full URI of the request
+    # @return [String]
     #
-    attr_reader :uri
+    attr_reader :path
 
-    # Request parameters
+    # The request headers
+    #
+    # @return [Hash<String, String>]
+    #
+    def headers
+      @headers ||=
+        if request_id
+          DEFAULT_HEADERS.merge("X-Request-Id" => request_id)
+        else
+          DEFAULT_HEADERS
+        end
+    end
+
+    # The request body
+    #
+    # @return [Hash<String, String>]
+    #
+    def body
+      @body ||= {}
+    end
+
+    # The request query
+    #
+    # @return [Hash<String, String>]
+    #
+    def query
+      @query ||= {}
+    end
+
+    # The hash of request parameters
     #
     # @return [Hash]
     #
     def params
-      @params ||= begin
-        key = (type == "get") ? :query : :body
-        { key => @data.merge(send_method) }.merge(header: headers)
+      hash = { header: headers }
+      hash.update(query: query) unless query.empty?
+      hash.update(body: JSON.generate(body)) unless body.empty?
+      hash
+    end
+
+    # Returns a copy of the request with new parts added to the uri
+    #
+    # @param [#to_s, Array<#to_s>] parts
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_path(*parts)
+      paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
+      new_path = [path, *paths].join("/")
+
+      clone_with { @path = new_path }
+    end
+
+    # Returns a copy of the request with new headers being added
+    #
+    # @param [Hash<#to_s, #to_s>] values
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_headers(values)
+      str_values  = values.map { |k, v| [k.to_s, v.to_s] }.to_h
+      new_headers = headers.merge(str_values)
+      clone_with { @headers = new_headers }
+    end
+
+    # Returns a copy of the request with new values added to its query
+    #
+    # @param [Hash<#to_s, #to_s>] values
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_query(values)
+      new_query = query.merge(values)
+      clone_with { @query = new_query }
+    end
+
+    # Returns a copy of the request with new values added to its body
+    #
+    # @param [Hash<#to_s, #to_s>] values
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_body(values)
+      new_body = body.merge(values)
+      clone_with { @body = new_body }
+    end
+
+    # Returns a copy of the request with a type added
+    #
+    # @param [String] raw_type
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_type(raw_type)
+      new_body =
+        case raw_type
+        when "get"  then {}
+        when "post" then body.reject { |key| key == "_method" }
+        else body.merge("_method" => raw_type)
+        end
+
+      clone_with do
+        @type = (raw_type == "get") ? "get" : "post"
+        @body = new_body
       end
     end
 
@@ -64,7 +141,7 @@ class Evil::Client
     # @return [Array]
     #
     def to_a
-      [request_type, uri, params]
+      [type, path, params]
     end
 
     private
@@ -74,20 +151,12 @@ class Evil::Client
       "Accept"       => "application/json"
     }.freeze
 
-    def headers
-      DEFAULT_HEADERS.merge(request_id ? { "X-Request-Id" => request_id } : {})
-    end
-
     def request_id
       @request_id ||= RequestID.value
     end
 
-    def request_type
-      @request_type ||= (type == "get") ? "get" : "post"
-    end
-
-    def send_method
-      @send_method ||= %w(get post).include?(type) ? {} : { _method: type }
+    def clone_with(&block)
+      dup.tap { |instance| instance.instance_eval(&block) }
     end
   end
 end

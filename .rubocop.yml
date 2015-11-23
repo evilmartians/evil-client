@@ -1,8 +1,4 @@
 ---
-# settings added by the 'hexx-suit' module
-# output: "tmp/rubocop"
-# format: "html"
-
 AllCops:
   Exclude:
     - '**/db/schema.rb'

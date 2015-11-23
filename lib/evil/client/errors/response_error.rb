@@ -13,7 +13,7 @@ module Evil::Client::Errors
       @request  = request
       @response = raw_response
 
-      super "#{request.type.upcase} request to #{request.uri}" \
+      super "#{request.type.upcase} request to #{request.path}" \
             " with params #{request.params}" \
             " has responded with error (status #{response.status})."
     end
@@ -36,6 +36,14 @@ module Evil::Client::Errors
     #
     def status
       @status ||= response.status
+    end
+
+    # Deserialized content of the response
+    #
+    # @return [Hashie::Mash]
+    #
+    def content
+      @content ||= response.content
     end
   end
 end

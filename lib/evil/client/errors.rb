@@ -5,7 +5,6 @@ class Evil::Client
   #
   module Errors
 
-    require_relative "errors/path_error"
     require_relative "errors/url_error"
     require_relative "errors/response_error"
 
