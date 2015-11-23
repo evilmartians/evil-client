@@ -48,4 +48,11 @@ describe "request", :fake_api do
     it { is_expected.to have_been_made_with_body(/baz=qux/) }
     it { is_expected.to have_been_made_with_body(/_method=foo/) }
   end
+
+  context "in FOO (arbitrary) request without params" do
+    before  { client.request :foo }
+    subject { a_request(:post, "http://localhost") }
+
+    it { is_expected.to have_been_made_with_body(/_method=foo/) }
+  end
 end
