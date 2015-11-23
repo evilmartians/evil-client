@@ -50,11 +50,13 @@ describe "unsafe response", :fake_api do
       end
     end
 
-    it "raises error with #status, #request, and #response" do
+    it "raises error with #status, #request, #response and #content" do
       expect { subject }.to raise_error do |error|
         expect(error.status).to eql 404
         expect(error).to respond_to :request
         expect(error).to respond_to :response
+        expect(error.content)
+          .to eq("error" => "", "meta" => { "http_code" => 404 })
       end
     end
   end

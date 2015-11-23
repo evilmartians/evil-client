@@ -37,5 +37,13 @@ module Evil::Client::Errors
     def status
       @status ||= response.status
     end
+
+    # Deserialized content of the response
+    #
+    # @return [Hashie::Mash]
+    #
+    def content
+      @content ||= response.content
+    end
   end
 end
