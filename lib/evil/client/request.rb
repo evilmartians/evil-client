@@ -63,7 +63,7 @@ class Evil::Client
     def params
       hash = { header: headers }
       hash.update(query: query) unless query.empty?
-      hash.update(body: body)   unless body.empty?
+      hash.update(body: JSON.generate(body)) unless body.empty?
       hash
     end
 
