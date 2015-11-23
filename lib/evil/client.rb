@@ -111,7 +111,7 @@ module Evil
     SAFE_METHOD = /^try_[a-z]+\!$/.freeze
     PATH_METHOD = /^\w+$/.freeze
 
-    def call!(type, data, &error_handler)
+    def call!(type, data = {}, &error_handler)
       request = Request.new(type, uri!, data)
       @adapter ||= Adapter.for_api(api)
       @adapter.call request, &error_handler

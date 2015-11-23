@@ -12,9 +12,20 @@ describe "sending arbitrary request", :fake_api do
       .to_return(status: status, body: body, headers: {})
   end
 
-  it "sends a proper request" do
-    subject
-    expect(request).to have_been_made_with_body(/text=Hello/, /_method=foo/)
+  context "without params" do
+    subject { client.users[1].sms.foo! }
+
+    it "send a proper request" do
+      subject
+      expect(request).to have_been_made_with_body(/_method=foo/)
+    end
+  end
+
+  context "with params" do
+    it "sends a proper request" do
+      subject
+      expect(request).to have_been_made_with_body(/text=Hello/, /_method=foo/)
+    end
   end
 
   it "defines JSON type in headers" do
