@@ -1,5 +1,5 @@
 describe "request", :fake_api do
-  before { stub_request :any, %r{localhost} }
+  before { stub_request :any, /localhost/ }
 
   let(:client) { Evil::Client.with(base_url: "http://localhost") }
 
@@ -42,7 +42,7 @@ describe "request", :fake_api do
   end
 
   context "in FOO (arbitrary) request" do
-    before  { client.call :foo, baz: :qux }
+    before  { client.request :foo, baz: :qux }
     subject { a_request(:post, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/baz=qux/) }

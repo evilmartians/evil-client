@@ -1,5 +1,5 @@
 describe "header", :fake_api do
-  before { stub_request :any, %r{localhost} }
+  before { stub_request :any, /localhost/ }
 
   let(:request) { a_request(:get, "http://localhost") }
   subject do

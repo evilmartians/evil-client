@@ -1,5 +1,5 @@
 describe "path" do
-  before { stub_request :any, %r{localhost} }
+  before { stub_request :any, /localhost/ }
 
   let(:client) do
     Evil::Client

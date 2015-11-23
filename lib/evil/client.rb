@@ -59,8 +59,8 @@ module Evil
     #
     # @return [Evil::Client] updated client
     #
-    def query(query)
-      request = @request.with_query(query)
+    def query(values)
+      request = @request.with_query(values)
       update { @request = request }
     end
 
@@ -70,8 +70,8 @@ module Evil
     #
     # @return [Evil::Client] updated client
     #
-    def headers(headers)
-      request = @request.with_headers(headers)
+    def headers(values)
+      request = @request.with_headers(values)
       update { @request = request }
     end
 
@@ -83,36 +83,124 @@ module Evil
       @request.path
     end
 
-    # Calls a request with type, data, and error handler
+    # Calls a GET request safely
     #
-    # @param [String] type
-    # @param [Hash] data
-    # @param [Proc] error_hanlder
+    # @param  [Hash] query
+    # @return [Hashie::Mash]
     #
-    # @return (see Evil::Client::Adapter#call)
-    # @yieldparam (see Evil::Client::Adapter#call)
-    #
-    def call(type, **data, &error_handler)
-      with    = (type == "get") ? :with_query : :with_body
-      request = @request.send(with, data).with_type(type)
-      
-      adapter.call(request, &error_handler)
+    def get(query = {})
+      adapter.call @request.with_query(query).with_type("get")
     end
 
-    # Calls a request and returns false in case of error response
+    # Calls a GET request unsafely
     #
-    # @param (see #call)
+    # @param  (see #get)
+    # @return (see #get)
+    # @raise  (see #request!) in case of error response
     #
-    # @return (see #call)
-    # @return [false] in case of error response
+    def get!(query = {})
+      adapter.call! @request.with_query(query).with_type("get")
+    end
+
+    # Calls a POST request safely
     #
-    def try_call(type, **data)
-      call(type, **data) { false }
+    # @param [Hash] body
+    # @return [Hashie::Mash]
+    #
+    def post(body = {})
+      request("post", body)
+    end
+
+    # Calls a POST request unsafely (raises in case of error response)
+    #
+    # @param  (see #post)
+    # @return (see #post)
+    # @raise  (see #request!) in case of error response
+    #
+    def post!(body = {})
+      request!("post", body)
+    end
+
+    # Calls a DELETE request safely
+    #
+    # @param  (see #post)
+    # @return (see #post)
+    #
+    def patch(body = {})
+      request("patch", body)
+    end
+
+    # Calls a PATCH request unsafely (raises in case of error response)
+    #
+    # @param  (see #post!)
+    # @return (see #post!)
+    # @raise  (see #post!)
+    #
+    def patch!(body = {})
+      request!("patch", body)
+    end
+
+    # Calls a PUT request safely
+    #
+    # @param  (see #post)
+    # @return (see #post)
+    #
+    def put(body = {})
+      request("put", body)
+    end
+
+    # Calls a PUT request unsafely (raises in case of error response)
+    #
+    # @param  (see #post!)
+    # @return (see #post!)
+    # @raise  (see #post!)
+    #
+    def put!(body = {})
+      request!("put", body)
+    end
+
+    # Calls a DELETE request safely
+    #
+    # @param  (see #post)
+    # @return (see #post)
+    #
+    def delete(body = {})
+      request("delete", body)
+    end
+
+    # Calls a DELETE request unsafely (raises in case of error response)
+    #
+    # @param  (see #post!)
+    # @return (see #post!)
+    # @raise  (see #post!)
+    #
+    def delete!(body = {})
+      request!("delete", body)
+    end
+
+    # Calls a request with custom method type safely
+    #
+    # @param  (see #request!)
+    # @return (see #request!)
+    #
+    def request(type, body = {})
+      return get(body) if type.to_s == "get"
+      adapter.call @request.with_body(body).with_type(type.to_s)
+    end
+
+    # Calls a request with custom method type unsafely
+    #
+    # @param  [String] type
+    # @param  [Hash]   body
+    # @return (see Adapter#call!)
+    # @raise  (see Adapter#call!)
+    #
+    def request!(type, body = {})
+      return get!(body) if type.to_s == "get"
+      adapter.call! @request.with_body(body).with_type(type.to_s)
     end
 
     private
-
-    CALL_METHOD = /^(try_)?(get|post|patch|put|delete)$/.freeze
 
     def adapter
       @adapter ||= Adapter.for_api(@api)
@@ -120,17 +208,6 @@ module Evil
 
     def update(&block)
       dup.tap { |client| client.instance_eval(&block) }
-    end
-
-    def method_missing(name, *args, &block)
-      return super unless respond_to? name
-      _, try, type = name.to_s.match(CALL_METHOD).to_a
-
-      send("#{try}call", type, *args, &block)
-    end
-
-    def respond_to_missing?(name, *)
-      name[CALL_METHOD]
     end
   end
 end

@@ -1,15 +1,15 @@
-describe "handling response", :fake_api do
+describe "unsafe response", :fake_api do
   let(:client)  { Evil::Client.with(base_url: "http://localhost") }
   let(:request) { a_request(:get, "http://localhost") }
   let(:status)  { [200, "Ok"] }
   let(:body)    { nil }
 
   before do
-    stub_request(:any, %r{localhost})
+    stub_request(:any, /localhost/)
       .to_return(status: status, body: body, headers: {})
   end
 
-  subject { client.get }
+  subject { client.get! }
 
   context "with success" do
     let(:status)  { [200, "Ok"] }
@@ -31,7 +31,7 @@ describe "handling response", :fake_api do
     end
   end
 
-  context "with error and no handler was provided" do
+  context "with error" do
     let(:status) { [404, "Not found"] }
     let(:body)   { nil }
 
@@ -56,19 +56,6 @@ describe "handling response", :fake_api do
         expect(error).to respond_to :request
         expect(error).to respond_to :response
       end
-    end
-  end
-
-  context "with error and block handler was provided" do
-    subject { client.get(&handler) }
-
-    let(:status)  { [404, "Not found"] }
-    let(:body)    { "Bang!" }
-    let(:handler) { proc { |response| response.content } }
-
-    it "sends raw response to the handler and returns the result" do
-      expect(subject.error).to eql "Bang!"
-      expect(subject.meta.http_code).to eql 404
     end
   end
 end

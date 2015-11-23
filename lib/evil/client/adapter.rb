@@ -45,25 +45,29 @@ class Evil::Client
       @logger   = options.fetch(:logger) { self.class.logger }
     end
 
-    # Sends the request to API, handles and returns its response
+    # Sends the request to API and returns either successful or errored response
+    #
+    # @param (see #call!)
+    #
+    # @return (see #call!)
+    #
+    def call(request)
+      send_request(request).content
+    end
+
+    # Sends the request to API and raises in case of error response
     #
     # @param [Evil::Client::Request] request
-    # @param [Proc] error_handler Custom handler of error responses
     #
-    # @return [Object] Deserialized body of a server response
-    #
-    # @yield block when API responds with error (status 4** or 5**)
-    # @yieldparam [HTTP::Message] The raw message from the server
-    # @see http://www.rubydoc.info/gems/httpclient/HTTP/Message
-    #   Docs for HTTP::Message format
+    # @return [Hashie::Mash] object containing a response
     #
     # @raise [Evil::Client::Errors::ResponseError]
-    #   when API responds with error and no block given
+    #   when API responded with error
     #
-    def call(request, &error_handler)
+    def call!(request)
       response = send_request(request)
       return response.content if response.success?
-      handle_error(request, response, &error_handler)
+      fail ResponseError.new(request, response)
     end
 
     private
