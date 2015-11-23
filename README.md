@@ -172,9 +172,11 @@ Both the source `request` and the hash-like `response` are available as exceptio
 begin
   client.path(:unknown).get!
 rescue Evil::Client::ResponseError => error
+  # Suppose the server responded with text (not a valid JSON!) body "Wrong URL!" and status 404
   error.status    # => 404
   error.request   # => #<Request @type="get" @path="http://localhost/unknown" ...>
   error.response  # => #<Response ...>
+  error.content   # => { "error" => "Wrong URL!", "meta" => { "http_code" => 404 } }
 end
 ```
 
@@ -188,9 +190,9 @@ In case the server responds with JSON body, it adds `[:meta][:http_code]` and `[
 result = client.path(:unknown).get!
 
 # Suppose the server responded with body {"text" => "Wrong URL!"} and status 404
-result.to_h
-# => { "text" => "Wrong URL!", "error" => true, "meta" => { "http_code" => 404 } }
-result.error? # => true
+result.error?         # => true
+result.text           # => "Wrong URL!"
+result.meta.http_code # => 404
 ```
 
 In case the server responds with non-JSON, it wraps the response to the `:error` key:
@@ -199,9 +201,9 @@ In case the server responds with non-JSON, it wraps the response to the `:error`
 result = client.path(:unknown).get!
 
 # Suppose the server responded with text (not a valid JSON!) body "Wrong URL!" and status 404
-result.to_h
-# => { "error" => "Wrong URL!", "meta" => { "http_code" => 404 } }
-result.error? # => true
+result.error?         # => true
+result.error          # => "Wrong URL!"
+result.meta.http_code # => 404
 ```
 
 You can always check `error?` over the result of the safe request.

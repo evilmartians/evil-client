@@ -50,7 +50,7 @@ module Evil
     #
     def path(*parts)
       request = @request.with_path(*parts)
-      update { @request = request }
+      clone_with { @request = request }
     end
 
     # Adds parameters to the query
@@ -61,7 +61,7 @@ module Evil
     #
     def query(values)
       request = @request.with_query(values)
-      update { @request = request }
+      clone_with { @request = request }
     end
 
     # Adds headers
@@ -72,7 +72,7 @@ module Evil
     #
     def headers(values)
       request = @request.with_headers(values)
-      update { @request = request }
+      clone_with { @request = request }
     end
 
     # Returns full URI that corresponds to the current path
@@ -89,7 +89,7 @@ module Evil
     # @return [Hashie::Mash]
     #
     def get(query = {})
-      adapter.call @request.with_query(query).with_type("get")
+      query(query).request :get
     end
 
     # Calls a GET request unsafely
@@ -99,7 +99,7 @@ module Evil
     # @raise  (see #request!) in case of error response
     #
     def get!(query = {})
-      adapter.call! @request.with_query(query).with_type("get")
+      query(query).request! :get
     end
 
     # Calls a POST request safely
@@ -178,16 +178,17 @@ module Evil
       request!("delete", body)
     end
 
+    # @!method request(type, body)
     # Calls a request with custom method type safely
     #
     # @param  (see #request!)
     # @return (see #request!)
     #
-    def request(type, body = {})
-      return get(body) if type.to_s == "get"
-      adapter.call @request.with_body(body).with_type(type.to_s)
+    def request(*args)
+      adapter.call prepare_request(*args)
     end
 
+    # @!method request!(type, body)
     # Calls a request with custom method type unsafely
     #
     # @param  [String] type
@@ -195,18 +196,21 @@ module Evil
     # @return (see Adapter#call!)
     # @raise  (see Adapter#call!)
     #
-    def request!(type, body = {})
-      return get!(body) if type.to_s == "get"
-      adapter.call! @request.with_body(body).with_type(type.to_s)
+    def request!(*args)
+      adapter.call! prepare_request(*args)
     end
 
     private
+
+    def prepare_request(type, body = {})
+      @request.with_body(body).with_type(type.to_s)
+    end
 
     def adapter
       @adapter ||= Adapter.for_api(@api)
     end
 
-    def update(&block)
+    def clone_with(&block)
       dup.tap { |client| client.instance_eval(&block) }
     end
   end

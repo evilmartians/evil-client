@@ -77,7 +77,7 @@ class Evil::Client
       paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
       new_path = [path, *paths].join("/")
 
-      update { @path = new_path }
+      clone_with { @path = new_path }
     end
 
     # Returns a copy of the request with new headers being added
@@ -89,7 +89,7 @@ class Evil::Client
     def with_headers(values)
       str_values  = values.map { |k, v| [k.to_s, v.to_s] }.to_h
       new_headers = headers.merge(str_values)
-      update { @headers = new_headers }
+      clone_with { @headers = new_headers }
     end
 
     # Returns a copy of the request with new values added to its query
@@ -100,7 +100,7 @@ class Evil::Client
     #
     def with_query(values)
       new_query = query.merge(values)
-      update { @query = new_query }
+      clone_with { @query = new_query }
     end
 
     # Returns a copy of the request with new values added to its body
@@ -111,7 +111,7 @@ class Evil::Client
     #
     def with_body(values)
       new_body = body.merge(values)
-      update { @body = new_body }
+      clone_with { @body = new_body }
     end
 
     # Returns a copy of the request with a type added
@@ -128,7 +128,7 @@ class Evil::Client
         else body.merge("_method" => raw_type)
         end
 
-      update do
+      clone_with do
         @type = (raw_type == "get") ? "get" : "post"
         @body = new_body
       end
@@ -155,7 +155,7 @@ class Evil::Client
       @request_id ||= RequestID.value
     end
 
-    def update(&block)
+    def clone_with(&block)
       dup.tap { |instance| instance.instance_eval(&block) }
     end
   end
