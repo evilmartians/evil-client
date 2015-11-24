@@ -107,9 +107,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_body(values)
-      if defined? ::Rails
-        prepare_for_files!(values)
-      end
+      prepare_for_files!(values) if defined? ::Rails
 
       new_body = body.merge(values)
       clone_with { @body = new_body }
@@ -122,17 +120,13 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_type(raw_type)
-      new_body =
-        case raw_type
-        when "get"  then {}
-        when "post" then body.reject { |key| key == "_method" }
-        else body.merge("_method" => raw_type)
-        end
+      type     = (raw_type == "get") ? "get" : "post"
+      new_body = (raw_type == type) ? body : body.merge("_method" => raw_type)
 
       clone_with do
+        @type     = type
         @raw_type = raw_type
-        @type = (raw_type == "get") ? "get" : "post"
-        @body = new_body
+        @body     = new_body
       end
     end
 
@@ -162,7 +156,7 @@ class Evil::Client
     end
 
     def multipart?
-      @raw_type == "post" and body_with_file?
+      @raw_type == "post" && body_with_file?
     end
 
     def body_with_file?
@@ -172,10 +166,10 @@ class Evil::Client
     def result_body
       result = body.dup
 
-      if not result.empty? and not multipart?
-        JSON.generate(result)
-      else
+      if result.empty? || multipart?
         result
+      else
+        JSON.generate(result)
       end
     end
 
@@ -183,7 +177,7 @@ class Evil::Client
       result = headers.dup
 
       if multipart?
-        result.update('Content-Type' => 'multipart/form-data')
+        result.update("Content-Type" => "multipart/form-data")
       else
         result
       end
@@ -191,7 +185,7 @@ class Evil::Client
 
     def prepare_for_files!(values)
       actiondispatch_files = values.find_all do |_, value|
-        ActionDispatch::Http::UploadedFile === value
+        ActionDispatch::Http::UploadedFile =~ value
       end
 
       actiondispatch_files.each do |(key, file)|

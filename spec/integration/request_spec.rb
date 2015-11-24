@@ -18,14 +18,14 @@ describe "request", :fake_api do
   end
 
   context "in POST multipart request" do
-    let(:tmpfile) { Tempfile.create('example.txt') }
+    let(:tmpfile) { Tempfile.create("example.txt") }
 
     before  { client.post "baz" => "qux", "file" => tmpfile }
     after   { tmpfile.close; File.unlink(tmpfile) }
 
     subject { a_request(:post, "http://localhost") }
 
-    it { is_expected.to have_been_made_with_header('Content-Type', /multipart\/form-data/) }
+    it { is_expected.to have_been_made_with_header("Content-Type", %r{multipart/form-data}) }
 
     it { is_expected.to have_been_made_with_body(/Content-Disposition: form-data/) }
     it { is_expected.to have_been_made_with_body(/filename="example\.txt.*"/) }
