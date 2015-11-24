@@ -61,7 +61,7 @@ class Evil::Client
     # @return [Array]
     #
     def params
-      [query, body, result_headers]
+      [query, result_body, result_headers]
     end
 
     # Returns a copy of the request with new parts added to the uri
@@ -126,7 +126,8 @@ class Evil::Client
         end
 
       clone_with do
-        @type = raw_type
+        @raw_type = raw_type
+        @type = (raw_type == "get") ? "get" : "post"
         @body = new_body
       end
     end
@@ -156,16 +157,32 @@ class Evil::Client
       dup.tap { |instance| instance.instance_eval(&block) }
     end
 
-    def result_headers
-      if type == "post" && body_with_file?
-        headers.reject { |key, _| key == 'Content-Type' }
-      else
-        headers
-      end
+    def multipart?
+      @raw_type == "post" and body_with_file?
     end
 
     def body_with_file?
       body.values.any? { |v| HTTP::Message.file?(v) }
+    end
+
+    def result_body
+      result = body.dup
+
+      if not result.empty? and not multipart?
+        JSON.generate(result)
+      else
+        result
+      end
+    end
+
+    def result_headers
+      result = headers.dup
+
+      if multipart?
+        result.update('Content-Type' => 'multipart/form-data')
+      else
+        result
+      end
     end
   end
 end
