@@ -25,6 +25,8 @@ describe "request", :fake_api do
 
     subject { a_request(:post, "http://localhost") }
 
+    it { is_expected.to have_been_made_with_header('Content-Type', /multipart\/form-data/) }
+
     it { is_expected.to have_been_made_with_body(/Content-Disposition: form-data/) }
     it { is_expected.to have_been_made_with_body(/filename="example\.txt.*"/) }
   end
