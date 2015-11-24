@@ -2,6 +2,7 @@ require "logger"
 require "delegate"
 require "hashie/mash"
 require "jsonclient"
+require "tempfile"
 
 # Namespace for evilmartians projects
 module Evil
