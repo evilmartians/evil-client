@@ -107,6 +107,10 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_body(values)
+      if defined? ::Rails
+        prepare_for_files!(values)
+      end
+
       new_body = body.merge(values)
       clone_with { @body = new_body }
     end
@@ -182,6 +186,16 @@ class Evil::Client
         result.update('Content-Type' => 'multipart/form-data')
       else
         result
+      end
+    end
+
+    def prepare_for_files!(values)
+      actiondispatch_files = values.find_all do |_, value|
+        ActionDispatch::Http::UploadedFile === value
+      end
+
+      actiondispatch_files.each do |(key, file)|
+        values.update(key => UploadFile.new(file))
       end
     end
   end
