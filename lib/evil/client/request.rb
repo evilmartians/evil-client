@@ -56,15 +56,12 @@ class Evil::Client
       @query ||= {}
     end
 
-    # The hash of request parameters
+    # The array of request parameters (query, body, headers)
     #
-    # @return [Hash]
+    # @return [Array]
     #
     def params
-      hash = { header: headers }
-      hash.update(query: query) unless query.empty?
-      hash.update(body: JSON.generate(body)) unless body.empty?
-      hash
+      [query, body, result_headers]
     end
 
     # Returns a copy of the request with new parts added to the uri
@@ -129,7 +126,7 @@ class Evil::Client
         end
 
       clone_with do
-        @type = (raw_type == "get") ? "get" : "post"
+        @type = raw_type
         @body = new_body
       end
     end
@@ -141,7 +138,7 @@ class Evil::Client
     # @return [Array]
     #
     def to_a
-      [type, path, params]
+      [type, path, *params]
     end
 
     private
@@ -157,6 +154,18 @@ class Evil::Client
 
     def clone_with(&block)
       dup.tap { |instance| instance.instance_eval(&block) }
+    end
+
+    def result_headers
+      if type == "post" && body_with_file?
+        headers.reject { |key, _| key == 'Content-Type' }
+      else
+        headers
+      end
+    end
+
+    def body_with_file?
+      body.values.any? { |v| HTTP::Message.file?(v) }
     end
   end
 end
