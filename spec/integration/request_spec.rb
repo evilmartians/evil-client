@@ -1,5 +1,3 @@
-require 'pry'
-
 describe "request", :fake_api do
   before { stub_request :any, /localhost/ }
 
