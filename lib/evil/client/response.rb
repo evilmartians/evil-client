@@ -33,7 +33,7 @@ class Evil::Client
 
     def extract_content
       source = __getobj__.content
-      (source.empty? && success?) ? {} : JSON(source)
+      (source.empty? && success?) ? {} : JSON.parse(source)
     rescue => error
       raise error unless error? # only error is allowed to be non-JSON
       { error: source }
