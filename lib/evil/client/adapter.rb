@@ -1,5 +1,3 @@
-require "logger"
-
 class Evil::Client
   # Sends the request to remote API and processes the response
   #

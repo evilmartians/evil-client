@@ -1,3 +1,6 @@
+require "logger"
+require "delegate"
+require "hashie/mash"
 require "jsonclient"
 
 # Namespace for evilmartians projects

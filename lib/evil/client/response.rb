@@ -1,5 +1,3 @@
-require "hashie/mash"
-
 class Evil::Client
   # Describes a server response
   #

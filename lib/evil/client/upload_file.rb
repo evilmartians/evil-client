@@ -1,5 +1,3 @@
-require 'delegate'
-
 class Evil::Client
   class UploadFile < SimpleDelegator
     def pos
