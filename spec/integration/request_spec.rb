@@ -33,40 +33,36 @@ describe "request", :fake_api do
 
   context "in PATCH request" do
     before  { client.patch "baz" => "qux" }
-    subject { a_request(:post, "http://localhost") }
+    subject { a_request(:patch, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/"baz":"qux"/) }
-    it { is_expected.to have_been_made_with_body(/"_method":"patch"/) }
   end
 
   context "in PUT request" do
     before  { client.put "baz" => "qux" }
-    subject { a_request(:post, "http://localhost") }
+    subject { a_request(:put, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/"baz":"qux"/) }
-    it { is_expected.to have_been_made_with_body(/"_method":"put"/) }
   end
 
   context "in DELETE request" do
     before  { client.delete "baz" => "qux" }
-    subject { a_request(:post, "http://localhost") }
+    subject { a_request(:delete, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/"baz":"qux"/) }
-    it { is_expected.to have_been_made_with_body(/"_method":"delete"/) }
   end
 
   context "in FOO (arbitrary) request" do
     before  { client.request :foo, "baz" => "qux" }
-    subject { a_request(:post, "http://localhost") }
+    subject { a_request(:foo, "http://localhost") }
 
     it { is_expected.to have_been_made_with_body(/"baz":"qux"/) }
-    it { is_expected.to have_been_made_with_body(/"_method":"foo"/) }
   end
 
   context "in FOO (arbitrary) request without params" do
     before  { client.request :foo }
-    subject { a_request(:post, "http://localhost") }
+    subject { a_request(:foo, "http://localhost") }
 
-    it { is_expected.to have_been_made_with_body(/"_method":"foo"/) }
+    it { is_expected.to have_been_made_with_body("") }
   end
 end

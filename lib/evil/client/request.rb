@@ -119,14 +119,10 @@ class Evil::Client
     #
     # @return [Evil::Client::Request]
     #
-    def with_type(raw_type)
-      type     = (raw_type == "get") ? "get" : "post"
-      new_body = (raw_type == type) ? body : body.merge("_method" => raw_type)
-
+    def with_type(type)
       clone_with do
-        @type     = type
-        @raw_type = raw_type
-        @body     = new_body
+        @type = type
+        @body = {} if type == "get"
       end
     end
 
@@ -156,7 +152,7 @@ class Evil::Client
     end
 
     def multipart?
-      @raw_type == "post" && body_with_file?
+      @type != "get" && body_with_file?
     end
 
     def body_with_file?
