@@ -7,6 +7,9 @@ class Evil::Client
   #
   class Request
 
+    require_relative "request/body"
+    require_relative "request/headers"
+
     # Initializes request with base url
     #
     # @param [String] base_url
@@ -32,12 +35,7 @@ class Evil::Client
     # @return [Hash<String, String>]
     #
     def headers
-      @headers ||=
-        if request_id
-          DEFAULT_HEADERS.merge("X-Request-Id" => request_id)
-        else
-          DEFAULT_HEADERS
-        end
+      @headers ||= {}
     end
 
     # The request body
@@ -56,14 +54,6 @@ class Evil::Client
       @query ||= {}
     end
 
-    # The array of request parameters (query, body, headers)
-    #
-    # @return [Array]
-    #
-    def params
-      [query, result_body, result_headers]
-    end
-
     # Returns a copy of the request with new parts added to the uri
     #
     # @param [#to_s, Array<#to_s>] parts
@@ -73,7 +63,6 @@ class Evil::Client
     def with_path(*parts)
       paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
       new_path = [path, *paths].join("/")
-
       clone_with { @path = new_path }
     end
 
@@ -107,15 +96,13 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_body(values)
-      prepare_for_files!(values) if defined? ::Rails
-
       new_body = body.merge(values)
       clone_with { @body = new_body }
     end
 
     # Returns a copy of the request with a type added
     #
-    # @param [String] raw_type
+    # @param [String] type
     #
     # @return [Evil::Client::Request]
     #
@@ -124,6 +111,38 @@ class Evil::Client
         @type = type
         @body = {} if type == "get"
       end
+    end
+
+    # Prepares a request in JSON
+    #
+    # @return [Evil::Client::Request]
+    #
+    def in_json
+      clone_with { @json = true }
+    end
+
+    # Checks whether a request should be sent in JSON
+    #
+    # @return [Boolean]
+    #
+    def json?
+      @json && !multipart?
+    end
+
+    # Checks whether a request is a multipart
+    #
+    # @return [Boolean]
+    #
+    def multipart?
+      @type != "get" && body_with_file?
+    end
+
+    # Returns parameters of the request: query, body, headers
+    #
+    # @return [Array]
+    #
+    def params
+      [query, Body.call(self), Headers.call(self)]
     end
 
     # Returns a standard array representation of the request
@@ -138,55 +157,12 @@ class Evil::Client
 
     private
 
-    DEFAULT_HEADERS = {
-      "Content-Type" => "application/json; charset=utf-8",
-      "Accept"       => "application/json"
-    }.freeze
-
-    def request_id
-      @request_id ||= RequestID.value
-    end
-
     def clone_with(&block)
       dup.tap { |instance| instance.instance_eval(&block) }
     end
 
-    def multipart?
-      @type != "get" && body_with_file?
-    end
-
     def body_with_file?
       body.values.any? { |v| HTTP::Message.file?(v) }
-    end
-
-    def result_body
-      result = body.dup
-
-      if result.empty? || multipart?
-        result
-      else
-        JSON.generate(result)
-      end
-    end
-
-    def result_headers
-      result = headers.dup
-
-      if multipart?
-        result.update("Content-Type" => "multipart/form-data")
-      else
-        result
-      end
-    end
-
-    def prepare_for_files!(values)
-      actiondispatch_files = values.find_all do |_, value|
-        ActionDispatch::Http::UploadedFile =~ value
-      end
-
-      actiondispatch_files.each do |(key, file)|
-        values.update(key => UploadFile.new(file))
-      end
     end
   end
 end

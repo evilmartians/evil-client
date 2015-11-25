@@ -13,8 +13,9 @@ describe "header", :fake_api do
   it "includes default headers" do
     subject
     expect(request).to have_been_made_with_headers(
-      "Accept"       => "application/json",
-      "Content-Type" => "application/json; charset=utf-8"
+      "Accept"         =>"text/plain",
+      "Accept-Charset" =>"utf-8",
+      "Content-Type"   =>"text/plain; charset=utf-8"
     )
   end
 
