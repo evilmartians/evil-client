@@ -2,7 +2,7 @@ describe "multipart request", :fake_api do
 
   subject do
     stub_request :any, /localhost/
-    client.post file: tmpfile, foo: :bar
+    client.post(file: { example: tmpfile }, foo: [:BAR, :BAZ])
     a_request(:post, "http://localhost")
   end
 
@@ -11,14 +11,19 @@ describe "multipart request", :fake_api do
 
   it "uses proper headers" do
     expect(subject).to have_been_made_with_headers(
-      "Content-Disposition" => "form-data",
       "Content-Type"        => %r{multipart/form-data},
-      "Accept"              => "plain/text; application/json"
+      "Accept"              => "application/json"
     )
   end
 
   it "uses proper body" do
-    expect(subject).to have_been_made_with_body(/filename="example\.txt.*"/)
+    expect(subject).to have_been_made_with_body(
+      /name=\"file\[example\]\"/,
+      /filename="example\.txt.*"/,
+      /name=\"foo\[\]\"/,
+      /BAR/,
+      /BAZ/
+    )
   end
 
   after do

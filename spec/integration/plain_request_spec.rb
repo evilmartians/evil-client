@@ -2,12 +2,12 @@ describe "plain request", :fake_api do
   before { stub_request :any, /localhost/ }
 
   let(:client) { Evil::Client.with(base_url: "http://localhost") }
-  let(:params) { { baz: :qux } }
-  let(:body)   { "baz=qux" }
+  let(:params) { { foo: { bar: [:baz, :qux] } } }
+  let(:body)   { "foo[bar][]=baz&foo[bar][]=qux" }
 
   context "using method GET" do
     before  { client.get params }
-    subject { a_request(:get, "http://localhost?baz=qux") }
+    subject { a_request(:get, "http://localhost?#{body}") }
 
     it { is_expected.to have_been_made_with_body "" }
   end

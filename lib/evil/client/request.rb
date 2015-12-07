@@ -9,6 +9,8 @@ class Evil::Client
 
     require_relative "request/body"
     require_relative "request/headers"
+    require_relative "request/request_id"
+    require_relative "request/multipart"
 
     # Initializes request with base url
     #
@@ -134,7 +136,7 @@ class Evil::Client
     # @return [Boolean]
     #
     def multipart?
-      @type != "get" && body_with_file?
+      (type != "get") && body_with_file?
     end
 
     # Returns parameters of the request: query, body, headers
@@ -162,7 +164,19 @@ class Evil::Client
     end
 
     def body_with_file?
-      body.values.any? { |v| HTTP::Message.file?(v) }
+      @body_with_file = false
+      apply(body) { |val| @body_with_file = true if HTTP::Message.file?(val) }
+      @body_with_file
+    end
+
+    def apply(value, &fn)
+      if value.is_a? Hash
+        value.inject({}) { |a, (key, val)| a.update(key => apply(val, &fn)) }
+      elsif value.is_a? Array
+        value.map { |val| apply(val, &fn) }
+      else
+        fn[value]
+      end
     end
   end
 end
