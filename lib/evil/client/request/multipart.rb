@@ -1,30 +1,12 @@
 class Evil::Client::Request
-  # Converts body to multipart format with nested keys
+  # Converts a request's body to multipart format with nested keys
   #
-  class Multipart
-    # Converts the body to multipart string
-    #
-    # @param [Hash] body
-    #
-    # @return [String]
-    #
-    def self.call(body)
-      new(body).call
-    end
-
-    # Initializes the converter
-    #
-    # @param [Hash] body
-    #
-    def initialize(body)
-      @body = body
-    end
-
+  class Multipart < Base
     # Returns multipart body
     #
     # @return [String]
     #
-    def call
+    def build
       [parts.map { |part| [boundary, part] }, "#{boundary}--", "", ""]
         .flatten
         .join("\r\n")
@@ -42,9 +24,9 @@ class Evil::Client::Request
       @nested ||= to_parts(body).flatten
     end
 
-    def to_parts(data = body, prefix = nil)
+    def to_parts(data = nil, prefix = nil)
       if prefix.nil?
-        data.map { |key, value| to_parts(value, key) }
+        request.body.map { |key, value| to_parts(value, key) }
       elsif data.is_a? Hash
         data.map { |key, value| to_parts(value, "#{prefix}[#{key}]") }
       elsif data.is_a? Array

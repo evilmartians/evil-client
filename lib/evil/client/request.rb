@@ -7,6 +7,7 @@ class Evil::Client
   #
   class Request
 
+    require_relative "request/base"
     require_relative "request/body"
     require_relative "request/headers"
     require_relative "request/request_id"
@@ -75,8 +76,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_headers(values)
-      str_values  = values.map { |k, v| [k.to_s, v.to_s] }.to_h
-      new_headers = headers.merge(str_values)
+      new_headers = headers.merge(values)
       clone_with { @headers = new_headers }
     end
 
@@ -109,10 +109,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_type(type)
-      clone_with do
-        @type = type
-        @body = {} if type == "get"
-      end
+      clone_with { @type = type }
     end
 
     # Checks whether a request is a multipart
@@ -120,7 +117,9 @@ class Evil::Client
     # @return [Boolean]
     #
     def multipart?
-      (type != "get") && body_with_file?
+      @multipart = false
+      apply(body) { |leaf| @multipart = true if HTTP::Message.file?(leaf) }
+      @multipart
     end
 
     # Returns parameters of the request: query, body, headers
@@ -128,7 +127,7 @@ class Evil::Client
     # @return [Array]
     #
     def params
-      [query, Body.call(self), Headers.call(self)]
+      [query, Body.build(self), Headers.build(self)]
     end
 
     # Returns a standard array representation of the request
@@ -145,12 +144,6 @@ class Evil::Client
 
     def clone_with(&block)
       dup.tap { |instance| instance.instance_eval(&block) }
-    end
-
-    def body_with_file?
-      @body_with_file = false
-      apply(body) { |val| @body_with_file = true if HTTP::Message.file?(val) }
-      @body_with_file
     end
 
     def apply(value, &fn)
