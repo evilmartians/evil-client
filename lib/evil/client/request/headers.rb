@@ -47,8 +47,7 @@ class Evil::Client::Request
 
     def default_headers
       return multipart_headers if request.multipart?
-      return json_headers if request.json?
-      plain_headers
+      form_url_headers
     end
 
     def common_headers
@@ -59,12 +58,8 @@ class Evil::Client::Request
       { "X-Request-Id" => request_id }
     end
 
-    def plain_headers
+    def form_url_headers
       { "Content-Type" => "www-url-form-encoded; charset=utf-8" }
-    end
-
-    def json_headers
-      { "Content-Type" => "application/json; charset=utf-8" }
     end
 
     def multipart_headers

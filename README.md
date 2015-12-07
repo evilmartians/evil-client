@@ -52,7 +52,7 @@ This will prepare a request to uri `http://localhost/users/1/sms/3?api_key=fooba
 ```ruby
 {
   "Accept"       => "application/json",
-  "Content-Type" => "application/json; charset=utf-8",
+  "Content-Type" => "www-url-form-encoded; charset=utf-8",
   "X-Request-Id" => "some ID taken from 'action_dispatch.request_id' Rack env",
   "Foo"          => "bar", # custom headers
   "Bar"          => "baz"
@@ -113,10 +113,9 @@ client
   .post! baz: :qux
 
 # will send a POST request to URI: http://localhost/users/1?foo=bar&bar=baz
-# with a body "baz=qux"
 ```
 
-Other requests are formed like the POST with a corresponding `_method` added to the body:
+You can send a request using any "conventional" method you need (patch, put, delete):
 
 ```ruby
 client
@@ -125,8 +124,7 @@ client
   .query(bar: :baz)
   .patch! baz: :qux
 
-# will send a POST request to URI: http://localhost/users/1?foo=bar&bar=baz
-# with a body "baz=qux\n_method=patch"
+# will send a PATCH request to URI: http://localhost/users/1?foo=bar&bar=baz
 ```
 
 Use the `request!` for non-conventional HTTP method with an additional first argument:
@@ -138,13 +136,58 @@ client
   .query(bar: :baz)
   .request! :foo, baz: :qux
 
-# will send a POST request to URI: http://localhost/users/1?foo=bar&bar=baz
-# with a body "baz=qux\n_method=foo"
+# will send a FOO request to URI: http://localhost/users/1?foo=bar&bar=baz
 ```
 
 **Roadmap**:
 
-- [ ] *Before sending the request will be validated against a corresponding API specification (swagger etc.)*.
+- [ ] *Before sending the request will be validated against a correspondin(g API specification (swagger etc.)*.
+
+### Request and Response Encoding
+
+By design, all the request are encoded as either `www-url-form-encoded`, or `multipart/form-data`.
+
+The remote API responces should be encoded as `application/json`.
+
+### Sending nested data
+
+When you send nested data, the keys will be authomatically converted following Rails convention:
+
+```ruby
+client
+  .path(:users, 1)
+  .post! foo: { bar: :BAZ }, qux: [:foo, :bar]
+
+# will send a request with body:
+# "foo[bar]=BAZ&qux[]=foo&qux[]=bar"
+```
+
+### Sending files
+
+When any value is sent as a file, the request is encoded to `multipart/form-data`. All nested keys are converted to follow rails convention.
+
+```ruby
+client
+  .path(:users, 1)
+  .post! files: [File.new("text.txt"), File.new("image.png")], foo: { bar: :BAZ }
+
+# will send a request with multipart body (notice nested names):
+#
+# --394u52u3kforiu-ur1\r\n
+# Content-Disposition: form-data; name="files[]"; filename="text.txt"\r\n
+# Content-Transfer-Encoding: binary\r\n
+# ...
+# --394u52u3kforiu-ur1\r\n
+# Content-Disposition: form-data; name="files[]"; filename="image.png"\r\n
+# Content-Transfer-Encoding: binary\r\n
+# Content-Type: image/png\r\n
+# ...
+# --394u52u3kforiu-ur1\r\n
+# Content-Disposition: form-data; name="foo[bar]"\r\n
+# \r\n
+# BAZ\r\n
+# --394u52u3kforiu-ur1--\r\n\r\n
+```
 
 ### Receiving Responses and Handling Errors
 

@@ -115,22 +115,6 @@ class Evil::Client
       end
     end
 
-    # Prepares a request in JSON
-    #
-    # @return [Evil::Client::Request]
-    #
-    def in_json
-      clone_with { @json = true }
-    end
-
-    # Checks whether a request should be sent in JSON
-    #
-    # @return [Boolean]
-    #
-    def json?
-      @json && !multipart?
-    end
-
     # Checks whether a request is a multipart
     #
     # @return [Boolean]

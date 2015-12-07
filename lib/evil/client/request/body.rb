@@ -34,9 +34,8 @@ class Evil::Client::Request
     #
     def call
       return if request.type == "get"
-      return to_json if request.json?
-      return to_plain unless request.multipart?
-      to_multipart
+      return to_multipart if request.multipart?
+      to_form_url
     end
 
     private
@@ -45,11 +44,7 @@ class Evil::Client::Request
       Multipart.call request.body
     end
 
-    def to_json
-      JSON.generate(request.body)
-    end
-
-    def to_plain
+    def to_form_url
       Rack::Utils.build_nested_query(request.body)
     end
   end

@@ -81,15 +81,6 @@ module Evil
       clone_with { @request = request }
     end
 
-    # Prepares JSON request
-    #
-    # @return [Evil::Client] updated client
-    #
-    def in_json
-      request = @request.in_json
-      clone_with { @request = request }
-    end
-
     # Returns full URI that corresponds to the current path
     #
     # @return [String]
