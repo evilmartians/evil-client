@@ -9,10 +9,10 @@ class Evil::Client::Request
     # @return [Hash]
     #
     def build
-      common_headers
-        .update(default_headers)
+      response_type_headers
+        .update(content_type_headers)
         .update(request_id_headers)
-        .update(request.headers)
+        .update(request.headers) # customized by user
         .inject({}) { |h, (key, value)| h.merge(key.to_s => value.to_s) }
     end
 
@@ -22,12 +22,11 @@ class Evil::Client::Request
       @request_id ||= RequestID.value
     end
 
-    def default_headers
-      return multipart_headers if request.multipart?
-      form_url_headers
+    def content_type_headers
+      request.multipart? ? multipart_headers : form_url_headers
     end
 
-    def common_headers
+    def response_type_headers
       { "Accept" => "application/json" }
     end
 

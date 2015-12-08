@@ -166,7 +166,7 @@ class Evil::Client
     end
 
     def file?(value)
-      [:read, :path].map(&value.method(:respond_to?)).reduce(:&)
+      value.respond_to?(:read) && value.respond_to?(:path)
     end
   end
 end
