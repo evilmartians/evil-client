@@ -14,7 +14,7 @@ describe "header", :fake_api do
     subject
     expect(request).to have_been_made_with_headers(
       "Accept"       => "application/json",
-      "Content-Type" => "application/json; charset=utf-8"
+      "Content-Type" => "www-url-form-encoded; charset=utf-8"
     )
   end
 
@@ -29,7 +29,7 @@ describe "header", :fake_api do
   it "takes request id from middleware" do
     rack_app = proc { |_env| subject }
     rack_env = { "HTTP_X_REQUEST_ID" => "foo" }
-    Evil::Client::RequestID.new(rack_app).call(rack_env)
+    Evil::Client::Request::RequestID.new(rack_app).call(rack_env)
 
     expect(request).to have_been_made_with_headers(
       "X-Request-Id" => "foo"

@@ -35,8 +35,7 @@ describe "client instantiation" do
     let(:base_url) { "http://" }
 
     it "raises URLError" do
-      expect { client }.to raise_error \
-        Evil::Client::Errors::URLError, %r{'http://'}
+      expect { client }.to raise_error StandardError, %r{http://}
     end
   end
 

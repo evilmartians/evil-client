@@ -1,5 +1,3 @@
-require "logger"
-
 class Evil::Client
   # Sends the request to remote API and processes the response
   #
@@ -74,9 +72,9 @@ class Evil::Client
 
     def connection
       @connection ||= begin
-        json_client = HTTPClient.new(base_url: @base_url)
-        json_client.debug_dev = @logger
-        json_client
+        client = HTTPClient.new(base_url: @base_url)
+        client.debug_dev = @logger
+        client
       end
     end
 

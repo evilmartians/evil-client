@@ -1,4 +1,11 @@
-require "jsonclient"
+require "delegate"
+require "hashie/mash"
+require "logger"
+require "mime-types"
+require "pathname"
+require "rack"
+require "securerandom"
+require "tempfile"
 
 # Namespace for evilmartians projects
 module Evil
@@ -11,7 +18,6 @@ module Evil
 
     require_relative "client/errors"
     require_relative "client/api"
-    require_relative "client/request_id"
     require_relative "client/request"
     require_relative "client/response"
     require_relative "client/adapter"

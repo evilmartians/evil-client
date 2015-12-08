@@ -1,4 +1,4 @@
-class Evil::Client
+class Evil::Client::Request
   # Middleware that takes a request_id from the Rack environment
   #
   # @api private

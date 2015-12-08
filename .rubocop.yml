@@ -11,6 +11,9 @@ Lint/RescueException:
   Exclude:
     - '**/*_spec.rb'
 
+Metrics/LineLength:
+  Max: 100
+
 Style/AccessorMethodName:
   Exclude:
     - '**/*_spec.rb'
@@ -47,6 +50,10 @@ Style/FileName:
 
 Style/RaiseArgs:
   EnforcedStyle: exploded
+
+Style/Semicolon:
+  Exclude:
+    - '**/*_spec.rb'
 
 Style/SingleLineMethods:
   Exclude:
