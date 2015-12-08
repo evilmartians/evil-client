@@ -21,20 +21,9 @@ class Evil::Client::Request
     end
 
     def parts
-      @nested ||= to_parts(body).flatten
-    end
-
-    def to_parts(data = nil, prefix = nil)
-      if prefix.nil?
-        request.body.map { |key, value| to_parts(value, key) }
-      elsif data.is_a? Hash
-        data.map { |key, value| to_parts(value, "#{prefix}[#{key}]") }
-      elsif data.is_a? Array
-        data.map { |value| to_parts(value, "#{prefix}[]") }
-      elsif HTTP::Message.file?(data)
-        FilePart.call(prefix, data)
-      else
-        ValuePart.call(prefix, data)
+      request.flat_body.map do |key, value, file|
+        converter = file ? FilePart : ValuePart
+        converter.call(key, value)
       end
     end
 

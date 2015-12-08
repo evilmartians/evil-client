@@ -49,6 +49,27 @@ class Evil::Client
       @body ||= {}
     end
 
+    # @!method flat_body
+    # The body represented as an array of triples [key, value, file?]
+    #
+    # @example
+    #   flat_body foo: { bar: [:BAZ, File.new("text.doc")] }
+    #   # => [["foo[bar][]", :BAZ, false], ["foo[bar][]", #<File...>, true]]
+    #
+    # @return [Array<[String, Object]>]
+    #
+    def flat_body(data = nil, prefix = nil)
+      if prefix.nil?
+        body.map { |key, val| flat_body(val, key) }
+      elsif data.is_a? Hash
+        data.map { |key, val| flat_body(val, "#{prefix}[#{key}]") }
+      elsif data.is_a? Array
+        data.map { |val| flat_body(val, "#{prefix}[]") }
+      else
+        [[[prefix, data, file?(data)]]]
+      end.reduce(:+) || []
+    end
+
     # The request query
     #
     # @return [Hash<String, String>]
@@ -117,9 +138,7 @@ class Evil::Client
     # @return [Boolean]
     #
     def multipart?
-      @multipart = false
-      apply(body) { |leaf| @multipart = true if HTTP::Message.file?(leaf) }
-      @multipart
+      flat_body.detect { |_, _, file| file }
     end
 
     # Returns parameters of the request: query, body, headers
@@ -146,14 +165,8 @@ class Evil::Client
       dup.tap { |instance| instance.instance_eval(&block) }
     end
 
-    def apply(value, &fn)
-      if value.is_a? Hash
-        value.inject({}) { |a, (key, val)| a.update(key => apply(val, &fn)) }
-      elsif value.is_a? Array
-        value.map { |val| apply(val, &fn) }
-      else
-        fn[value]
-      end
+    def file?(value)
+      [:read, :path].map(&value.method(:respond_to?)).reduce(:&)
     end
   end
 end
