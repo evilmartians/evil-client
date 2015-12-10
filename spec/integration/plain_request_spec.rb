@@ -2,8 +2,8 @@ describe "plain request", :fake_api do
   before { stub_request :any, /localhost/ }
 
   let(:client) { Evil::Client.with(base_url: "http://localhost") }
-  let(:params) { { foo: { bar: [:baz, :qux] } } }
-  let(:body)   { "foo[bar][]=baz&foo[bar][]=qux" }
+  let(:params) { { foo: { bar: ["баз", 1] } } }
+  let(:body)   { "foo[bar][]=%D0%B1%D0%B0%D0%B7&foo[bar][]=1" }
 
   context "using method GET" do
     before  { client.get params }

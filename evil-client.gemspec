@@ -13,9 +13,8 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = ">= 2.2"
 
-  gem.add_runtime_dependency "hashie"
+  gem.add_runtime_dependency "hashie",     "~> 3.4"
   gem.add_runtime_dependency "httpclient", "~> 2.6"
-  gem.add_runtime_dependency "rack"
   gem.add_runtime_dependency "mime-types"
 
   gem.add_development_dependency "guard-rspec"

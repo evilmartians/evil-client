@@ -3,7 +3,6 @@ require "hashie/mash"
 require "logger"
 require "mime-types"
 require "pathname"
-require "rack"
 require "securerandom"
 require "tempfile"
 

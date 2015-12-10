@@ -17,11 +17,15 @@ class Evil::Client::Request
     private
 
     def to_multipart
-      Multipart.build request
+      Multipart.build(request)
     end
 
     def to_form_url
-      Rack::Utils.build_nested_query(request.body)
+      URI.escape(plain_body)
+    end
+
+    def plain_body
+      request.flat_body.map { |item| item[0..1].join("=") }.join("&")
     end
   end
 end
