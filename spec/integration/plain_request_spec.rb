@@ -9,7 +9,7 @@ describe "plain request", :fake_api do
     before  { client.get params }
     subject { a_request(:get, "http://localhost?#{body}") }
 
-    it { is_expected.to have_been_made_with_body "" }
+    it { is_expected.to have_been_made_with_body(nil) }
   end
 
   context "using method POST" do

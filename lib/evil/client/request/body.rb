@@ -10,22 +10,103 @@ class Evil::Client::Request
     #
     def build
       return if request.type == "get"
-      return to_multipart if request.multipart?
+      return to_multipart if items.multipart?
       to_form_url
     end
 
     private
 
-    def to_multipart
-      Multipart.build(request)
+    def items
+      @items ||= Items.new(request.body)
     end
 
     def to_form_url
-      URI.escape(plain_body)
+      items
+        .map { |item| item.value ? "#{item.key}=#{item.value}" : item.key }
+        .join("&")
     end
 
-    def plain_body
-      request.flat_body.map { |item| item[0..1].join("=") }.join("&")
+    def to_multipart
+      [parts, "#{boundary}--", "", ""].flatten.join("\r\n")
+    end
+
+    def boundary
+      @boundary ||= "--#{SecureRandom.hex}"
+    end
+
+    def parts
+      items.map { |item| item.file? ? FilePart.build(item) : Part.build(item) }
+    end
+
+    # Builder of simple part of a multipart body
+    #
+    # @api private
+    #
+    class Part < SimpleDelegator
+      # Builds a body from item
+      #
+      # @param [Evil::Client::Request::Items::Item] item
+      #
+      # @return [String]
+      #
+      def self.build(item)
+        new(item).build
+      end
+
+      # Builds a body from the current item
+      #
+      # @return [String]
+      #
+      def build
+        [headers, "", data].flatten.join("\r\n")
+      end
+
+      private
+
+      def headers
+        ["Content-Disposition: form-data; name=\"#{key}\""]
+      end
+
+      def data
+        value
+      end
+    end
+
+    # Builder of file part of a multipart body
+    #
+    # @api private
+    #
+    class FilePart < Part
+      private
+
+      def headers
+        [content_disposition, content_transfer_encoding, content_type].compact
+      end
+
+      def data
+        value.read
+      end
+
+      def path
+        value.path
+      end
+
+      def content_disposition
+        "Content-Disposition: form-data; name=\"#{key}\"; filename=\"#{name}\""
+      end
+
+      def content_transfer_encoding
+        "Content-Transfer-Encoding: binary"
+      end
+
+      def content_type
+        type = MIME::Types.type_for(path).first
+        "Content-Type: #{type}" if type
+      end
+
+      def name
+        CGI.escape Pathname.new(path).basename.to_s
+      end
     end
   end
 end

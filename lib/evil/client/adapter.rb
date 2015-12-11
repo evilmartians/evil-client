@@ -70,17 +70,13 @@ class Evil::Client
 
     private
 
-    def connection
-      @connection ||= begin
-        client = HTTPClient.new(base_url: @base_url)
-        client.debug_dev = @logger
-        client
-      end
-    end
-
     def send_request(request)
-      raw_response = connection.request(*request.to_a)
-      Response.new(raw_response)
+      type, path, body, headers = request.to_a
+      uri    = URI.parse(path)
+      client = Net::HTTP.new(uri.host, uri.port)
+
+      response = client.send_request(type, uri.request_uri, body, headers)
+      Response.new(response)
     end
 
     def handle_error(request, response)

@@ -8,7 +8,8 @@ class Evil::Client
     class Railtie < ::Rails::Railtie
       # Uses a railtie as a request ID provider
       initializer "evil.client.request_id" do |app|
-        app.middleware.use Request::RequestID.with("action_dispatch.request_id")
+        request_id = Request::Headers::RequestID
+        app.middleware.use request_id.with("action_dispatch.request_id")
       end
 
       # Sets logger for Rails dev/test environment

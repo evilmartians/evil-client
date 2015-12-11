@@ -12,7 +12,6 @@ class Evil::Client
   # @api private
   #
   class API
-
     include Errors
 
     # @!attribute [r] base
@@ -25,14 +24,34 @@ class Evil::Client
     # Initializes API specification with given settings
     #
     # @param [Hash] settings
-    # @option settings [String] :base_url
-    #   The base url of the API with required protocol and path
     #
     # @raise [Evil::Client::Errors::URLError] in case of invalid path
     #
-    def initialize(base_url:)
-      @base_url = base_url
-      validate_base_url
+    def initialize(**settings)
+      @settings = settings
+    end
+
+    # Base URI with default settings applied
+    #
+    # @return [URI]
+    #
+    def base_uri
+      @base_uri ||= begin
+        source = @settings[:base_url].to_s
+        uri = URI.parse source
+        uri = URI.parse "http://#{source}" unless uri.scheme
+        uri = URI.parse "#{uri}//localhost" unless uri.host
+        uri.port = @settings[:port] if @settings[:port]
+        uri
+      end
+    end
+
+    # Base url
+    #
+    # @return [String]
+    #
+    def base_url
+      @base_url ||= base_uri
     end
 
     # Prepares a full URI from given relative path
@@ -43,12 +62,6 @@ class Evil::Client
     #
     def uri(path)
       path.to_s.empty? ? base_url : URI.join("#{base_url}/", path).to_s
-    end
-
-    private
-
-    def validate_base_url
-      fail(URLError, base_url) unless URI(base_url).host
     end
   end
 end

@@ -46,7 +46,6 @@ describe "unsafe response", :fake_api do
       expect { subject }.to raise_error do |error|
         response = error.response
         expect(response.status).to eql 404
-        expect(response.reason).to eql "Not found"
       end
     end
 
@@ -56,7 +55,7 @@ describe "unsafe response", :fake_api do
         expect(error).to respond_to :request
         expect(error).to respond_to :response
         expect(error.content)
-          .to eq("error" => "", "meta" => { "http_code" => 404 })
+          .to eq("error" => true, "meta" => { "http_code" => 404 })
       end
     end
   end

@@ -3,7 +3,7 @@ describe "path" do
 
   let(:client) do
     Evil::Client
-      .with(base_url: "http://localhost/v1/")
+      .with(base_url: "https://localhost/v1/")
       .path(:users, 1)
       .path("/sms/3/")
   end
@@ -13,13 +13,12 @@ describe "path" do
   end
 
   it "builds absolute uri for API base url" do
-    expect(client.uri).to eql "http://localhost/v1/users/1/sms/3"
+    expect(client.uri).to eql "https://localhost/v1/users/1/sms/3"
   end
 
   it "is used by request" do
     client.get
 
-    expect(a_request(:get, "http://localhost/v1/users/1/sms/3"))
-      .to have_been_made
+    expect(a_request(:get, %r{v1/users/1/sms/3})).to have_been_made
   end
 end

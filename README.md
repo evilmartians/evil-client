@@ -1,7 +1,7 @@
 [WIP] Evil::Client
 ==================
 
-DSL for dealing with remote REST APIs
+DSL built on top of `Net::HTTP` for dealing with remote REST APIs
 
 Setup
 -----

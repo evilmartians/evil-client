@@ -8,10 +8,10 @@ class Evil::Client
   class Request
 
     require_relative "request/base"
+    require_relative "request/items"
+    require_relative "request/path"
     require_relative "request/body"
     require_relative "request/headers"
-    require_relative "request/request_id"
-    require_relative "request/multipart"
 
     # Initializes request with base url
     #
@@ -47,27 +47,6 @@ class Evil::Client
     #
     def body
       @body ||= {}
-    end
-
-    # @!method flat_body
-    # The body represented as an array of triples [key, value, file?]
-    #
-    # @example
-    #   flat_body foo: { bar: [:BAZ, File.new("text.doc")] }
-    #   # => [["foo[bar][]", :BAZ, false], ["foo[bar][]", #<File...>, true]]
-    #
-    # @return [Array<[String, Object]>]
-    #
-    def flat_body(data = nil, prefix = nil)
-      if prefix.nil?
-        body.map { |key, val| flat_body(val, key) }
-      elsif data.is_a? Hash
-        data.map { |key, val| flat_body(val, "#{prefix}[#{key}]") }
-      elsif data.is_a? Array
-        data.map { |val| flat_body(val, "#{prefix}[]") }
-      else
-        [[[prefix, data, file?(data)]]]
-      end.reduce(:+) || []
     end
 
     # The request query
@@ -133,22 +112,6 @@ class Evil::Client
       clone_with { @type = type }
     end
 
-    # Checks whether a request is a multipart
-    #
-    # @return [Boolean]
-    #
-    def multipart?
-      flat_body.detect { |_, _, file| file }
-    end
-
-    # Returns parameters of the request: query, body, headers
-    #
-    # @return [Array]
-    #
-    def params
-      [query, Body.build(self), Headers.build(self)]
-    end
-
     # Returns a standard array representation of the request
     #
     # @see [Evil::Client::Adapter#call]
@@ -156,17 +119,13 @@ class Evil::Client
     # @return [Array]
     #
     def to_a
-      [type, path, *params]
+      [type, Path.build(self), Body.build(self), Headers.build(self)]
     end
 
     private
 
     def clone_with(&block)
       dup.tap { |instance| instance.instance_eval(&block) }
-    end
-
-    def file?(value)
-      value.respond_to?(:read) && value.respond_to?(:path)
     end
   end
 end

@@ -29,21 +29,28 @@ class Evil::Client
       @content ||= Hashie::Mash.new handle_error(extract_content)
     end
 
+    # Numeric status of the http response
+    #
+    # @return [Integer]
+    #
+    def status
+      code.to_i
+    end
+
     private
 
     def extract_content
-      source = __getobj__.content
-      (source.empty? && success?) ? {} : JSON.parse(source)
+      (!body && success?) ? {} : JSON.parse(body)
     rescue => error
       raise error unless error? # only error is allowed to be non-JSON
-      { error: source }
+      { error: body }
     end
 
     def handle_error(hash)
       return hash unless error?
 
       hash[:error] ||= true
-      hash.update(meta: { http_code: __getobj__.status })
+      hash.update(meta: { http_code: status })
     end
   end
 end

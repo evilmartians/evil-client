@@ -1,3 +1,5 @@
+require "net/http"
+require "net/https"
 require "delegate"
 require "hashie/mash"
 require "logger"
@@ -85,7 +87,7 @@ module Evil
     # @return [String]
     #
     def uri
-      @request.path
+      Request::Path.build(@request)
     end
 
     # Calls a GET request safely
