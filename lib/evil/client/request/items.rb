@@ -62,6 +62,14 @@ class Evil::Client::Request
       any?(&:file?)
     end
 
+    # Represents items as pairs of [key, value]
+    #
+    # @return [Array<String, Object>]
+    #
+    def pairs
+      map { |item| [item.key, item.value] }
+    end
+
     private
 
     def pre_flatten(data, *keys)

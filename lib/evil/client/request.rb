@@ -7,11 +7,14 @@ class Evil::Client
   #
   class Request
 
+    require_relative "request/inclusion"
     require_relative "request/base"
     require_relative "request/items"
     require_relative "request/path"
     require_relative "request/body"
     require_relative "request/headers"
+
+    include Inclusion
 
     # Initializes request with base url
     #
@@ -65,7 +68,7 @@ class Evil::Client
     #
     def with_path(*parts)
       paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
-      new_path = [path, *paths].join("/")
+      new_path = [path, *paths].join("/").downcase
       clone_with { @path = new_path }
     end
 
@@ -109,7 +112,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_type(type)
-      clone_with { @type = type }
+      clone_with { @type = type.to_s.downcase }
     end
 
     # Returns a standard array representation of the request
