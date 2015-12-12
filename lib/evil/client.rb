@@ -49,6 +49,14 @@ module Evil
       @request = Request.new(api.base_url)
     end
 
+    # The gateway to remote API
+    #
+    # @return [Evil::Client::Adapter]
+    #
+    def adapter
+      @adapter ||= Adapter.for_api(@api)
+    end
+
     # Adds part to the URI
     #
     # @param (see Evil::Client::Request#with_path)
@@ -96,7 +104,7 @@ module Evil
     # @return [Hashie::Mash]
     #
     def get(query = {})
-      query(query).request :get
+      request("get", query)
     end
 
     # Calls a GET request unsafely
@@ -106,7 +114,7 @@ module Evil
     # @raise  (see #request!) in case of error response
     #
     def get!(query = {})
-      query(query).request! :get
+      request!("get", query)
     end
 
     # Calls a POST request safely
@@ -207,15 +215,19 @@ module Evil
       adapter.call! prepare_request(*args)
     end
 
+    # @!method prepare_request(type, body)
+    # Prepares a final request to be sent
+    #
+    # @param [#to_s] type
+    # @param [Hash] data
+    #   Either a query of a GET request, or a body of the others
+    #
+    def prepare_request(type, data = {})
+      req  = @request.with_type(type)
+      (req.type == "get") ? req.with_query(data) : req.with_body(data)
+    end
+
     private
-
-    def prepare_request(type, body = {})
-      @request.with_body(body).with_type(type.to_s)
-    end
-
-    def adapter
-      @adapter ||= Adapter.for_api(@api)
-    end
 
     def clone_with(&block)
       dup.tap { |client| client.instance_eval(&block) }

@@ -4,6 +4,28 @@ class Evil::Client
   # @api public
   #
   class Response < SimpleDelegator
+    # @!attribute [r] status
+    #
+    # @return [Integer] status of the response
+    #
+    attr_reader :status
+
+    # @!attribute [r] body
+    #
+    # @return [String] raw body of the response
+    #
+    attr_reader :body
+
+    # Initializes the response with status and body
+    #
+    # @param [#to_i]  status The status of the response
+    # @param [String] body   The raw body of the response
+    #
+    def initialize(status, body)
+      @status = status.to_i
+      @body   = body
+    end
+
     # Checks whether a server responded with a success
     #
     # @return [Boolean]
@@ -27,14 +49,6 @@ class Evil::Client
     #
     def content
       @content ||= Hashie::Mash.new handle_error(extract_content)
-    end
-
-    # Numeric status of the http response
-    #
-    # @return [Integer]
-    #
-    def status
-      code.to_i
     end
 
     private

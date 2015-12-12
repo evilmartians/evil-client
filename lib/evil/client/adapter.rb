@@ -68,16 +68,22 @@ class Evil::Client
       fail ResponseError.new(request, response)
     end
 
-    private
-
+    # The access point that sends prepared requests to remote client
+    #
+    # @param [Evil::Client::Request] request
+    #
+    # @return [Evil::Client::Response]
+    #
     def send_request(request)
       type, path, body, headers = request.to_a
       uri    = URI.parse(path)
       client = Net::HTTP.new(uri.host, uri.port)
 
       response = client.send_request(type, uri.request_uri, body, headers)
-      Response.new(response)
+      Response.new(response.code, response.body)
     end
+
+    private
 
     def handle_error(request, response)
       if block_given?
