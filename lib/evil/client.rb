@@ -47,15 +47,14 @@ module Evil
     def initialize(api)
       @api = api
       @request = Request.new(api.base_url)
+      @adapter ||= Adapter.for_api(@api)
     end
 
-    # The gateway to remote API
+    # The underlying adapter
     #
     # @return [Evil::Client::Adapter]
     #
-    def adapter
-      @adapter ||= Adapter.for_api(@api)
-    end
+    attr_reader :adapter
 
     # Adds part to the URI
     #
@@ -215,15 +214,16 @@ module Evil
       adapter.call! prepare_request(*args)
     end
 
-    # @!method prepare_request(type, body)
     # Prepares a final request to be sent
     #
     # @param [#to_s] type
-    # @param [Hash] data
+    # @param [Hash]  data
     #   Either a query of a GET request, or a body of the others
     #
+    # @return [Evil::Client::Request] prepared request
+    #
     def prepare_request(type, data = {})
-      req  = @request.with_type(type)
+      req = @request.with_type(type)
       (req.type == "get") ? req.with_query(data) : req.with_body(data)
     end
 

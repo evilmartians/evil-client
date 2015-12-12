@@ -48,21 +48,22 @@ class Evil::Client
     # @return [nil] in case of empty response
     #
     def content
-      @content ||= Hashie::Mash.new handle_error(extract_content)
+      Hashie::Mash.new handle_error(data)
     end
 
     private
 
-    def extract_content
+    def data
+      return body unless body.is_a? String
       (!body && success?) ? {} : JSON.parse(body)
     rescue => error
       raise error unless error? # only error is allowed to be non-JSON
       { error: body }
     end
 
-    def handle_error(hash)
+    def handle_error(data)
+      hash = data.to_h
       return hash unless error?
-
       hash[:error] ||= true
       hash.update(meta: { http_code: status })
     end

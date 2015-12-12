@@ -12,17 +12,17 @@ class Evil::Client::Request
     # @return [Boolean]
     #
     def include?(other)
-      self.class === other &&
-      self.path == other.path &&
-      self.type == other.type &&
-      matched_hashes?(self.body, other.body) &&
-      matched_hashes?(self.query, other.query) &&
-      matched_hashes?(self.headers, other.headers)
+      other.is_a?(self.class) &&
+        path == other.path &&
+        type == other.type &&
+        nested?(body, other.body) &&
+        nested?(query, other.query) &&
+        nested?(headers, other.headers)
     end
 
     private
 
-    def matched_hashes?(one, other)
+    def nested?(one, other)
       (Items.new(other).pairs - Items.new(one).pairs).empty?
     end
 
