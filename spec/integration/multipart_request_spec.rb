@@ -6,7 +6,7 @@ describe "multipart request", :fake_api do
     a_request(:post, "http://localhost")
   end
 
-  let(:client)  { Evil::Client.with(base_url: "http://localhost") }
+  let(:client)  { Evil::Client.new("http://localhost") }
   let(:tmpfile) { Tempfile.create("example.txt") }
 
   it "uses proper headers" do

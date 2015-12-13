@@ -4,29 +4,18 @@ class Evil::Client::Request
   # @api private
   #
   class Path < Base
-    # Returns the resulting path with query
+    # Returns the relative path with query
     #
     # @return [String]
     #
     def build
-      [path, query].compact.join("?")
+      [request.path, query].compact.join("?")
     end
 
     private
 
-    def path
-      request.path
-    end
-
     def query
-      return unless items.any?
-      items
-        .map { |item| item.value ? "#{item.key}=#{item.value}" : item.key }
-        .join("&")
-    end
-
-    def items
-      @items ||= Items.new(request.query)
+      Items.new(request.query).url_encoded
     end
   end
 end

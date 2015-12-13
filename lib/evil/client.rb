@@ -18,36 +18,18 @@ module Evil
   class Client
 
     require_relative "client/errors"
-    require_relative "client/api"
     require_relative "client/request"
     require_relative "client/response"
     require_relative "client/adapter"
     require_relative "client/rails" if defined? ::Rails
 
-    # There will be several ways to prepare api for initialization
-    # For every way we define a custom constructor, like [.with]
-    private_class_method :new
-
-    # Initializes a client instance with API settings
+    # Initializes a client instance with base url
     #
-    # @param [Hash] settings
-    # @options settings (see Evil::Client::API#initialize)
+    # @param [String] base_url
     #
-    # @return [Evil::Client]
-    #
-    def self.with(settings)
-      api = API.new(settings)
-      new api
-    end
-
-    # Initializes a client instance with API specification
-    #
-    # @param [Evil::Client::API] api
-    #
-    def initialize(api)
-      @api = api
-      @request = Request.new(api.base_url)
-      @adapter ||= Adapter.for_api(@api)
+    def initialize(base_url)
+      @request = Request.new(base_url)
+      @adapter = Adapter.new
     end
 
     # The underlying adapter
@@ -62,9 +44,28 @@ module Evil
     #
     # @return [Evil::Client] updated client
     #
-    def path(*parts)
-      request = @request.with_path(*parts)
-      clone_with { @request = request }
+    def path(*values)
+      clone_with @request.with_path(values)
+    end
+
+    # Changes the port of the request
+    #
+    # @param (see Evil::Client::Request#with_port)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def port(value)
+      clone_with @request.with_port(value)
+    end
+
+    # Changes the protocol of the request
+    #
+    # @param (see Evil::Client::Request#with_protocol)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def protocol(value)
+      clone_with @request.with_protocol(value)
     end
 
     # Adds parameters to the query
@@ -74,8 +75,27 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def query(values)
-      request = @request.with_query(values)
-      clone_with { @request = request }
+      clone_with @request.with_query(values)
+    end
+
+    # Adds parameters to the body
+    #
+    # @param (see Evil::Client::Request#with_body)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def body(values)
+      clone_with @request.with_body(values)
+    end
+
+    # Sets new type of the request
+    #
+    # @param (see Evil::Client::Request#with_type)
+    #
+    # @return [Evil::Client] updated client
+    #
+    def type(value)
+      clone_with @request.with_type(value)
     end
 
     # Adds headers
@@ -85,8 +105,7 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def headers(values)
-      request = @request.with_headers(values)
-      clone_with { @request = request }
+      clone_with @request.with_headers(values)
     end
 
     # Returns full URI that corresponds to the current path
@@ -94,143 +113,149 @@ module Evil
     # @return [String]
     #
     def uri
-      Request::Path.build(@request)
+      path = Request::Path.build(@request)
+      "#{@request.protocol}://#{@request.host}#{path}"
     end
 
+    # Returns the current state of the prepared request
+    #
+    # @return [Evil::Client::Request]
+    # @api private
+    #
+    def current_request
+      @request
+    end
+
+    # @!method get(query)
     # Calls a GET request safely
     #
     # @param  [Hash] query
     # @return [Hashie::Mash]
     #
-    def get(query = {})
-      request("get", query)
+    def get(data = {})
+      query(data).request("get")
     end
 
+    # @!method get!(query)
     # Calls a GET request unsafely
     #
     # @param  (see #get)
     # @return (see #get)
     # @raise  (see #request!) in case of error response
     #
-    def get!(query = {})
-      request!("get", query)
+    def get!(data = {})
+      query(data).request!("get")
     end
 
+    # @!method post(body)
     # Calls a POST request safely
     #
     # @param [Hash] body
     # @return [Hashie::Mash]
     #
-    def post(body = {})
-      request("post", body)
+    def post(data = {})
+      body(data).request("post")
     end
 
+    # @!method post!(body)
     # Calls a POST request unsafely (raises in case of error response)
     #
     # @param  (see #post)
     # @return (see #post)
     # @raise  (see #request!) in case of error response
     #
-    def post!(body = {})
-      request!("post", body)
+    def post!(data = {})
+      body(data).request!("post")
     end
 
-    # Calls a DELETE request safely
+    # @!method patch(body)
+    # Calls a PATCH request safely
     #
     # @param  (see #post)
     # @return (see #post)
     #
-    def patch(body = {})
-      request("patch", body)
+    def patch(data = {})
+      body(data).request("patch")
     end
 
+    # @!method patch!(body)
     # Calls a PATCH request unsafely (raises in case of error response)
     #
     # @param  (see #post!)
     # @return (see #post!)
     # @raise  (see #post!)
     #
-    def patch!(body = {})
-      request!("patch", body)
+    def patch!(data = {})
+      body(data).request!("patch")
     end
 
+    # @!method put(body)
     # Calls a PUT request safely
     #
     # @param  (see #post)
     # @return (see #post)
     #
-    def put(body = {})
-      request("put", body)
+    def put(data = {})
+      body(data).request("put")
     end
 
+    # @!method put!(body)
     # Calls a PUT request unsafely (raises in case of error response)
     #
     # @param  (see #post!)
     # @return (see #post!)
     # @raise  (see #post!)
     #
-    def put!(body = {})
-      request!("put", body)
+    def put!(data = {})
+      body(data).request!("put")
     end
 
+    # @!method delete(body)
     # Calls a DELETE request safely
     #
     # @param  (see #post)
     # @return (see #post)
     #
-    def delete(body = {})
-      request("delete", body)
+    def delete(data = {})
+      body(data).request("delete")
     end
 
+    # @!method delete!(body)
     # Calls a DELETE request unsafely (raises in case of error response)
     #
     # @param  (see #post!)
     # @return (see #post!)
     # @raise  (see #post!)
     #
-    def delete!(body = {})
-      request!("delete", body)
+    def delete!(data = {})
+      body(data).request!("delete")
     end
 
-    # @!method request(type, body)
+    # @!method request(type)
     # Calls a request with custom method type safely
     #
-    # @param  (see #request!)
+    # @param  [#to_s] type
     # @return (see #request!)
     #
-    def request(*args)
-      adapter.call prepare_request(*args)
+    def request(value)
+      adapter.call type(value).current_request
     end
 
-    # @!method request!(type, body)
-    # Calls a request with custom method type unsafely
+    # @!method request!(type)
+    # Calls a custom request unsafely (raises in case of error response)
     #
-    # @param  [String] type
-    # @param  [Hash]   body
+    # @param  [#to_s] type
     # @return (see Adapter#call!)
     # @raise  (see Adapter#call!)
     #
-    def request!(*args)
-      adapter.call! prepare_request(*args)
-    end
-
-    # Prepares a final request to be sent
-    #
-    # @param [#to_s] type
-    # @param [Hash]  data
-    #   Either a query of a GET request, or a body of the others
-    #
-    # @return [Evil::Client::Request] prepared request
-    #
-    def prepare_request(type, data = {})
-      req = @request.with_type(type)
-      (req.type == "get") ? req.with_query(data) : req.with_body(data)
+    def request!(value)
+      adapter.call! type(value).current_request
     end
 
     private
 
-    def clone_with(&block)
-      dup.tap { |client| client.instance_eval(&block) }
+    def clone_with(request)
+      dup.tap { |client| client.instance_eval { @request = request } }
     end
   end
 end

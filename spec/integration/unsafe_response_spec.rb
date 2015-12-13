@@ -1,5 +1,5 @@
 describe "unsafe response", :fake_api do
-  let(:client)  { Evil::Client.with(base_url: "http://localhost") }
+  let(:client)  { Evil::Client.new("http://localhost") }
   let(:request) { a_request(:get, "http://localhost") }
   let(:status)  { [200, "Ok"] }
   let(:body)    { nil }

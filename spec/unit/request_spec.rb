@@ -3,7 +3,7 @@ describe Evil::Client::Request do
     described_class
       .new("https://www.example.com/foo")
       .with_type(:post)
-      .with_path(:bar, 1, :baz)
+      .with_path([:bar, 1, :baz])
       .with_query(foo: [:bar, :baz], baz: { qux: :QUX })
       .with_body(foo: [:bar, :baz], baz: { qux: :QUX })
       .with_headers("Foo" => "FOO", "Bar" => "BAR")
@@ -13,7 +13,7 @@ describe Evil::Client::Request do
     let(:other) do
       described_class
         .new("https://www.example.com/foo")
-        .with_path("bar/1/baz")
+        .with_path(["bar/1/baz"])
         .with_type("POST")
     end
 
@@ -28,7 +28,7 @@ describe Evil::Client::Request do
     end
 
     context "request with different path" do
-      let(:another) { other.with_path(:extra) }
+      let(:another) { other.with_path([:extra]) }
 
       it { is_expected.not_to include another }
     end

@@ -1,5 +1,5 @@
 describe "safe response", :fake_api do
-  subject { Evil::Client.with(base_url: "http://localhost").get }
+  subject { Evil::Client.new("http://localhost").get }
 
   before do
     stub_request(:any, /localhost/)

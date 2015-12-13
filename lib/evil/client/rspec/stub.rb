@@ -1,38 +1,57 @@
 class Evil::Client
   module RSpec
-    # Stubs the client with a current response
+    # Stubs strictly defined requests with a current response
     #
     # @example Block syntax
     #   # Stubs 'POST /foo/1?bar=BAZ' with body 'baz=QUX'
     #   # to return 200 with json { bar: :BAZ, baz: :QUX }
     #   #
-    #   allow_client { client.path(:foo, 1).query(bar: :BAZ) }
-    #     .to_request(:post, baz: :QUX)
-    #     .with_response(200, bar: :BAZ, baz: QUX)
+    #   allow_request { client.path(:foo, 1).query(bar: :BAZ) }
+    #     .to_respond_with(200, bar: :BAZ, baz: QUX)
     #
     # @example Argument syntax
-    #   allow_client(client.path(:foo, 1).query(bar: :BAZ))
-    #     .to_request(:post, baz: :QUX)
-    #     .with_response(200, bar: :BAZ, baz: QUX)
+    #   allow_request(client.path(:foo, 1).query(bar: :BAZ))
+    #     .to_respond_with(200, bar: :BAZ, baz: QUX)
     #
     # @param [Evil::Client, nil] client
     #
     # @return [Evil::Client::Stub]
     #
-    def allow_client(client = nil)
-      Stub.new(self, client || yield)
+    def allow_request(client = nil)
+      Stub.new(self, client || yield, true)
+    end
+
+    # Stubs partially defined requests with a current response
+    #
+    # @example Block syntax
+    #   # Stubs 'POST /foo/1?bar=BAZ' with any body including 'baz=QUX'
+    #   # to return 200 with json { bar: :BAZ, baz: :QUX }
+    #   #
+    #   allow_any_request { client.path(:foo, 1).query(bar: :BAZ) }
+    #     .to_respond_with(200, bar: :BAZ, baz: QUX)
+    #
+    # @example Argument syntax
+    #   allow_any_request(client.path(:foo, 1).query(bar: :BAZ))
+    #     .to_respond_with(200, bar: :BAZ, baz: QUX)
+    #
+    # @param [Evil::Client, nil] client
+    #
+    # @return [Evil::Client::Stub]
+    #
+    def allow_any_request(client = nil)
+      Stub.new(self, client || yield, false)
     end
 
     # Hash of stubs defined for various client adapters
     #
-    # { client => { request => response } }
+    # { client => strict => { request => response } }
     #
     # @return [Hash<Evil::Client::Adapter, Hash>]
     #
     # @api private
     #
     def evil_client_stubs_registry
-      @evil_client_stubs_registry ||= Hash.new({})
+      @evil_client_stubs_registry ||= Hash.new(true => {}, false => {})
     end
 
     # Adds new stub to the registry and re-stubs the adapter
@@ -40,13 +59,14 @@ class Evil::Client
     # @param [Evil::Client::Adapter]  adapter
     # @param [Evil::Client::Request]  request
     # @param [Evil::Client::Response] response
+    # @param [Boolean] strict
     #
     # @return [undefined]
     #
     # @api private
     #
-    def register_evil_client_stub(adapter, request, response)
-      evil_client_stubs_registry[adapter][request] = response
+    def register_evil_client_stub(adapter, request, response, strict)
+      evil_client_stubs_registry[adapter][strict][request] = response
       apply_evil_client_stub(adapter)
     end
 
@@ -59,10 +79,16 @@ class Evil::Client
     # @api private
     #
     def apply_evil_client_stub(adapter)
-      stubs = evil_client_stubs_registry[adapter]
+      stubs    = evil_client_stubs_registry[adapter]
+      stricts  = stubs[true]
+      partials = stubs[false]
+
       allow(adapter).to receive(:send_request) do |actual|
-        response = stubs.select { |req, _| actual.include? req }.values.first
-        response || fail(StubError.new actual)
+        stub = stricts.find { |req, _| actual == req } ||
+          partials.find { |req, _| actual.include? req } ||
+          fail(StubError.new actual)
+        
+        stub.last
       end
     end
 
@@ -78,47 +104,33 @@ class Evil::Client
       # @param [Object] context The context of the RSpec example
       # @param [Evil::Client] client
       #
-      def initialize(context, client)
+      def initialize(context, client, strict = true)
         @context = context
         @client  = client
+        @strict  = strict
       end
 
-      # @!attribute [r] context
+      # Whether the request should be stabbed strictly (via equality),
+      # or partially (via equivalence)
       #
-      # @return [Object] The context of the RSpec example
+      # @return [Boolean]
       #
-      attr_reader :context
+      attr_reader :strict
 
-      # @!attribute [r] context
+      # The request to be stabbed
       #
-      # @return [Object] The stubbed client
+      # @return [Evil::Client::Request]
       #
-      attr_reader :client
-
-      # @!attribute [r] request
-      #
-      # @return [Evil::Client::Request] The request to be stabbed
-      #
-      attr_reader :request
+      def request
+        @request ||= @client.current_request
+      end
 
       # The client's adapter to be stabbed
       #
       # @return [Evil::Client::Adapter]
       #
       def adapter
-        @adapter ||= client.adapter
-      end
-
-      # Defines the request to be stubbed
-      #
-      # @param [#to_s] type The type of the request
-      # @param [Hash]  data Either a query (GET) or a body of the request
-      #
-      # @return [self] itself
-      #
-      def to_request(type, data = {})
-        @request = client.prepare_request(type, data)
-        self
+        @adapter ||= @client.adapter
       end
 
       # Stubs the request
@@ -128,10 +140,10 @@ class Evil::Client
       #
       # @return [Evil::Client::Stub]
       #
-      def and_respond(status, body = nil)
+      def to_respond_with(status, body = nil)
         raw_body = body.nil? ? nil : JSON.generate(body)
         response = Response.new(status, raw_body)
-        context.register_evil_client_stub(adapter, request, response)
+        @context.register_evil_client_stub(adapter, request, response, strict)
       end
     end
 

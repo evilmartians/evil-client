@@ -9,21 +9,20 @@ class Evil::Client::Request
     # @return [String]
     #
     def build
-      return if request.type == "get"
-      return to_multipart if items.multipart?
-      to_form_url
+      case
+      when request.type == 'get'
+        nil
+      when items.multipart?
+        to_multipart
+      else
+        items.url_encoded
+      end
     end
 
     private
 
     def items
       @items ||= Items.new(request.body)
-    end
-
-    def to_form_url
-      items
-        .map { |item| item.value ? "#{item.key}=#{item.value}" : item.key }
-        .join("&")
     end
 
     def to_multipart
@@ -105,7 +104,7 @@ class Evil::Client::Request
       end
 
       def name
-        CGI.escape Pathname.new(path).basename.to_s
+        CGI.escape File.basename(path)
       end
     end
   end

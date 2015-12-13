@@ -4,7 +4,7 @@ describe "header", :fake_api do
   let(:request) { a_request(:get, "http://localhost") }
   subject do
     Evil::Client
-      .with(base_url: "http://localhost/")
+      .new("http://localhost/")
       .headers("Foo" => :bar)
       .headers("Bar" => :baz)
       .get

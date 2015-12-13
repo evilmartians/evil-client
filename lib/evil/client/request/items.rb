@@ -49,8 +49,7 @@ class Evil::Client::Request
     # @yieldparam [Evil::Client::Request::Items::Item]
     #
     def each
-      return to_enum unless block_given?
-      @items ||= pre_flatten(source).flatten.sort_by(&:key)
+      @items ||= flatten(source).sort_by(&:key)
       @items.each { |item| yield(item) }
     end
 
@@ -70,16 +69,24 @@ class Evil::Client::Request
       map { |item| [item.key, item.value] }
     end
 
+    # Converts the source to either www-form-url-encoded string, or nil
+    #
+    # @return [String, nil]
+    #
+    def url_encoded
+      map { |item| [item.key, item.value].compact.join("=") }.join("&") if any?
+    end
+
     private
 
-    def pre_flatten(data, *keys)
+    def flatten(data, keys = [])
       case data
       when Hash
-        data.map { |key, val| pre_flatten(val, *keys, key) }
+        data.map { |key, val| flatten(val, keys + [key]) }.flatten
       when Array
-        data.map { |val| pre_flatten(val, *keys, nil) }
+        data.map { |val| flatten(val, keys + [nil]) }.flatten
       else
-        Item.new(data, *keys)
+        Item.new(data, keys)
       end
     end
 
@@ -93,9 +100,9 @@ class Evil::Client::Request
       # @param [Object] raw_value
       # @param [Array<#to_s>] keys
       #
-      def initialize(raw_value, *keys)
+      def initialize(raw_value, keys)
         @raw_value = raw_value
-        @keys      = keys.map(&:to_s).map(&CGI.method(:escape))
+        @keys      = keys.map { |key| CGI.escape key.to_s }
       end
 
       # The nested escaped key for the item
@@ -103,10 +110,7 @@ class Evil::Client::Request
       # @return [String]
       #
       def key
-        @key ||= begin
-          list = [@keys.first] + @keys[1..-1].to_a.map { |k| "[#{k}]" }
-          list.join
-        end
+        @key ||= @keys.inject { |prefix, key| "#{prefix}[#{key}]" }
       end
 
       # The value stringified and escaped when necessary

@@ -7,34 +7,60 @@ class Evil::Client
   #
   class Request
 
-    require_relative "request/inclusion"
+    require_relative "request/base_url"
+    require_relative "request/comparison"
     require_relative "request/base"
     require_relative "request/items"
     require_relative "request/path"
     require_relative "request/body"
     require_relative "request/headers"
 
-    include Inclusion
+    include Comparison
+
+    # Regex to remove terminal slashes from paths
+    STRIP_SLASHES = %r{[^/](.*[^/])?}.freeze
 
     # Initializes request with base url
     #
     # @param [String] base_url
     #
     def initialize(base_url)
-      @path = base_url.to_s.sub(%r{/+$}, "")
+      url = BaseURL.new(base_url)
+      @host     = url.host
+      @port     = url.port
+      @path     = url.path
+      @protocol = url.protocol
     end
 
     # The type of the request
     #
-    # @return ["get", "post"]
+    # @return [String]
     #
     attr_reader :type
 
-    # The request path
+    # The host of the request with protocol
     #
     # @return [String]
     #
+    attr_reader :host
+
+    # The relative path to the host
+    #
+    # @return [Array<String>]
+    #
     attr_reader :path
+
+    # The request port
+    #
+    # @return [Integer]
+    #
+    attr_reader :port
+
+    # The request protocol
+    #
+    # @return [String]
+    #
+    attr_reader :protocol
 
     # The request headers
     #
@@ -60,15 +86,15 @@ class Evil::Client
       @query ||= {}
     end
 
-    # Returns a copy of the request with new parts added to the uri
+    # Returns a copy of the request with new parts added
     #
-    # @param [#to_s, Array<#to_s>] parts
+    # @param [Array<#to_s>] values
     #
     # @return [Evil::Client::Request]
     #
-    def with_path(*parts)
-      paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
-      new_path = [path, *paths].join("/").downcase
+    def with_path(values)
+      parts    = values.map(&:to_s).map { |part| part[STRIP_SLASHES] }
+      new_path = [path, parts].flatten.join("/")
       clone_with { @path = new_path }
     end
 
@@ -105,24 +131,53 @@ class Evil::Client
       clone_with { @body = new_body }
     end
 
-    # Returns a copy of the request with a type added
+    # Returns a copy of the request with new type
     #
-    # @param [String] type
+    # @param [#to_s] value
     #
     # @return [Evil::Client::Request]
     #
-    def with_type(type)
-      clone_with { @type = type.to_s.downcase }
+    def with_type(value)
+      clone_with { @type = value.to_s.downcase }
+    end
+
+    # Returns a copy of the request with new port
+    #
+    # @param [#to_i] value
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_port(value)
+      clone_with { @port = value.to_i }
+    end
+
+    # Returns a copy of the request with new protocol
+    #
+    # @param ["http", "https", :http, :https] value
+    #
+    # @return [Evil::Client::Request]
+    #
+    def with_protocol(value)
+      return self unless value[/https?/]
+      clone_with { @port = value.to_s }
     end
 
     # Returns a standard array representation of the request
+    # [type, host, path, port, body, headers]
     #
     # @see [Evil::Client::Adapter#call]
     #
     # @return [Array]
     #
     def to_a
-      [type, Path.build(self), Body.build(self), Headers.build(self)]
+      [
+        type,
+        host,
+        Path.build(self),
+        port,
+        Body.build(self),
+        Headers.build(self)
+      ]
     end
 
     private

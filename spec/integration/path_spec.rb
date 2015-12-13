@@ -3,7 +3,7 @@ describe "path" do
 
   let(:client) do
     Evil::Client
-      .with(base_url: "https://localhost/v1/")
+      .new("https://localhost/v1/")
       .path(:users, 1)
       .path("/sms/3/")
   end

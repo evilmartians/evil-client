@@ -11,24 +11,22 @@ The library is available as a gem `evil-client`.
 Usage
 -----
 
-### Configuring
-
-Inside Rails application, define a request ID for a remote API:
-
-```ruby
-@todo
-```
-
 ### Initialization
 
-Initialize a new client with `base_url` of a remote API:
+Initialize a new client with base url of a remote API:
 
 ```ruby
-client = Evil::Client.with base_url: "http://localhost"
+client = Evil::Client.new "localhost"
 client.uri! # => "http://localhost"
 ```
 
 We will use this client in all the examples below.
+
+By default initializer sets `http` protocol (port `80`). You can redefine both the protocol and the port:
+
+```ruby
+client = Evil::Client.new "https://localhost/foo:444"
+```
 
 **Roadmap**:
 
@@ -37,17 +35,22 @@ We will use this client in all the examples below.
 
 ### Request preparation
 
-Use methods `path`, `query` and `headers` to customize a request. You can call them in any order, so that every method adds new data to previously formed request:
+Use methods `path`, `query`, `headers`, `body`, `protocol` and `port` to customize a request. Actually any part, except for the base host, can be customized while building the request.
+
+You can call them in any order, so that every method adds new data to previously formed request:
 
 ```ruby
 client
   .path(:users, 1)
   .query(api_key: "foobar")
+  .body(baz: { qux: "QUX" })
+  .protocol(:https) # either http or https
+  .port(445)
   .path("/sms/3/")
   .headers(foo: :bar, bar: :baz)
 ```
 
-This will prepare a request to uri `http://localhost/users/1/sms/3?api_key=foobar` with headers:
+This will prepare a request to uri `https://localhost:445/users/1/sms/3?api_key=foobar` with body `baz[qux]=QUX` and headers:
 
 ```ruby
 {
@@ -65,17 +68,17 @@ The client is designed to work with JSON APIs, that's why default headers are ad
 - *either taken from Rack env `HTTP_X_REQUEST_ID` instead of `action_dispatch.request_id`,
 - *or skipped when no Rack env is available.*
 
-### Checking the uri
+### Checking the url
 
-The `#uri` method allows to view the current uri of the request without a query:
+The `#uri` method allows to view the current URI of the request:
 
 ```ruby
 client
   .path(:users, 1)
-  .query(api_key: "foobar")
+  .query(meta: { api_key: "foobar" })
 
-client.uri
-# => "http://localhost/users/1"
+client.url
+# => "http://localhost/users/1?meta[api_key]=foobar"
 
 client.path(:sms, 3).uri
 # => "http://localhost/users/1/sms/3"
@@ -91,7 +94,7 @@ client.path(:sms, 3).uri
 
 To send conventional requests use methods `get!`, `post!`, `patch!`, `put!` and `delete!` with a corresponding query or body.
 
-In a GET request the arguments will be added to previously formed query:
+Arguments of a GET request are added to previously formed query:
 
 ```ruby
 client
@@ -103,7 +106,7 @@ client
 # will send a GET request to URI: http://localhost/users/1?foo=bar&bar=baz&baz=qux
 ```
 
-In a POST request the arguments will be sent as a body. The preformed query is used as well:
+Arguments of a POST, PATCH, PUT and DELETE requests are added to the body. The preformed query is used as well:
 
 ```ruby
 client
@@ -115,28 +118,27 @@ client
 # will send a POST request to URI: http://localhost/users/1?foo=bar&bar=baz
 ```
 
-You can send a request using any "conventional" method you need (patch, put, delete):
+Use the `request!` for non-conventional HTTP method. You can send the type argument only.
+
+Because there is no common convention for custom methods, you can specify body or query explicitly:
 
 ```ruby
 client
   .path(:users, 1)
   .query(foo: :bar)
+  .body(baz: :qux)
   .query(bar: :baz)
-  .patch! baz: :qux
-
-# will send a PATCH request to URI: http://localhost/users/1?foo=bar&bar=baz
-```
-
-Use the `request!` for non-conventional HTTP method with an additional first argument:
-
-```ruby
-client
-  .path(:users, 1)
-  .query(foo: :bar)
-  .query(bar: :baz)
-  .request! :foo, baz: :qux
+  .request! :foo
 
 # will send a FOO request to URI: http://localhost/users/1?foo=bar&bar=baz
+```
+
+For example, you can send a request without body:
+
+```ruby
+client.path(:users, 1).headers('X-Foo' => 'Bar').request! :head
+
+# will send a HEAD request to URI: http://localhost/users/1
 ```
 
 **Roadmap**:
@@ -254,6 +256,18 @@ You can always check `error?` over the result of the safe request.
 **Roadmap**:
 
 - [ ] *A successful responses will also be validated against a corresponding API spec (swagger etc.)*
+
+## RSpec Helpers
+
+For testing a client of the remote API, the gem provides methods to stub an match requests.
+
+### Stubbing Requests
+
+@todo
+
+### Matching Requests
+
+@todo
 
 Compatibility
 -------------
