@@ -5,6 +5,7 @@ class Evil::Client
   #
   module RSpec
     require_relative "rspec/stubs"
+    require_relative "rspec/matchers"
   end
 end
 
