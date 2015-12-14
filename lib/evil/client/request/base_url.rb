@@ -49,7 +49,7 @@ class Evil::Client::Request
 
       uri = URI.parse path
       uri = URI.parse "http://#{path}" unless uri.scheme
-      uri.port = port if port
+      uri.port = port.to_i if port
       return uri if uri.host
 
       fail "base_url should be set"
