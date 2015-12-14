@@ -4,7 +4,7 @@ class Evil::Client
   # @api private
   #
   module RSpec
-    require_relative "rspec/stub"
+    require_relative "rspec/stubs"
   end
 end
 

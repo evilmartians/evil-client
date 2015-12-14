@@ -157,7 +157,7 @@ class Evil::Client
       def initialize(request)
         super <<-MESSAGE.gsub(/ +\|/, "")
           |Unexpected request has been sent by http client:
-          |  #{request.type.upcase} #{request.path}
+          |  #{request.type.upcase} #{request.protocol}://#{request.host}:#{request.port}#{request.path}
           |  with headers: #{request.headers}
           |  with body:    #{request.body}
           |  with query:   #{request.query}
