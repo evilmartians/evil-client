@@ -261,13 +261,112 @@ You can always check `error?` over the result of the safe request.
 
 For testing a client of the remote API, the gem provides methods to stub an match requests.
 
+Load the them via:
+
+```ruby
+require "evil/client/rspec"
+```
+
 ### Stubbing Requests
 
-@todo
+To stub requests to the client use `allow_request` and `allow_any_request` methods.
+
+The first method stubs requests strictly. This means it will stub only request, whose attributes are equal to described:
+
+```ruby
+RSpec.shared_examples :sending_request do
+  let(:client) { Evil::Client.new("http://example.com/users:81") }
+
+  before do
+    allow_request { request.path(:users, 1).type(:get) }
+      .to_respond_with(200, id: 1, name: "John")
+
+    allow_request { request.path(:users, 2).type(:get) }
+      .to_respond_with(200, id: 2, name: "Jane")
+
+    allow_request { request.path(:users, 3).type(:get) }
+      .to_respond_with(404)
+  end
+end
+```
+
+This example will stub described request and will fail in case any other request will be sent.
+
+To stub requests partially use `allow_any_request`. This method will stub any request, whose query, body or headers include described ones. The comparison of `protocol`, `port`, `path` and `type` is strict in both cases.
+
+```ruby
+# This example will stub any call to GET http://example.com:81/users/1
+# with any body, query and headers
+RSpec.shared_examples :sending_request do
+  let(:client) { Evil::Client.new("http://example.com/users:81") }
+
+  before do
+    allow_any_request { request.path(:users, 1).type(:get) }
+      .to_respond_with(200, id: 1, name: "John")
+  end
+end
+```
+
+The order of stubs definition is significant, because they are checked until from first to last. If no stub is applicable the exception will be raised (complaining about unknown request).
+
+There is one exception. All the strict stubs are checked before all the partial ones, even in case partial stubs were declared first.
 
 ### Matching Requests
 
-@todo
+Use `send_request_to` matcher with options to check sending the request:
+
+```ruby
+require "evil/client/rspec"
+
+RSpec.describe "sending the request" do
+
+  let(:client) do
+    Evil::Client
+      .new("http://example.com/users:81")
+      .path(1)
+      .query(auth: "foobar")
+  end
+
+  # This will check the request PATCH http://example.com:81/users/1?auth=foobar
+  # to have been sent with body 'name=Andrew':
+
+  it "works" do
+    expect { client.patch name: "Andrew" }
+      .to send_request_to(client)
+      .with(
+        port:     81,
+        protocol: :http,
+        type:     :patch,
+        path:     "/users/1"
+      )
+      .with(
+        query: { auth: "foobar" },
+        body:  { name: "Andrew" }
+      )
+  end
+end
+```
+
+You can check options `port`, `protocol`, `path` (relative to the host - see the example above), `type`, `query`, `body`, and `headers` using chain of `with(options)` methods.
+
+Only listed attributes will be checked. In the following example both tests will pass as well:
+
+```ruby
+expect { client.patch name: "Andrew" }
+  .to send_request_to(client)
+
+expect { client.post name: "Andrew" }
+  .to send_request_to(client)
+  .with(body: { name: "Andrew" })
+```
+
+All options are checked strictly. This means the following test will pass:
+
+```ruby
+expect { client.patch name: "Andrew" }
+  .not_to send_request_to(client)             # <- Notice the negation!
+  .with(body: { name: "Andrew", sex: :male })
+```
 
 Compatibility
 -------------
