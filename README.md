@@ -1,7 +1,19 @@
 [WIP] Evil::Client
 ==================
 
-DSL built on top of `Net::HTTP` for dealing with remote REST APIs
+DSL built on top of `Net::HTTP` to communicate between microservices.
+
+It differs from other HTTP-clients by the following features:
+
+* building requests lazily
+* applying some opionated settings:
+  - encoding requests to `www-url-form-encoded`
+  - authomatically encoding requests to `multipart/form-data` when files being sent
+  - following Rails convention for encoding nested body and query
+  - expecting responses to be serialized in JSON
+  - mapping json responces to [hashies][mash]
+* [wip] supporting swagger specifications
+* providing RSpec stubs and matchers for the client out of the box
 
 Setup
 -----
@@ -16,18 +28,11 @@ Usage
 Initialize a new client with base url of a remote API:
 
 ```ruby
-client = Evil::Client.new "localhost/foo"
-client.uri # => "http://localhost:80/foo"
+client = Evil::Client.new "https://localhost/foo:10443"
+client.uri # => "https://localhost:443/foo"
 ```
 
 *We will use client with these settings in the examples below.*
-
-By default initializer sets `http` protocol (port `80`). You can redefine both the protocol and the port:
-
-```ruby
-client = Evil::Client.new "https://localhost/foo:10443"
-client.uri # => "https://localhost:10443/foo"
-```
 
 **Roadmap**:
 

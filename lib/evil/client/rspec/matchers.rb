@@ -1,4 +1,4 @@
-# Checks that a subject sends a request to the client's adapter
+# Checks whether a subject sends a request to the client's adapter
 #
 # @example
 #   expect { some_action }
@@ -20,7 +20,7 @@ RSpec::Matchers.define :send_request_to do |client|
 
   match do |action|
     allow(adapter).to receive(:send_request).and_wrap_original do |m, request|
-      expect(request).to be_in_agreement_to options
+      expect(request).to be_match(options)
       m.call(request)
     end
 
@@ -31,13 +31,13 @@ RSpec::Matchers.define :send_request_to do |client|
 
   match_when_negated do |action|
     allow(adapter).to receive(:send_request).and_wrap_original do |m, request|
-      expect(request).not_to be_in_agreement_to options
+      expect(request).not_to be_match(options)
       m.call(request)
     end
 
     expect(adapter)
       .to receive(:send_request)
-      .with(be_in_agreement_to options)
+      .with(be_match options)
       .exactly(0).times
 
     action.call
@@ -89,22 +89,5 @@ RSpec::Matchers.define :send_request_to do |client|
 
   def options
     @options ||= {}
-  end
-end
-
-class Evil::Client::Request
-  # Checks whether a request matches a hash of options
-  #
-  # @param [Hash]
-  #
-  # @return [Boolean]
-  #
-  def in_agreement_to?(**options)
-    return false if options[:path] && !options[:path].to_s[%r{^/?#{path}$}]
-    return false if options[:method] && options[:method].to_s.downcase != method
-    return false if options[:query] && !same?(query, options[:query])
-    return false if options[:body] && !same?(body, options[:body])
-    return false if options[:headers] && !same?(headers, options[:headers])
-    true
   end
 end

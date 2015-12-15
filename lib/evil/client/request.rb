@@ -20,6 +20,9 @@ class Evil::Client
     # Regex to remove terminal slashes from paths
     STRIP_SLASHES = %r{[^/].*[^/]|[^/]}.freeze
 
+    # List of significant attributes assigned to the request
+    ATTRIBUTES = %i(host port protocol path method query body headers).freeze
+
     # Initializes request with base url
     #
     # @param [String] base_url
@@ -148,7 +151,7 @@ class Evil::Client
       clone_with { @method = value.to_s.downcase }
     end
 
-    # Returns a standard array representation of the request
+    # The array representation of the request
     # [method, host, path, port, body, headers]
     #
     # @see [Evil::Client::Adapter#call]
@@ -164,6 +167,14 @@ class Evil::Client
         Body.build(self),
         Headers.build(self)
       ]
+    end
+
+    # The hash representation of the request
+    #
+    # @return [Hash]
+    #
+    def to_h
+      ATTRIBUTES.zip(ATTRIBUTES.map { |name| send(name) }).to_h
     end
 
     private
