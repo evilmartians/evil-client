@@ -16,11 +16,11 @@ Usage
 Initialize a new client with base url of a remote API:
 
 ```ruby
-client = Evil::Client.new "localhost"
-client.uri! # => "http://localhost"
+client = Evil::Client.new "localhost/foo"
+client.uri! # => "http://localhost:80/foo"
 ```
 
-We will use this client in all the examples below.
+*We will use client with these settings in all the examples below.*
 
 By default initializer sets `http` protocol (port `80`). You can redefine both the protocol and the port:
 

@@ -18,7 +18,7 @@ class Evil::Client
     include Comparison
 
     # Regex to remove terminal slashes from paths
-    STRIP_SLASHES = %r{[^/](.*[^/])?}.freeze
+    STRIP_SLASHES = %r{[^/].*[^/]|[^/]}.freeze
 
     # Initializes request with base url
     #
@@ -28,7 +28,7 @@ class Evil::Client
       url = BaseURL.new(base_url)
       @host     = url.host
       @port     = url.port
-      @path     = url.path
+      @parts    = [url.path]
       @protocol = url.protocol
     end
 
@@ -86,6 +86,14 @@ class Evil::Client
       @query ||= {}
     end
 
+    # The request path relative to the host
+    #
+    # @return [String]
+    #
+    def path
+      "/" << @parts.map { |part| part.to_s[STRIP_SLASHES] }.compact.join("/")
+    end
+
     # Returns a copy of the request with new parts added
     #
     # @param [Array<#to_s>] values
@@ -93,9 +101,8 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_path(values)
-      parts    = values.map(&:to_s).map { |part| part[STRIP_SLASHES] }
-      new_path = [path, parts].flatten.join("/")
-      clone_with { @path = new_path }
+      new_parts = [@parts, values].flatten
+      clone_with { @parts = new_parts }
     end
 
     # Returns a copy of the request with new headers being added
