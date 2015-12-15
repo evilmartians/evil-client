@@ -13,46 +13,34 @@ describe "send_request_to" do
     expect { 1 }.not_to send_request_to(client)
   end
 
-  it "matches protocol inline" do
+  it "matches type using #with" do
     expect { client.post }
       .to send_request_to(client)
-      .with(protocol: :https)
+      .with(method: 'POST')
   end
 
-  it "ignores wrong protocol" do
-    expect { client.post }
-      .not_to send_request_to(client)
-      .with(protocol: :http)
-  end
-
-  it "matches port inline" do
-    expect { client.port(443).post }
-      .to send_request_to(client)
-      .with(port: 443)
-  end
-
-  it "ignores wrong port" do
-    expect { client.port(443).post }
-      .not_to send_request_to(client)
-      .with(port: 89)
-  end
-
-  it "matches type inline" do
+  it "matches type using #with_method" do
     expect { client.post }
       .to send_request_to(client)
-      .with(type: 'POST')
+      .with_method('POST')
   end
 
   it "ignores wrong type" do
     expect { client.get }
       .not_to send_request_to(client)
-      .with(type: 'POST')
+      .with(method: 'POST')
   end
 
-  it "matches path inline" do
+  it "matches path using #with" do
     expect { client.path(:bar).post }
       .to send_request_to(client)
       .with(path: "/foo/bar")
+  end
+
+  it "matches path using #with_path" do
+    expect { client.path(:bar).post }
+      .to send_request_to(client)
+      .with_path("/foo/bar")
   end
 
   it "ignores wrong path" do
@@ -61,10 +49,16 @@ describe "send_request_to" do
       .with(path: "/foo/bar")
   end
 
-  it "matches query inline" do
+  it "matches query using #with" do
     expect { client.query(bar: :bar).post }
       .to send_request_to(client)
       .with(query: { bar: :bar })
+  end
+
+  it "matches query using #with_query" do
+    expect { client.query(bar: :bar).post }
+      .to send_request_to(client)
+      .with_query(bar: :bar)
   end
 
   it "ignores wrong query" do
@@ -73,10 +67,16 @@ describe "send_request_to" do
       .with(query: { bar: :bar })
   end
 
-  it "matches body inline" do
+  it "matches body using #with" do
     expect { client.body(bar: :bar).post }
       .to send_request_to(client)
       .with(body: { bar: :bar })
+  end
+
+  it "matches body using #with_body" do
+    expect { client.body(bar: :bar).post }
+      .to send_request_to(client)
+      .with_body(bar: :bar)
   end
 
   it "ignores wrong body" do
@@ -85,10 +85,16 @@ describe "send_request_to" do
       .with(body: { bar: :bar })
   end
 
-  it "matches headers inline" do
+  it "matches headers using #with" do
     expect { client.headers('X-Bar' => :Bar).post }
       .to send_request_to(client)
       .with(headers: { 'X-Bar' => :Bar })
+  end
+
+  it "matches headers using #with_headers" do
+    expect { client.headers('X-Bar' => :Bar).post }
+      .to send_request_to(client)
+      .with_headers('X-Bar' => :Bar)
   end
 
   it "ignores wrong headers" do

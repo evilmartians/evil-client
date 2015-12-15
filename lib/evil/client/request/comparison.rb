@@ -4,7 +4,7 @@ class Evil::Client::Request
   module Comparison
     # Checks whether current request includes another object
     #
-    # Included request should have the same protocol, host, path and port,
+    # Included request should have the same method and path,
     # and subset of the other requests's body, query and headers.
     #
     # @param [Object] other The object to compare to
@@ -20,8 +20,7 @@ class Evil::Client::Request
 
     # Checks whether current request equals to another object
     #
-    # Both requests should have the same protocol, host, path, port,
-    # body, query and headers.
+    # Both requests should have the same method, path, body, query and headers.
     #
     # @param [Object] other The object to compare to
     #
@@ -42,7 +41,7 @@ class Evil::Client::Request
         host == other.host &&
         path == other.path &&
         port == other.port &&
-        type == other.type
+        method == other.method
     end
 
     def nested?(one, other)

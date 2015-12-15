@@ -10,7 +10,7 @@ class Evil::Client::Request
     #
     def build
       case
-      when request.type == 'get'
+      when request.method == 'get'
         nil
       when items.multipart?
         to_multipart

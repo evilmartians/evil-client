@@ -32,11 +32,11 @@ class Evil::Client
       @protocol = url.protocol
     end
 
-    # The type of the request
+    # The method of sending the request
     #
     # @return [String]
     #
-    attr_reader :type
+    attr_reader :method
 
     # The host of the request with protocol
     #
@@ -138,39 +138,18 @@ class Evil::Client
       clone_with { @body = new_body }
     end
 
-    # Returns a copy of the request with new type
+    # Returns a copy of the request with new method
     #
     # @param [#to_s] value
     #
     # @return [Evil::Client::Request]
     #
-    def with_type(value)
-      clone_with { @type = value.to_s.downcase }
-    end
-
-    # Returns a copy of the request with new port
-    #
-    # @param [#to_i] value
-    #
-    # @return [Evil::Client::Request]
-    #
-    def with_port(value)
-      clone_with { @port = value.to_i }
-    end
-
-    # Returns a copy of the request with new protocol
-    #
-    # @param ["http", "https", :http, :https] value
-    #
-    # @return [Evil::Client::Request]
-    #
-    def with_protocol(value)
-      return self unless value[/https?/]
-      clone_with { @port = value.to_s }
+    def with_method(value)
+      clone_with { @method = value.to_s.downcase }
     end
 
     # Returns a standard array representation of the request
-    # [type, host, path, port, body, headers]
+    # [method, host, path, port, body, headers]
     #
     # @see [Evil::Client::Adapter#call]
     #
@@ -178,7 +157,7 @@ class Evil::Client
     #
     def to_a
       [
-        type,
+        method,
         host,
         Path.build(self),
         port,

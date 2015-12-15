@@ -4,16 +4,16 @@ describe "allow_any_request" do
   let!(:client) { Evil::Client.new "https://localhost/foo" }
 
   before do
-    allow_any_request { client.path(:bar, 1).query(foo: :foo).type(:post) }
+    allow_any_request { client.path(:bar, 1).query(foo: :foo).method(:post) }
       .to_respond_with(200, bar: "foo")
 
-    allow_any_request { client.path(:bar, 1).query(foo: :bar).type(:post) }
+    allow_any_request { client.path(:bar, 1).query(foo: :bar).method(:post) }
       .to_respond_with(200, bar: "bar")
 
-    allow_any_request { client.path(:bar, 1).type(:get) }
+    allow_any_request { client.path(:bar, 1).method(:get) }
       .to_respond_with(400)
 
-    allow_any_request { client.path(:bar, 2).type(:post) }
+    allow_any_request { client.path(:bar, 2).method(:post) }
       .to_respond_with(404)
   end
 
@@ -35,7 +35,7 @@ describe "allow_any_request" do
     expect(response.bar).to eql "bar"
   end
 
-  it "differs requests by types" do
+  it "differs requests by methods" do
     response = client.path(:bar, 1).query(foo: "bar", baz: "baz").get
 
     expect(response).to be_kind_of Hashie::Mash
@@ -47,15 +47,5 @@ describe "allow_any_request" do
 
     expect(response).to be_kind_of Hashie::Mash
     expect(response.meta.http_code).to eql 404
-  end
-
-  it "differs requests by protocols" do
-    request = client.path(:bar, 1).query(foo: "foo", bar: "bar").protocol(:http)
-    expect { request.post }.to raise_error(StandardError)
-  end
-
-  it "differs requests by ports" do
-    request = client.path(:bar, 1).query(foo: "foo", bar: "bar").port(81)
-    expect { request.post }.to raise_error(StandardError)
   end
 end

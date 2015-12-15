@@ -68,9 +68,9 @@ class Evil::Client
     # @return [Evil::Client::Response]
     #
     def send_request(request)
-      type, host, path, port, body, headers = request.to_a
+      method, host, path, port, body, headers = request.to_a
       client   = Net::HTTP.new(host, port)
-      response = client.send_request(type, path, body, headers)
+      response = client.send_request(method, path, body, headers)
 
       Response.new(response.code, response.body)
     end

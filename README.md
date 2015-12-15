@@ -17,15 +17,16 @@ Initialize a new client with base url of a remote API:
 
 ```ruby
 client = Evil::Client.new "localhost/foo"
-client.uri! # => "http://localhost:80/foo"
+client.uri # => "http://localhost:80/foo"
 ```
 
-*We will use client with these settings in all the examples below.*
+*We will use client with these settings in the examples below.*
 
 By default initializer sets `http` protocol (port `80`). You can redefine both the protocol and the port:
 
 ```ruby
-client = Evil::Client.new "https://localhost/foo:444"
+client = Evil::Client.new "https://localhost/foo:10443"
+client.uri # => "https://localhost:10443/foo"
 ```
 
 **Roadmap**:
@@ -35,7 +36,7 @@ client = Evil::Client.new "https://localhost/foo:444"
 
 ### Request preparation
 
-Use methods `path`, `query`, `headers`, `body`, `protocol` and `port` to customize a request. Actually any part, except for the base host, can be customized while building the request.
+Use methods `path`, `query`, `body`, and `headers` to customize a request.
 
 You can call them in any order, so that every method adds new data to previously formed request:
 
@@ -44,13 +45,11 @@ client
   .path(:users, 1)
   .query(api_key: "foobar")
   .body(baz: { qux: "QUX" })
-  .protocol(:https) # either http or https
-  .port(445)
   .path("/sms/3/")
   .headers(foo: :bar, bar: :baz)
 ```
 
-This will prepare a request to uri `https://localhost:445/users/1/sms/3?api_key=foobar` with body `baz[qux]=QUX` and headers:
+This will prepare a request to uri `https://localhost:443/users/1/sms/3?api_key=foobar` with body `baz[qux]=QUX` and headers:
 
 ```ruby
 {
@@ -118,7 +117,7 @@ client
 # will send a POST request to URI: http://localhost/users/1?foo=bar&bar=baz
 ```
 
-Use the `request!` for non-conventional HTTP method. You can send the type argument only.
+Use the `request!` for non-conventional HTTP method. You can send the method argument only.
 
 Because there is no common convention for custom methods, you can specify body or query explicitly:
 
@@ -219,7 +218,7 @@ begin
 rescue Evil::Client::ResponseError => error
   # Suppose the server responded with text (not a valid JSON!) body "Wrong URL!" and status 404
   error.status    # => 404
-  error.request   # => #<Request @type="get" @path="http://localhost/unknown" ...>
+  error.request   # => #<Request @method="get" @path="http://localhost/unknown" ...>
   error.response  # => #<Response ...>
   error.content   # => { "error" => "Wrong URL!", "meta" => { "http_code" => 404 } }
 end
@@ -278,13 +277,13 @@ RSpec.shared_examples :sending_request do
   let(:client) { Evil::Client.new("http://example.com/users:81") }
 
   before do
-    allow_request { request.path(:users, 1).type(:get) }
+    allow_request { request.path(:users, 1).method(:get) }
       .to_respond_with(200, id: 1, name: "John")
 
-    allow_request { request.path(:users, 2).type(:get) }
+    allow_request { request.path(:users, 2).method(:get) }
       .to_respond_with(200, id: 2, name: "Jane")
 
-    allow_request { request.path(:users, 3).type(:get) }
+    allow_request { request.path(:users, 3).method(:get) }
       .to_respond_with(404)
   end
 end
@@ -292,16 +291,17 @@ end
 
 This example will stub described request and will fail in case any other request will be sent.
 
-To stub requests partially use `allow_any_request`. This method will stub any request, whose query, body or headers include described ones. The comparison of `protocol`, `port`, `path` and `type` is strict in both cases.
+To stub requests partially use `allow_any_request`. This method will stub any request, whose query, body or headers include described ones. The comparison of `path` and `method` is strict in both cases.
 
 ```ruby
 # This example will stub any call to GET http://example.com:81/users/1
 # with any body, query and headers
+
 RSpec.shared_examples :sending_request do
   let(:client) { Evil::Client.new("http://example.com/users:81") }
 
   before do
-    allow_any_request { request.path(:users, 1).type(:get) }
+    allow_any_request { request.path(:users, 1).method(:get) }
       .to_respond_with(200, id: 1, name: "John")
   end
 end
@@ -333,39 +333,48 @@ RSpec.describe "sending the request" do
   it "works" do
     expect { client.patch name: "Andrew" }
       .to send_request_to(client)
-      .with(
-        port:     81,
-        protocol: :http,
-        type:     :patch,
-        path:     "/users/1"
-      )
-      .with(
-        query: { auth: "foobar" },
-        body:  { name: "Andrew" }
-      )
+      .with(method: :patch, path: "/users/1")
+      .with(query: { auth: "foobar" }),
+      .with(body:  { name: "Andrew" })
   end
 end
 ```
 
-You can check options `port`, `protocol`, `path` (relative to the host - see the example above), `type`, `query`, `body`, and `headers` using chain of `with(options)` methods.
+You can check options *path* (relative to the host - see the example above), *method*, *query*, *body*, and *headers* via chain of `with` method calls.
 
-Only listed attributes will be checked. In the following example both tests will pass as well:
+Only listed attributes will be checked. In the following example both tests will pass:
 
 ```ruby
-expect { client.patch name: "Andrew" }
+client = Evil::Client.new("https://example.com/users")
+
+expect { client.post name: "Andrew" }
   .to send_request_to(client)
 
 expect { client.post name: "Andrew" }
   .to send_request_to(client)
   .with(body: { name: "Andrew" })
+  .with(path: "/users", method: :post)
 ```
 
 All options are checked strictly. This means the following test will pass:
 
 ```ruby
 expect { client.patch name: "Andrew" }
-  .not_to send_request_to(client)             # <- Notice the negation!
-  .with(body: { name: "Andrew", sex: :male })
+  .not_to send_request_to(client)             # <- Negation!
+  .with(body: { name: "Andrew", gender: :male })
+```
+
+For better readability use specialized chaining methods `with_path`, `with_method`, `with_query`, `with_body`, `with_headers`:
+
+```ruby
+expect { client.path(:users).query(key: "foobar").post name: "Andrew", gender: :male, age: 90 }
+  .to send_request_to(client)
+  .with_body(name: "Andrew", gender: :male)
+  .with_body(age: 90)
+  .with_query(key: "foobar")
+  .with_method(:post)
+
+client.post 
 ```
 
 Compatibility

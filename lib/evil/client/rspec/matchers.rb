@@ -4,9 +4,7 @@
 #   expect { some_action }
 #     .to send_request_to(client)
 #     .with(
-#       port:     8080,
-#       protocol: :http,
-#       type:     :post,
+#       method:   :post,
 #       path:     "/users",
 #       query:    { auth: "foobar" },
 #       body:     { name: "Andrew" },
@@ -16,6 +14,8 @@
 # @api public
 #
 RSpec::Matchers.define :send_request_to do |client|
+  supports_block_expectations
+
   adapter = client.adapter
 
   match do |action|
@@ -43,7 +43,7 @@ RSpec::Matchers.define :send_request_to do |client|
     action.call
   end
 
-  chain :with do |**opts|
+  chain :with do |opts = {}|
     opts.each do |key, value|
       if [:body, :query, :headers].include? key
         options[key] ||= {}
@@ -54,23 +54,38 @@ RSpec::Matchers.define :send_request_to do |client|
     end
   end
 
-  failure_message do |_|
-    req    = client.current_request
-    path   = "#{req.protocol}://#{req.host}:#{req.port}#{req.path}"
-    string = " with options #{options}" unless options.empty?
+  chain :with_method do |method|
+    with(method: method)
+  end
 
-    "The client of #{path} has not received the request#{string}"
+  chain :with_path do |path|
+    with(path: path)
+  end
+
+  chain :with_body do |body = {}|
+    with(body: body)
+  end
+
+  chain :with_query do |query = {}|
+    with(query: query)
+  end
+
+  chain :with_headers do |headers = {}|
+    with(headers: headers)
+  end
+
+  req = client.current_request
+  root_path = "#{req.protocol}://#{req.host}:#{req.body}"
+
+  failure_message do |_|
+    string = " with options #{options}" unless options.empty?
+    "The client of #{root_path} has not received the request#{string}"
   end
 
   failure_message_when_negated do |_|
-    req    = client.current_request
-    path   = "#{req.protocol}://#{req.host}:#{req.port}#{req.path}"
     string = " with options #{options}" unless options.empty?
-
-    "The client of #{path} has received the request#{string}"
+    "The client of #{root_path} has received the request#{string}"
   end
-
-  supports_block_expectations
 
   def options
     @options ||= {}
@@ -85,10 +100,8 @@ class Evil::Client::Request
   # @return [Boolean]
   #
   def in_agreement_to?(**options)
-    return false if options[:protocol] && options[:protocol].to_s != protocol
-    return false if options[:path] && options[:path].to_s != path
-    return false if options[:port] && options[:port].to_i != port
-    return false if options[:type] && options[:type].to_s.downcase != type
+    return false if options[:path] && !options[:path].to_s[%r{^/?#{path}$}]
+    return false if options[:method] && options[:method].to_s.downcase != method
     return false if options[:query] && !same?(query, options[:query])
     return false if options[:body] && !same?(body, options[:body])
     return false if options[:headers] && !same?(headers, options[:headers])

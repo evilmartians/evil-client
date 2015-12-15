@@ -2,7 +2,7 @@ require "evil/client/rspec"
 
 describe "allow_request" do
   let(:client)  { Evil::Client.new "https://localhost/foo" }
-  let(:request) { client.path(:bar, 1).query(foo: :foo).type(:post) }
+  let(:request) { client.path(:bar, 1).query(foo: :foo).method(:post) }
 
   before do
     allow_any_request { request }

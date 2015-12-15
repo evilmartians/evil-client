@@ -48,26 +48,6 @@ module Evil
       clone_with @request.with_path(values)
     end
 
-    # Changes the port of the request
-    #
-    # @param (see Evil::Client::Request#with_port)
-    #
-    # @return [Evil::Client] updated client
-    #
-    def port(value)
-      clone_with @request.with_port(value)
-    end
-
-    # Changes the protocol of the request
-    #
-    # @param (see Evil::Client::Request#with_protocol)
-    #
-    # @return [Evil::Client] updated client
-    #
-    def protocol(value)
-      clone_with @request.with_protocol(value)
-    end
-
     # Adds parameters to the query
     #
     # @param (see Evil::Client::Request#with_query)
@@ -88,14 +68,14 @@ module Evil
       clone_with @request.with_body(values)
     end
 
-    # Sets new type of the request
+    # Sets new method for sending the request
     #
-    # @param (see Evil::Client::Request#with_type)
+    # @param (see Evil::Client::Request#with_method)
     #
     # @return [Evil::Client] updated client
     #
-    def type(value)
-      clone_with @request.with_type(value)
+    def method(value)
+      clone_with @request.with_method(value)
     end
 
     # Adds headers
@@ -231,25 +211,25 @@ module Evil
       body(data).request!("delete")
     end
 
-    # @!method request(type)
-    # Calls a request with custom method type safely
+    # @!method request(method)
+    # Calls a request with custom method safely
     #
-    # @param  [#to_s] type
+    # @param  [#to_s] method
     # @return (see #request!)
     #
     def request(value)
-      adapter.call type(value).current_request
+      adapter.call method(value).current_request
     end
 
-    # @!method request!(type)
+    # @!method request!(method)
     # Calls a custom request unsafely (raises in case of error response)
     #
-    # @param  [#to_s] type
+    # @param  [#to_s] method
     # @return (see Adapter#call!)
     # @raise  (see Adapter#call!)
     #
     def request!(value)
-      adapter.call! type(value).current_request
+      adapter.call! method(value).current_request
     end
 
     private

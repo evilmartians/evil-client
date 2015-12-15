@@ -2,7 +2,7 @@ describe Evil::Client::Request do
   subject do
     described_class
       .new("https://www.example.com/foo")
-      .with_type(:post)
+      .with_method(:post)
       .with_path([:bar, 1, :baz])
       .with_query(foo: [:bar, :baz], baz: { qux: :QUX })
       .with_body(foo: [:bar, :baz], baz: { qux: :QUX })
@@ -14,7 +14,7 @@ describe Evil::Client::Request do
       described_class
         .new("https://www.example.com/foo")
         .with_path(["bar/1/baz"])
-        .with_type("POST")
+        .with_method("POST")
     end
 
     context "request with the same type and path" do
@@ -22,7 +22,7 @@ describe Evil::Client::Request do
     end
 
     context "request with different type" do
-      let(:another) { other.with_type(:patch) }
+      let(:another) { other.with_method(:patch) }
 
       it { is_expected.not_to include another }
     end
