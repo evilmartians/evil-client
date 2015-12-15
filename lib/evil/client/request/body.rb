@@ -26,7 +26,7 @@ class Evil::Client::Request
     end
 
     def to_multipart
-      [parts, "#{boundary}--", "", ""].flatten.join("\r\n")
+      [[boundary].product(parts), "#{boundary}--", "", ""].flatten.join("\r\n")
     end
 
     def boundary
