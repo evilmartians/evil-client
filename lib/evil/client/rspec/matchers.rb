@@ -1,93 +1,120 @@
 # Checks whether a subject sends a request to the client's adapter
 #
 # @example
-#   expect { some_action }
-#     .to send_request_to(client)
-#     .with(
-#       method:   :post,
-#       path:     "/users",
-#       query:    { auth: "foobar" },
-#       body:     { name: "Andrew" },
-#       headers:  { "X-Password" => "barbaz" }
-#     )
+#   expect(client).to receive_request.with(
+#     method:  :post,
+#     path:    "/users",
+#     body:    { name: "Andrew" },
+#   )
+#   client.path(:users).post name: "Andrew"
 #
 # @api public
 #
-RSpec::Matchers.define :send_request_to do |client|
-  supports_block_expectations
+RSpec::Matchers.define :receive_request do |method, path|
 
-  adapter = client.adapter
+  match do |client|
+    strict.update(method: method, path: path)
+    adapter = client.adapter
 
-  match do |action|
     allow(adapter).to receive(:send_request).and_wrap_original do |m, request|
-      expect(request).to be_match(options)
+      expect(request).to be_match_pair(strict, partial)
       m.call(request)
     end
 
     expect(adapter).to receive(:send_request)
-
-    action.call
   end
 
-  match_when_negated do |action|
+  match_when_negated do |client|
+    strict.update(method: method, path: path)
+    adapter = client.adapter
+
     allow(adapter).to receive(:send_request).and_wrap_original do |m, request|
-      expect(request).not_to be_match(options)
+      expect(request).not_to be_match_pair(strict, partial)
       m.call(request)
     end
 
     expect(adapter)
       .to receive(:send_request)
-      .with(be_match options)
+      .with(be_match_pair strict, partial)
       .exactly(0).times
-
-    action.call
-  end
-
-  chain :with do |opts = {}|
-    opts.each do |key, value|
-      if [:body, :query, :headers].include? key
-        options[key] ||= {}
-        options[key].update(value)
-      else
-        options.update(key => value)
-      end
-    end
-  end
-
-  chain :with_method do |method|
-    with(method: method)
-  end
-
-  chain :with_path do |path|
-    with(path: path)
   end
 
   chain :with_body do |body = {}|
-    with(body: body)
+    strict[:body] ||= {}
+    strict[:body].update(body)
   end
 
   chain :with_query do |query = {}|
-    with(query: query)
+    strict[:query] ||= {}
+    strict[:query].update(query)
   end
 
   chain :with_headers do |headers = {}|
-    with(headers: headers)
+    strict[:headers] ||= {}
+    strict[:headers].update(headers)
   end
 
-  req = client.current_request
-  root_path = "#{req.protocol}://#{req.host}:#{req.body}"
-
-  failure_message do |_|
-    string = " with options #{options}" unless options.empty?
-    "The client of #{root_path} has not received the request#{string}"
+  chain :with_body_including do |body = {}|
+    partial[:body] ||= {}
+    partial[:body].update(body)
   end
 
-  failure_message_when_negated do |_|
-    string = " with options #{options}" unless options.empty?
-    "The client of #{root_path} has received the request#{string}"
+  chain :with_query_including do |query = {}|
+    partial[:query] ||= {}
+    partial[:query].update(query)
   end
 
-  def options
-    @options ||= {}
+  chain :with_headers_including do |headers = {}|
+    partial[:headers] ||= {}
+    partial[:headers].update(headers)
+  end
+
+  failure_message do |client|
+    message(client, true)
+  end
+
+  failure_message_when_negated do |client|
+    message(client, false)
+  end
+
+  def strict
+    @strict ||= {}
+  end
+
+  def partial
+    @partial ||= {}
+  end
+
+  def message(client, direct = true)
+    req = client.current_request
+    path = "#{strict[:method].upcase} #{req.protocol}://#{req.host}:#{req.body}#{strict[:path]}"
+    "The request #{path} has #{"not " if direct}been received by the client"
+  end
+end
+
+# # When this matcher is used in a code below, it changes the subject
+# # of the current spec from `client` to `request`! I haven't had any idea why :(
+# #
+# # Maybe this is the bug in 'rspec/expectations'
+# #
+# #    expect(adapter)
+# #     .to receive(:send_request)
+# #     .with(be_match_pair strict, partial)
+# #     .exactly(0).times
+# #
+# RSpec::Matchers.define :match_pair? do |strict, partial|
+#   match do |request|
+#     request.match?(strict) && request.match?(partial, false)
+#   end
+# end
+
+class Evil::Client::Request
+  # @private
+  #
+  # This method is added due to strange behaviour of RSpec expectation
+  # (see commented method above)
+  #
+  def match_pair?(strict, partial)
+    match?(strict) && match?(partial, false)
   end
 end

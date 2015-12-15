@@ -318,68 +318,51 @@ There is one exception. All the strict stubs are checked before all the partial 
 
 ### Matching Requests
 
-Use `send_request_to` matcher with options to check sending the request:
+Use `send_request` matcher with options to check sending the request in the style of RSpec `receive` expectation:
+
+The matcher has two required arguments for request **method** and **path** (reqative to the host).
+
+You can also check *query*, *body*, and *headers* via chain of `with_` method calls.
 
 ```ruby
-require "evil/client/rspec"
+client = Evil::Client.new("http://example.com/users:81")
 
-RSpec.describe "sending the request" do
+# Add expectation BEFORE calling tested method
+expect(client).to receive_request(:patch, "/users/1")
+  .with_body(name: "Andrew")
 
-  let(:client) do
-    Evil::Client
-      .new("http://example.com/users:81")
-      .path(1)
-      .query(auth: "foobar")
-  end
-
-  # This will check the request PATCH http://example.com:81/users/1?auth=foobar
-  # to have been sent with body 'name=Andrew':
-
-  it "works" do
-    expect { client.patch name: "Andrew" }
-      .to send_request_to(client)
-      .with(method: :patch, path: "/users/1")
-      .with(query: { auth: "foobar" }),
-      .with(body:  { name: "Andrew" })
-  end
-end
+# Call the method AFTER expectation
+client.path(1).patch name: "Andrew"
 ```
 
-You can check options *path* (relative to the host - see the example above), *method*, *query*, *body*, and *headers* via chain of `with` method calls.
-
-Only listed attributes will be checked. In the following example both tests will pass:
+Only listed attributes will be tested. In the following example both tests will pass:
 
 ```ruby
-client = Evil::Client.new("https://example.com/users")
+expect(client).to receive_request(:patch, "/users/1")
 
-expect { client.post name: "Andrew" }
-  .to send_request_to(client)
+expect(client).to receive_request(:patch, "/users/1")
+  .with_query({})
+  .with_body(name: "Andrew")
 
-expect { client.post name: "Andrew" }
-  .to send_request_to(client)
-  .with(body: { name: "Andrew" })
-  .with(path: "/users", method: :post)
+client.path(1).patch name: "Andrew"
 ```
 
-All options are checked strictly. This means the following test will pass:
+Methods `with_body` etc. are tested strictly:
 
 ```ruby
-expect { client.patch name: "Andrew" }
-  .not_to send_request_to(client)             # <- Negation!
-  .with(body: { name: "Andrew", gender: :male })
+expect(client).not_to receive_request(:patch, "/users/1") # <- Negation
+  .with_body(name: "Andrew")
+
+client.path(1).patch name: "Andrew", gender: :male
 ```
 
-For better readability use specialized chaining methods `with_path`, `with_method`, `with_query`, `with_body`, `with_headers`:
+When you need to check a part of body, query or headers, use `with_body_including` (same for headers and query):
 
 ```ruby
-expect { client.path(:users).query(key: "foobar").post name: "Andrew", gender: :male, age: 90 }
-  .to send_request_to(client)
-  .with_body(name: "Andrew", gender: :male)
-  .with_body(age: 90)
-  .with_query(key: "foobar")
-  .with_method(:post)
+expect(client).to receive_request(:patch, "/users/1")
+  .with_body_including(name: "Andrew")
 
-client.post 
+client.path(1).patch name: "Andrew", gender: :male
 ```
 
 Compatibility
