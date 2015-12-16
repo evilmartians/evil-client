@@ -11,7 +11,7 @@ describe "client instantiation" do
   end
 
   context "with valid https url" do
-    let(:base_url) { "https://127.0.0.1/foobar:445" }
+    let(:base_url) { "https://127.0.0.1:445/foobar" }
 
     it "builds the client" do
       expect(client).to be_kind_of Evil::Client

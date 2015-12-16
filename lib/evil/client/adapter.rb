@@ -1,33 +1,55 @@
 class Evil::Client
-  # Sends the request to remote API and processes the response
+  # Sends the request to remote API
   #
   # It is responsible for:
-  # * sending requests to the server
-  # * deserializing a response body
-  # * handling error responses
+  #
+  # * sending prepared requests to the server
+  # * deserializing a response body into the Request object
+  # * processing error responses
   #
   # @api private
   #
   class Adapter
-
     include Errors
 
     # @api private
     class << self
-      # @!attribute [rw] logger
+      # @!attribute [rw] default_logger
       #
-      # @return [Logger, nil] The logger used by all connections
+      # @return [Logger, nil] The default logger
       #
-      attr_accessor :logger
+      attr_accessor :default_logger
+
+      # Builds the adapter depending on uri with customizable logger
+      #
+      # @param [URI] base_uri
+      # @param [Logger] logger
+      #
+      # @return [Evil::Client::Adapter]
+      #
+      def build(base_uri, logger = default_logger)
+        client = Net::HTTP.new base_uri.host, base_uri.port
+        new(client, logger)
+      end
     end
 
-    # Initializes the adapter with custom logger
+    # Initializes the adapter with http(s) client and logger
     #
+    # @param [Object] client
     # @param [Logger] logger
     #
-    def initialize(logger = nil)
-      @logger = logger || self.class.logger
+    def initialize(client, logger)
+      @client = client
+      @logger = logger
     end
+
+    # @!attribute [r] client
+    #
+    # It should never be called in test env (raises an exception)
+    #
+    # @return [Net::HTTP] the underlying HTTP client
+    #
+    attr_reader :client
 
     # @!attribute [r] logger
     #
@@ -68,10 +90,7 @@ class Evil::Client
     # @return [Evil::Client::Response]
     #
     def send_request(request)
-      method, host, path, port, body, headers = request.to_a
-      client   = Net::HTTP.new(host, port)
-      response = client.send_request(method, path, body, headers)
-
+      response = client.send_request(*request.to_a)
       Response.new(response.code, response.body)
     end
   end

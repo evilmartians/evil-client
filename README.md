@@ -28,8 +28,7 @@ Usage
 Initialize a new client with base url of a remote API:
 
 ```ruby
-client = Evil::Client.new "https://localhost/foo:10443"
-client.uri # => "https://localhost:443/foo"
+client = Evil::Client.new "https://localhost:10443/foo"
 ```
 
 *We will use client with these settings in the examples below.*

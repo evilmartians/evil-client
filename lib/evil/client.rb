@@ -4,7 +4,6 @@ require "delegate"
 require "hashie/mash"
 require "logger"
 require "mime-types"
-require "pathname"
 require "securerandom"
 require "tempfile"
 
@@ -18,25 +17,65 @@ module Evil
   class Client
 
     require_relative "client/errors"
+    require_relative "client/base_uri"
     require_relative "client/request"
     require_relative "client/response"
     require_relative "client/adapter"
     require_relative "client/rails" if defined? ::Rails
 
-    # Initializes a client instance with base url
+    # Instantiates client from the base url
     #
     # @param [String] base_url
     #
-    def initialize(base_url)
-      @request = Request.new(base_url)
-      @adapter = Adapter.new
+    # @return [Evil::Client]
+    #
+    def self.new(base_url)
+      base_uri = BaseURI.parse base_url
+      request  = Request.build base_uri
+      adapter  = Adapter.build base_uri
+
+      super(base_uri, adapter, request)
     end
 
-    # The underlying adapter
+    # Initializes a client instance with current request and adapter
     #
-    # @return [Evil::Client::Adapter]
+    # @param [URI] base_uri
+    # @param [Evil::Client::Adapter] adapter
+    # @param [Evil::Client::Request] current_request
+    #
+    def initialize(base_uri, adapter, current_request)
+      @base_uri        = base_uri
+      @adapter         = adapter
+      @current_request = current_request
+    end
+
+    # @!attribute [r] base_uri
+    #
+    # @return [URI] the base URI
+    #
+    attr_reader :base_uri
+
+    # @!attribute [r] adapter
+    #
+    # @return [Evil::Client::Adapter] the adapter to http(s) client
     #
     attr_reader :adapter
+
+    # @!attribute [r] current_request
+    #
+    # @return [Evil::Client::Request] the lazily prepared current request
+    # @api private
+    #
+    attr_reader :current_request
+
+    # Returns full URI that corresponds to the current path
+    #
+    # @return [String]
+    #
+    def uri
+      full_path = Request::Path.build(current_request)
+      base_uri.dup.tap { |uri| uri.path = full_path }.to_s
+    end
 
     # Adds part to the URI
     #
@@ -45,7 +84,7 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def path(*values)
-      clone_with @request.with_path(values)
+      clone_with current_request.with_path(values)
     end
 
     # Adds parameters to the query
@@ -55,7 +94,7 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def query(values)
-      clone_with @request.with_query(values)
+      clone_with current_request.with_query(values)
     end
 
     # Adds parameters to the body
@@ -65,7 +104,7 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def body(values)
-      clone_with @request.with_body(values)
+      clone_with current_request.with_body(values)
     end
 
     # Sets new method for sending the request
@@ -75,7 +114,7 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def method(value)
-      clone_with @request.with_method(value)
+      clone_with current_request.with_method(value)
     end
 
     # Adds headers
@@ -85,25 +124,7 @@ module Evil
     # @return [Evil::Client] updated client
     #
     def headers(values)
-      clone_with @request.with_headers(values)
-    end
-
-    # Returns full URI that corresponds to the current path
-    #
-    # @return [String]
-    #
-    def uri
-      path = Request::Path.build(@request)
-      "#{@request.protocol}://#{@request.host}#{path}"
-    end
-
-    # Returns the current state of the prepared request
-    #
-    # @return [Evil::Client::Request]
-    # @api private
-    #
-    def current_request
-      @request
+      clone_with current_request.with_headers(values)
     end
 
     # @!method get(query)
@@ -235,7 +256,7 @@ module Evil
     private
 
     def clone_with(request)
-      dup.tap { |client| client.instance_eval { @request = request } }
+      dup.tap { |client| client.instance_eval { @current_request = request } }
     end
   end
 end

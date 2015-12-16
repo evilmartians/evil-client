@@ -84,7 +84,8 @@ class Evil::Client
       partials = stubs[false]
 
       allow(adapter).to receive(:send_request) do |actual|
-        stub = stricts.find { |req, _| actual == req } ||
+        stub =
+          stricts.find { |req, _| actual == req } ||
           partials.find { |req, _| actual.include? req } ||
           fail(StubError.new actual)
         

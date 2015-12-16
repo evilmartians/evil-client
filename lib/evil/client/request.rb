@@ -7,7 +7,6 @@ class Evil::Client
   #
   class Request
 
-    require_relative "request/base_url"
     require_relative "request/comparison"
     require_relative "request/base"
     require_relative "request/items"
@@ -17,22 +16,28 @@ class Evil::Client
 
     include Comparison
 
-    # Regex to remove terminal slashes from paths
-    STRIP_SLASHES = %r{[^/].*[^/]|[^/]}.freeze
+    # Converts path, or its part to list of safe parts without slashes
+    PARTS = proc { |part| part.to_s[%r{[^/].*[^/]|[^/]}].to_s.split("/") }
 
     # List of significant attributes assigned to the request
-    ATTRIBUTES = %i(host port protocol path method query body headers).freeze
+    ATTRIBUTES = %i(method path query body headers).freeze
 
-    # Initializes request with base url
+    # Builds the request from base uri
     #
-    # @param [String] base_url
+    # @param  [URI] base_uri
+    # @return [Evil::Client::Request]
     #
-    def initialize(base_url)
-      url = BaseURL.new(base_url)
-      @host     = url.host
-      @port     = url.port
-      @parts    = [url.path]
-      @protocol = url.protocol
+    def self.build(uri)
+      parts = PARTS[uri.path]
+      new parts
+    end
+
+    # Initializes request with parts of the root path without trailing slashes
+    #
+    # @param [Array<String>] parts
+    #
+    def initialize(parts)
+      @parts = parts
     end
 
     # The method of sending the request
@@ -41,29 +46,11 @@ class Evil::Client
     #
     attr_reader :method
 
-    # The host of the request with protocol
-    #
-    # @return [String]
-    #
-    attr_reader :host
-
     # The relative path to the host
     #
     # @return [Array<String>]
     #
     attr_reader :path
-
-    # The request port
-    #
-    # @return [Integer]
-    #
-    attr_reader :port
-
-    # The request protocol
-    #
-    # @return [String]
-    #
-    attr_reader :protocol
 
     # The request headers
     #
@@ -94,7 +81,7 @@ class Evil::Client
     # @return [String]
     #
     def path
-      "/" << @parts.map { |part| part.to_s[STRIP_SLASHES] }.compact.join("/")
+      "/" << @parts.compact.join("/")
     end
 
     # Returns a copy of the request with new parts added
@@ -104,7 +91,7 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_path(values)
-      new_parts = [@parts, values].flatten
+      new_parts = @parts + values.map { |value| PARTS[value] }.flatten
       clone_with { @parts = new_parts }
     end
 
@@ -148,11 +135,12 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_method(value)
-      clone_with { @method = value.to_s.downcase }
+      new_method = value.to_s.downcase
+      clone_with { @method = new_method }
     end
 
-    # The array representation of the request
-    # [method, host, path, port, body, headers]
+    # Array representation of the request
+    # [method, path, body, headers]
     #
     # @see [Evil::Client::Adapter#call]
     #
@@ -161,15 +149,13 @@ class Evil::Client
     def to_a
       [
         method,
-        host,
         Path.build(self),
-        port,
         Body.build(self),
         Headers.build(self)
       ]
     end
 
-    # The hash representation of the request
+    # Hash representation of the raw request (before flattening body and query)
     #
     # @return [Hash]
     #

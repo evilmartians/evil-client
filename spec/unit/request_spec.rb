@@ -1,7 +1,7 @@
 describe Evil::Client::Request do
   subject do
     described_class
-      .new("https://www.example.com/foo")
+      .build(uri)
       .with_method(:post)
       .with_path([:bar, 1, :baz])
       .with_query(foo: [:bar, :baz], baz: { qux: :QUX })
@@ -9,10 +9,12 @@ describe Evil::Client::Request do
       .with_headers("Foo" => "FOO", "Bar" => "BAR")
   end
 
+  let(:uri) { URI.parse "https://www.example.com/foo" }
+
   describe "#include?" do
     let(:other) do
       described_class
-        .new("https://www.example.com/foo")
+        .build(uri)
         .with_path(["bar/1/baz"])
         .with_method("POST")
     end

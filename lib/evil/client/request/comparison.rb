@@ -54,8 +54,6 @@ class Evil::Client::Request
         match_path?(actual, expected)
       when :method
         match_method?(actual, expected)
-      else
-        actual == expected
       end
     end
 

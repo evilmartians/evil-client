@@ -73,21 +73,21 @@ describe "receive_request_to" do
   it "matches strict headers" do
     expect(client)
       .not_to receive_request(:post, "foo")
-      .with_headers('X-Bar' => 'Bar')
+      .with_headers("X-Bar" => "Bar")
 
     expect(client)
       .to receive_request(:post, "foo")
-      .with_headers('X-Bar' => 'Bar', 'X-Foo' => 'Foo')
+      .with_headers("X-Bar" => "Bar", "X-Foo" => "Foo")
 
-    client.headers('X-Bar' => 'Bar', 'X-Foo' => 'Foo').post
+    client.headers("X-Bar" => "Bar", "X-Foo" => "Foo").post
   end
 
   it "matches partial headers" do
     expect(client)
       .to receive_request(:post, "foo")
-      .with_headers_including('X-Bar' => 'Bar')
+      .with_headers_including("X-Bar" => "Bar")
 
-    client.headers('X-Bar' => 'Bar', 'X-Foo' => 'Foo').post
+    client.headers("X-Bar" => "Bar", "X-Foo" => "Foo").post
   end
 
   it "supports lazy chainining" do
