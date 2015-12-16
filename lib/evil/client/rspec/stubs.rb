@@ -87,8 +87,8 @@ class Evil::Client
         stub =
           stricts.find { |req, _| actual == req } ||
           partials.find { |req, _| actual.include? req } ||
-          fail(StubError.new actual)
-        
+          fail(UnknownRequestError.new actual)
+
         stub.last
       end
     end
@@ -145,24 +145,6 @@ class Evil::Client
         raw_body = body.nil? ? nil : JSON.generate(body)
         response = Response.new(status, raw_body)
         @context.register_evil_client_stub(adapter, request, response, strict)
-      end
-    end
-
-    # The error to be raised when unknown request is sent
-    #
-    class StubError < RuntimeError
-      # Initializes the error for the unexpected request
-      #
-      # @param [Evil::Client::Request] request
-      #
-      def initialize(request)
-        super <<-MESSAGE.gsub(/ +\|/, "")
-          |Unexpected request has been sent by http client:
-          |  #{request.method.upcase} #{request.protocol}://#{request.host}:#{request.port}#{request.path}
-          |  with headers: #{request.headers}
-          |  with body:    #{request.body}
-          |  with query:   #{request.query}
-        MESSAGE
       end
     end
   end

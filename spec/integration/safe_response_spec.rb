@@ -1,4 +1,4 @@
-describe "safe response", :fake_api do
+describe "safe response", stub_client: false do
   subject { Evil::Client.new("http://localhost").get }
 
   before do

@@ -264,10 +264,27 @@ You can always check `error?` over the result of the safe request.
 
 For testing a client of the remote API, the gem provides methods to stub an match requests.
 
-Load the them via:
+Load them in test environment via:
 
 ```ruby
 require "evil/client/rspec"
+```
+
+This will stub the client so that it **raises exception in responce to any unstubbed request**.
+
+```ruby
+client = Evil::Client.new("http://example.com/users")
+
+client.post name: "Ian"
+# => #<Evil::Client::RSpec::UnknownRequestError ...>
+```
+
+You can switch off with behaviour by tagging some examples with `stub_client: false`:
+
+```ruby
+it "should not stub client", stub_client: false do
+# ...
+end
 ```
 
 ### Stubbing Requests

@@ -1,4 +1,4 @@
-describe "unsafe response", :fake_api do
+describe "unsafe response", stub_client: false do
   let(:client)  { Evil::Client.new("http://localhost") }
   let(:request) { a_request(:get, "http://localhost") }
   let(:status)  { [200, "Ok"] }
