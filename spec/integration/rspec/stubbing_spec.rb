@@ -55,8 +55,8 @@ describe "stubbing client" do
 
   it "supports complex restriction for the request" do
     allow(client).to receive_request(:post, "/users/6")
-      .with { |req| req.body == { name: "Simon" } }
-      .with { |req| req.query == { key: "secret" } }
+      .where { |req| req.body == { name: "Simon" } }
+      .where { |req| req.query == { key: "secret" } }
       .and_respond(201, "id" => 6, "name" => "Simon")
 
     expect { client.path(:users, 6).query(key: "secret").post(name: "Simon") }
@@ -77,7 +77,7 @@ describe "stubbing client" do
 
   it "supports body #==" do
     allow(client).to receive_request(:post)
-      .with { |req| req.body == { user: { name: "Tobit" } } }
+      .where { |req| req.body == { user: { name: "Tobit" } } }
       .and_respond(200)
 
     expect { client.post user: { name: "Tobit" } }
@@ -92,7 +92,7 @@ describe "stubbing client" do
 
   it "supports body #include?" do
     allow(client).to receive_request(:post)
-      .with { |req| req.body.include?(user: { name: "Andrew" }) }
+      .where { |req| req.body.include?(user: { name: "Andrew" }) }
       .and_respond(200)
 
     expect { client.post user: { name: "Andrew", id: 1 } }
@@ -104,7 +104,7 @@ describe "stubbing client" do
 
   it "supports body #keys" do
     allow(client).to receive_request(:post)
-      .with { |req| req.body.keys.include? "user[name]" }
+      .where { |req| req.body.keys.include? "user[name]" }
       .and_respond(200)
 
     expect { client.post user: { name: "Bartholomew", id: 1 } }
@@ -116,7 +116,7 @@ describe "stubbing client" do
 
   it "supports query #==" do
     allow(client).to receive_request(:get)
-      .with { |req| req.query == { user: { name: "Tobit" } } }
+      .where { |req| req.query == { user: { name: "Tobit" } } }
       .and_respond(200)
 
     expect { client.get user: { name: "Tobit" } }
@@ -131,7 +131,7 @@ describe "stubbing client" do
 
   it "supports query #include?" do
     allow(client).to receive_request(:get)
-      .with { |req| req.query.include?(user: { name: "James" }) }
+      .where { |req| req.query.include?(user: { name: "James" }) }
       .and_respond(200)
 
     expect { client.get user: { name: "James", id: 1 } }
@@ -143,7 +143,7 @@ describe "stubbing client" do
 
   it "supports query #keys" do
     allow(client).to receive_request(:get)
-      .with { |req| req.query.keys.include? "user[name]" }
+      .where { |req| req.query.keys.include? "user[name]" }
       .and_respond(200)
 
     expect { client.get user: { name: "Thaddeus", id: 1 } }
@@ -155,7 +155,7 @@ describe "stubbing client" do
 
   it "supports headers #==" do
     allow(client).to receive_request(:get)
-      .with { |req| req.headers == { "X-Name" => "Peter" } }
+      .where { |req| req.headers == { "X-Name" => "Peter" } }
       .and_respond(200)
 
     expect { client.headers("X-Name" => "Peter").get }
@@ -167,7 +167,7 @@ describe "stubbing client" do
 
   it "supports headers #include?" do
     allow(client).to receive_request(:get)
-      .with { |req| req.headers.include?("X-Name" => "Silas") }
+      .where { |req| req.headers.include?("X-Name" => "Silas") }
       .and_respond(200)
 
     expect { client.headers("X-Name" => "Silas", "Y-Name" => "Timothy").get }
@@ -179,7 +179,7 @@ describe "stubbing client" do
 
   it "supports headers #keys" do
     allow(client).to receive_request(:get)
-      .with { |req| req.headers.keys.include? "X-Name" }
+      .where { |req| req.headers.keys.include? "X-Name" }
       .and_respond(200)
 
     expect { client.headers("X-Name" => "Apollos", "Y-Name" => "Junia").get }
@@ -191,7 +191,7 @@ describe "stubbing client" do
 
   it "supports path equality to Rails path pattern" do
     allow(client).to receive_request(:get)
-      .with { |req| req.path == "/users/:id" }
+      .where { |req| req.path == "/users/:id" }
       .and_respond(200)
 
     expect { client.path(:users, 8).get! }

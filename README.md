@@ -294,21 +294,21 @@ To stub requests to the client use stubber:
 ```ruby
 allow(client)
   .to receive_request(method, path = nil)
-  .with { |req| ... }
+  .where { |req| ... }
   .and_respond(status, body = nil)
 ```
 
 Its syntax is pretty the same as RSpec original `allow(client).to receive(request).and_return(response)` with subtle differencies:
 
 * `receive_request(method, path = nil)` takes a method and optional path to be stubbed
-* `with { |req| ... }` takes a block with actual request to add constraints to
+* `where { |req| ... }` adds the constraint for matching requests
 * `and_respond(status, body = nil)` takes an http status and optional body to be received
 
 ```ruby
 allow(client)
   .to receive_request(:post, "/users/:id")
-  .with { |req| req.body.include? name: "Peter" }
-  .with { |req| req.query.keys.include? "auth[key]" }
+  .where { |req| req.body.include? name: "Peter" }
+  .where { |req| req.query.keys.include? "auth[key]" }
   .and_respond(200, name: "Peter", confirmed: true)
 
 response =
@@ -321,7 +321,7 @@ response.name      # => "Peter"
 response.confirmed # => true
 ```
 
-Unlike the original `with()` that **re-writes** previous constraints, the reloaded `with { |req| ... }` **accumulates** them and stubs only those requests that satisfies all constraints.
+Unlike the original `with()` that **re-writes** previous constraints, the `where { |req| ... }` **accumulates** them and stubs only those requests that satisfies all constraints.
 
 Inside the block you can check any part of the request: `body`, `query`, `headers`, `path`.
 
@@ -343,29 +343,22 @@ expect(client).to receive_request(method, body = nil)
 
 The syntax is the same as described in the previous section.
 
-You can count requests, or check their order using the [original RSpec syntax][rspec-mocks]:
+You can count requests, or check their order using the [original RSpec syntax][rspec-mocks-constraints]:
 
 ```ruby
 expect(client).to receive_request(:post, "/users/:id").once.ordered
 ```
 
-Usually, you don't need `with` in expectations. Instead stub the request and check whether it is called.
+Usually, you don't need `where` in expectations. Instead stub the request and check whether it is called.
 
-If you still do use it, notice that `with { |req| ... }` **unstubs** the request.
-
-This time you should:
-* stub http requests via `webmock` or else
-* add `and_call_original` to the end of chain
+If you still do use it, notice that `where` constraint is lazy.
+To apply it add either `and_respond`, or [any other finalizer method][rspec-mocks-finalizers].
 
 ```ruby
-require "webmock"
-
-stub_request(:any, //) # use webmock to catch the requests
-
 expect(client)
   .to receive_request(:get, "/cities")
-  .with { |req| req.query.include? name: "R'lyeh" }
-  .and_call_original # return to original implementation of unstubbed request
+  .where { |req| req.query.include? name: "R'lyeh" }
+  .and_call_original # switch to original implementation of unstubbed request
 ```
 
 Compatibility
@@ -394,5 +387,6 @@ See the [MIT LICENSE](LICENSE).
 [rspec]: http://rspec.org
 [swagger]: http://swagger.io
 [client-message]: http://www.rubydoc.info/gems/httpclient/HTTP/Message
-[rspec-mocks]: https://www.relishapp.com/rspec/rspec-mocks/v/3-4/docs/setting-constraints
+[rspec-mocks-constraints]: https://www.relishapp.com/rspec/rspec-mocks/v/3-4/docs/setting-constraints
+[rspec-mocks-finalizers]: https://relishapp.com/rspec/rspec-mocks/v/3-4/docs/configuring-responses
 [mustermann]: https://github.com/rkh/mustermann/blob/master/mustermann-rails/README.md#syntax
