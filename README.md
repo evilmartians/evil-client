@@ -371,7 +371,7 @@ expect(client)
 Compatibility
 -------------
 
-Tested under rubies [compatible to MRI 2.2+](.travis.yml).
+Tested under rubies [MRI 2.2+ and JRuby 9+](.travis.yml).
 
 Uses [RSpec][rspec] 3.0+ for testing.
 
