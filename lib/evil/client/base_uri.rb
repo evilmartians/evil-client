@@ -6,6 +6,8 @@ class Evil::Client
     #
     # Sets 'http' scheme by default and removes trailing slashes from path
     #
+    # @param [String] string
+    #
     # @return [URI]
     # @raise [ArgumentError] in case the host not properly defined
     #

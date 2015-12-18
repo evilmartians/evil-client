@@ -1,32 +1,26 @@
 class Evil::Client::Request
-  # Utility to build a final body of a prepared request
+  # Represents a request query as an array of items following Rails convention
   #
-  # @api private
+  # @api public
   #
-  class Body < Base
+  class Body < Items
     # Returns the resulting body
     #
     # @return [String]
     #
-    def build
-      case
-      when request.method == "get"
-        nil
-      when items.multipart?
-        to_multipart
-      else
-        items.url_encoded
-      end
+    def final
+      return unless any?
+      multipart? ? to_multipart : to_line
     end
 
     private
 
-    def items
-      @items ||= Items.new(request.body)
+    def to_line
+      map(&:to_s).join("&")
     end
 
     def to_multipart
-      [[boundary].product(parts), "#{boundary}--", "", ""].flatten.join("\r\n")
+      [parts, "#{boundary}--", "", ""].flatten.join("\r\n")
     end
 
     def boundary
@@ -34,78 +28,7 @@ class Evil::Client::Request
     end
 
     def parts
-      items.map { |item| item.file? ? FilePart.build(item) : Part.build(item) }
-    end
-
-    # Builder of simple part of a multipart body
-    #
-    # @api private
-    #
-    class Part < SimpleDelegator
-      # Builds a body from item
-      #
-      # @param [Evil::Client::Request::Items::Item] item
-      #
-      # @return [String]
-      #
-      def self.build(item)
-        new(item).build
-      end
-
-      # Builds a body from the current item
-      #
-      # @return [String]
-      #
-      def build
-        [headers, "", data].flatten.join("\r\n")
-      end
-
-      private
-
-      def headers
-        ["Content-Disposition: form-data; name=\"#{key}\""]
-      end
-
-      def data
-        value
-      end
-    end
-
-    # Builder of file part of a multipart body
-    #
-    # @api private
-    #
-    class FilePart < Part
-      private
-
-      def headers
-        [content_disposition, content_transfer_encoding, content_type].compact
-      end
-
-      def data
-        value.read
-      end
-
-      def path
-        value.path
-      end
-
-      def content_disposition
-        "Content-Disposition: form-data; name=\"#{key}\"; filename=\"#{name}\""
-      end
-
-      def content_transfer_encoding
-        "Content-Transfer-Encoding: binary"
-      end
-
-      def content_type
-        type = MIME::Types.type_for(path).first
-        "Content-Type: #{type}" if type
-      end
-
-      def name
-        CGI.escape File.basename(path)
-      end
+      [boundary].product map(&:to_part)
     end
   end
 end

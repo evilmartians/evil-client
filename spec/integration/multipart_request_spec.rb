@@ -1,5 +1,4 @@
 describe "multipart request", :fake_api do
-
   subject do
     stub_request :any, /localhost/
     client.post(file: { example: tmpfile }, foo: [:BAR, :BAZ])

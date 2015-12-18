@@ -7,82 +7,56 @@ class Evil::Client
   #
   class Request
 
-    require_relative "request/comparison"
-    require_relative "request/base"
+    require_relative "request/item"
     require_relative "request/items"
+    require_relative "request/request_id"
+
     require_relative "request/path"
+    require_relative "request/method"
+    require_relative "request/query"
     require_relative "request/body"
     require_relative "request/headers"
 
-    include Comparison
-
-    # Converts path, or its part to list of safe parts without slashes
-    PARTS = proc { |part| part.to_s[%r{[^/].*[^/]|[^/]}].to_s.split("/") }
-
-    # List of significant attributes assigned to the request
-    ATTRIBUTES = %i(method path query body headers).freeze
-
-    # Builds the request from base uri
+    # Initializes request with base path
     #
-    # @param  [URI] base_uri
-    # @return [Evil::Client::Request]
+    # @param [String] base_path
     #
-    def self.build(uri)
-      parts = PARTS[uri.path]
-      new parts
+    def initialize(base_path)
+      @path    = Path.new(base_path)
+      @headers = Headers.new
+      @body    = Body.new
+      @query   = Query.new
     end
 
-    # Initializes request with parts of the root path without trailing slashes
+    # @!attribute [r] method
     #
-    # @param [Array<String>] parts
-    #
-    def initialize(parts)
-      @parts = parts
-    end
-
-    # The method of sending the request
-    #
-    # @return [String]
+    # @return [String] The method of sending the request
     #
     attr_reader :method
 
-    # The relative path to the host
+    # @!attribute [r] path
     #
-    # @return [Array<String>]
+    # @return [Evil::Client::Request::Path] The object representing a path
     #
     attr_reader :path
 
-    # The request headers
+    # @!attribute [r] headers
     #
-    # @return [Hash<String, String>]
+    # @return [Evil::Client::Request::Headers] The object representing headers
     #
-    def headers
-      @headers ||= {}
-    end
+    attr_reader :headers
 
-    # The request body
+    # @!attribute [r] body
     #
-    # @return [Hash<String, String>]
+    # @return [Evil::Client::Request::Body] The object representing a body
     #
-    def body
-      @body ||= {}
-    end
+    attr_reader :body
 
-    # The request query
+    # @!attribute [r] query
     #
-    # @return [Hash<String, String>]
+    # @return [Evil::Client::Request::Query] The object representing a query
     #
-    def query
-      @query ||= {}
-    end
-
-    # The request path relative to the host
-    #
-    # @return [String]
-    #
-    def path
-      "/" << @parts.compact.join("/")
-    end
+    attr_reader :query
 
     # Returns a copy of the request with new parts added
     #
@@ -91,8 +65,8 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_path(values)
-      new_parts = @parts + values.map { |value| PARTS[value] }.flatten
-      clone_with { @parts = new_parts }
+      new_parts = path + values
+      clone_with { @path = new_parts }
     end
 
     # Returns a copy of the request with new headers being added
@@ -135,8 +109,15 @@ class Evil::Client
     # @return [Evil::Client::Request]
     #
     def with_method(value)
-      new_method = value.to_s.downcase
-      clone_with { @method = new_method }
+      clone_with { @method = Method.new(value) }
+    end
+
+    # Full path of the request including relative path and query
+    #
+    # @return [String]
+    #
+    def full_path
+      [path.final, query.final].compact.join("?")
     end
 
     # Array representation of the request
@@ -147,20 +128,17 @@ class Evil::Client
     # @return [Array]
     #
     def to_a
-      [
-        method,
-        Path.build(self),
-        Body.build(self),
-        Headers.build(self)
-      ]
+      [method, full_path, body.final, headers.final(self)]
     end
 
-    # Hash representation of the raw request (before flattening body and query)
+    # Human-readable representations of the request
     #
-    # @return [Hash]
+    # @return [String]
     #
-    def to_h
-      ATTRIBUTES.zip(ATTRIBUTES.map { |name| send(name) }).to_h
+    def inspect
+      "#{method} #{full_path} with" \
+      " headers: #{headers.inspect}," \
+      " body: #{body.inspect}"
     end
 
     private

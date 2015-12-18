@@ -6,7 +6,7 @@ describe "path" do
   end
 
   it "updates path lazily" do
-    expect(client).to be_kind_of Evil::Client
+    expect(client.class).to eql Evil::Client
   end
 
   context "without protocol" do

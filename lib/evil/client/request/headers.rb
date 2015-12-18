@@ -1,29 +1,41 @@
 class Evil::Client::Request
-  # Utility to build final headers of a prepared request
+  # Represents request headers as a plain stringified hash
+  #
+  # All specific knowledge about headers is contained here
   #
   # @api private
   #
-  class Headers < Base
-    # Returns the resulting headers
+  class Headers < Items
+    # Returns the final hash representing headers of the request
+    #
+    # @param [Request] request
     #
     # @return [Hash]
     #
-    def build
+    def final(request)
+      @request = request
       response_type_headers
-        .update(content_type_headers)
-        .update(request_id_headers)
-        .update(request.headers) # customized by user
-        .inject({}) { |h, (key, value)| h.merge(key.to_s => value.to_s) }
+        .merge(content_type_headers)
+        .merge(request_id_headers)
+        .merge(self)
+    end
+
+    # Returns headers as a plain hash
+    #
+    # @return [Hash]
+    #
+    def to_hash
+      inject({}) { |hash, item| hash.merge(item.key => item.value) }
     end
 
     private
 
     def multipart?
-      Items.new(request.body).multipart?
+      @request.body.multipart?
     end
 
     def request_id
-      @request_id ||= RequestID.value
+      RequestID.value
     end
 
     def content_type_headers
@@ -44,63 +56,6 @@ class Evil::Client::Request
 
     def multipart_headers
       { "Content-Type" => "multipart/form-data; charset=utf-8" }
-    end
-
-    # Middleware that takes a request_id from the Rack environment
-    #
-    # @api private
-    #
-    class RequestID
-      # @api private
-      class << self
-        # Rack environment key for extracting [#value] from
-        #
-        # @return [String]
-        #
-        def key
-          @key || "HTTP_X_REQUEST_ID"
-        end
-
-        # Subclasses the middleware with a specific Rack env [#key]
-        #
-        # @param [#to_s] custom_key
-        #
-        # @return [Class]
-        #
-        def with(custom_key)
-          Class.new(self) { @key = custom_key.to_s }
-        end
-
-        # Provides access to a request_id extracted from Rack env by [#key]
-        #
-        # @return [String, nil]
-        #
-        def value
-          Thread.current[key] if key
-        end
-      end
-
-      # Initializes the middleware
-      #
-      # @param [Class] app Rack application
-      #
-      def initialize(app)
-        @app = app
-        @key = self.class.key
-      end
-
-      # Calls the middleware to extract a request id from Rack environment
-      #
-      # @param [Hash] env Rack environment
-      #
-      # @return [Hash]
-      #
-      def call(env)
-        Thread.current[@key] = env[@key]
-        @app.call env
-      ensure
-        Thread.current[@key] = nil
-      end
     end
   end
 end

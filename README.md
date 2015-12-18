@@ -289,96 +289,83 @@ end
 
 ### Stubbing Requests
 
-To stub requests to the client use `allow_request` and `allow_any_request` methods.
-
-The first method stubs requests strictly. This means it will stub only request, whose attributes are equal to described:
+To stub requests to the client use stubber:
 
 ```ruby
-RSpec.shared_examples :sending_request do
-  let(:client) { Evil::Client.new("http://example.com/users:81") }
-
-  before do
-    allow_request { request.path(:users, 1).method(:get) }
-      .to_respond_with(200, id: 1, name: "John")
-
-    allow_request { request.path(:users, 2).method(:get) }
-      .to_respond_with(200, id: 2, name: "Jane")
-
-    allow_request { request.path(:users, 3).method(:get) }
-      .to_respond_with(404)
-  end
-end
+allow(client)
+  .to receive_request(method, path = nil)
+  .with { |req| ... }
+  .and_respond(status, body = nil)
 ```
 
-This example will stub described request and will fail in case any other request will be sent.
+Its syntax is pretty the same as RSpec original `allow(client).to receive(request).and_return(response)` with subtle differencies:
 
-To stub requests partially use `allow_any_request`. This method will stub any request, whose query, body or headers include described ones. The comparison of `path` and `method` is strict in both cases.
+* `receive_request(method, path = nil)` takes a method and optional path to be stubbed
+* `with { |req| ... }` takes a block with actual request to add constraints to
+* `and_respond(status, body = nil)` takes an http status and optional body to be received
 
 ```ruby
-# This example will stub any call to GET http://example.com:81/users/1
-# with any body, query and headers
+allow(client)
+  .to receive_request(:post, "/users/:id")
+  .with { |req| req.body.include? name: "Peter" }
+  .with { |req| req.query.keys.include? "auth[key]" }
+  .and_respond(200, name: "Peter", confirmed: true)
 
-RSpec.shared_examples :sending_request do
-  let(:client) { Evil::Client.new("http://example.com/users:81") }
+response =
+  client
+    .path(:users, 1)
+    .query(auth: { key: SecureRandom.hex(20) })
+    .post name: "Peter"
 
-  before do
-    allow_any_request { request.path(:users, 1).method(:get) }
-      .to_respond_with(200, id: 1, name: "John")
-  end
-end
+response.name      # => "Peter"
+response.confirmed # => true
 ```
 
-The order of stubs definition is significant, because they are checked until from first to last. If no stub is applicable the exception will be raised (complaining about unknown request).
+Unlike the original `with()` that **re-writes** previous constraints, the reloaded `with { |req| ... }` **accumulates** them and stubs only those requests that satisfies all constraints.
 
-There is one exception. All the strict stubs are checked before all the partial ones, even in case partial stubs were declared first.
+Inside the block you can check any part of the request: `body`, `query`, `headers`, `path`.
+
+For `body`, `query` and `headers` you can check equality (`==` or `eql?`), inclusion (`include?`) or list of `keys` that [follows Rails convention][mustermann].
+
+The `path` can be checked for equality (`==` or `eql?`) against Rails path pattern:
+
+```ruby
+request.path == "/users/:id"
+```
 
 ### Matching Requests
 
-Use `send_request` matcher with options to check sending the request in the style of RSpec `receive` expectation:
-
-The matcher has two required arguments for request **method** and **path** (reqative to the host).
-
-You can also check *query*, *body*, and *headers* via chain of `with_` method calls.
+Use expectations for clients:
 
 ```ruby
-client = Evil::Client.new("http://example.com/users:81")
-
-# Add expectation BEFORE calling tested method
-expect(client).to receive_request(:patch, "/users/1")
-  .with_body(name: "Andrew")
-
-# Call the method AFTER expectation
-client.path(1).patch name: "Andrew"
+expect(client).to receive_request(method, body = nil)
 ```
 
-Only listed attributes will be tested. In the following example both tests will pass:
+The syntax is the same as described in the previous section.
+
+You can count requests, or check their order using the [original RSpec syntax][rspec-mocks]:
 
 ```ruby
-expect(client).to receive_request(:patch, "/users/1")
-
-expect(client).to receive_request(:patch, "/users/1")
-  .with_query({})
-  .with_body(name: "Andrew")
-
-client.path(1).patch name: "Andrew"
+expect(client).to receive_request(:post, "/users/:id").once.ordered
 ```
 
-Methods `with_body` etc. are tested strictly:
+Usually, you don't need `with` in expectations. Instead stub the request and check whether it is called.
+
+If you still do use it, notice that `with { |req| ... }` **unstubs** the request.
+
+This time you should:
+* stub http requests via `webmock` or else
+* add `and_call_original` to the end of chain
 
 ```ruby
-expect(client).not_to receive_request(:patch, "/users/1") # <- Negation
-  .with_body(name: "Andrew")
+require "webmock"
 
-client.path(1).patch name: "Andrew", gender: :male
-```
+stub_request(:any, //) # use webmock to catch the requests
 
-When you need to check a part of body, query or headers, use `with_body_including` (same for headers and query):
-
-```ruby
-expect(client).to receive_request(:patch, "/users/1")
-  .with_body_including(name: "Andrew")
-
-client.path(1).patch name: "Andrew", gender: :male
+expect(client)
+  .to receive_request(:get, "/cities")
+  .with { |req| req.query.include? name: "R'lyeh" }
+  .and_call_original # return to original implementation of unstubbed request
 ```
 
 Compatibility
@@ -407,3 +394,5 @@ See the [MIT LICENSE](LICENSE).
 [rspec]: http://rspec.org
 [swagger]: http://swagger.io
 [client-message]: http://www.rubydoc.info/gems/httpclient/HTTP/Message
+[rspec-mocks]: https://www.relishapp.com/rspec/rspec-mocks/v/3-4/docs/setting-constraints
+[mustermann]: https://github.com/rkh/mustermann/blob/master/mustermann-rails/README.md#syntax

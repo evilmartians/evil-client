@@ -53,7 +53,7 @@ class Evil::Client
 
     # @!attribute [r] logger
     #
-    # @return [Logger]
+    # @return [Logger] the logger used by the adapter
     #
     attr_reader :logger
 

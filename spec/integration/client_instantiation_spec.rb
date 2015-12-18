@@ -1,12 +1,11 @@
 describe "client instantiation" do
-
   let(:client) { Evil::Client.new base_url }
 
   context "with valid http url" do
     let(:base_url) { "http://github.com/evilmartians:8080" }
 
     it "builds the client" do
-      expect(client).to be_kind_of Evil::Client
+      expect(client.class).to eql Evil::Client
     end
   end
 
@@ -14,7 +13,7 @@ describe "client instantiation" do
     let(:base_url) { "https://127.0.0.1:445/foobar" }
 
     it "builds the client" do
-      expect(client).to be_kind_of Evil::Client
+      expect(client.class).to eql Evil::Client
     end
   end
 

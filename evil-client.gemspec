@@ -13,7 +13,9 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = ">= 2.2"
 
+  gem.add_runtime_dependency "equalizer"
   gem.add_runtime_dependency "hashie", "~> 3.4"
+  gem.add_runtime_dependency "mustermann-rails", "~> 0.4.0"
   gem.add_runtime_dependency "mime-types"
 
   gem.add_development_dependency "guard-rspec"

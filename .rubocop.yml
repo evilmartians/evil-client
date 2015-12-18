@@ -21,6 +21,9 @@ Style/AccessorMethodName:
 Style/AsciiComments:
   Enabled: false
 
+Style/CaseEquality:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   Enabled: false
 
@@ -30,13 +33,7 @@ Style/Documentation:
 Style/DoubleNegation:
   Enabled: false
 
-Style/EmptyLinesAroundBlockBody:
-  Enabled: false
-
 Style/EmptyLinesAroundClassBody:
-  Enabled: false
-
-Style/EmptyLinesAroundMethodBody:
   Enabled: false
 
 Style/EmptyLinesAroundModuleBody:
@@ -49,11 +46,14 @@ Style/FileName:
   Enabled: false
 
 Style/RaiseArgs:
-  EnforcedStyle: exploded
+  EnforcedStyle: compact
 
 Style/Semicolon:
   Exclude:
     - '**/*_spec.rb'
+
+Style/SingleLineBlockParams:
+  Enabled: false
 
 Style/SingleLineMethods:
   Exclude:

@@ -1,12 +1,8 @@
 class Evil::Client::Request
-  # Converts nested hash, which represents either a body or a query,
-  # to ordered array of items with methods:
+  # Converts nested hash to array of items (key, value, file?), ordered by keys.
   #
-  # * +#key+   - flattened escaped key
-  # * +#value+ - either escaped string, or file
-  # * +#file?+ - whether [#value] is a file
-  #
-  # Items are ordered by keys
+  # This is a base class for Body and Query. It allows body and query to
+  # be compared to other bodies and hashes
   #
   # @example
   #   items = Items.new foo: { "бар" => ["[]", File.new("текст.doc"), baz: nil }
@@ -24,6 +20,7 @@ class Evil::Client::Request
   #   items[2].file? # => true
   #
   # @api private
+  # @abstract
   #
   class Items
     include Enumerable
@@ -38,8 +35,19 @@ class Evil::Client::Request
     #
     # @param [Hash] source
     #
-    def initialize(source)
+    def initialize(source = {})
       @source = source
+      @items  = flatten(source).sort_by(&:key)
+    end
+
+    # Returns new list of items, whose source merges given hash
+    #
+    # @param [Hash] hash Data to be added to items
+    #
+    # @return [Evil::Client::Request::Items]
+    #
+    def merge(hash)
+      self.class.new source.merge(hash)
     end
 
     # Iterates by items
@@ -49,11 +57,18 @@ class Evil::Client::Request
     # @yieldparam [Evil::Client::Request::Items::Item]
     #
     def each
-      @items ||= flatten(source).sort_by(&:key)
       @items.each { |item| yield(item) }
     end
 
-    # Checks whether source contains files
+    # Returns keys following Rails convention
+    #
+    # @return [Array<String>]
+    #
+    def keys
+      map(&:key)
+    end
+
+    # Checks whether items contains files
     #
     # @return [Boolean]
     #
@@ -61,80 +76,46 @@ class Evil::Client::Request
       any?(&:file?)
     end
 
-    # Represents items as pairs of [key, value]
+    # Checks whether items is equal to another list of items, or hash
     #
-    # @return [Array<String, Object>]
+    # @param [Object] other
     #
-    def pairs
-      map { |item| [item.key, item.value] }
+    # @return [Boolean]
+    #
+    def ==(other)
+      to_a == flatten(other).to_a
     end
 
-    # Converts the source to either www-form-url-encoded string, or nil
+    # Checks whether items contains another list of items, or hash
     #
-    # @return [String, nil]
+    # @param [Object] other
     #
-    def url_encoded
-      map { |item| [item.key, item.value].compact.join("=") }.join("&") if any?
+    # @return [Boolean]
+    #
+    def include?(other)
+      (flatten(other).to_a - to_a).empty?
+    end
+
+    # Human-readable representation of items
+    #
+    # @return [String]
+    #
+    def inspect
+      source.inspect
     end
 
     private
 
     def flatten(data, keys = [])
       case data
+      when Items
+        data.to_a
       when Hash
         data.map { |key, val| flatten(val, keys + [key]) }.flatten
       when Array
         data.map { |val| flatten(val, keys + [nil]) }.flatten
       else
         Item.new(data, keys)
-      end
-    end
-
-    # Describes a single item
-    #
-    # @api private
-    #
-    class Item
-      # Initializes a value from raw unescaped value and array of its keys
-      #
-      # @param [Object] raw_value
-      # @param [Array<#to_s>] keys
-      #
-      def initialize(raw_value, keys)
-        @raw_value = raw_value
-        @keys      = keys.map { |key| CGI.escape key.to_s }
-      end
-
-      # The nested escaped key for the item
-      #
-      # @return [String]
-      #
-      def key
-        @key ||= @keys.inject { |prefix, key| "#{prefix}[#{key}]" }
-      end
-
-      # The value stringified and escaped when necessary
-      #
-      # @return [String, File, nil]
-      #
-      def value
-        @value ||=
-          if @raw_value.nil? || file?
-            @raw_value
-          else
-            CGI.escape(@raw_value.to_s)
-          end
-      end
-
-      # The predicate to check whether [#value] is a file
-      #
-      # @return [Boolean]
-      #
-      def file?
-        if @file.nil?
-          @file = @raw_value.respond_to?(:read) && @raw_value.respond_to?(:path)
-        end
-        @file
       end
     end
   end

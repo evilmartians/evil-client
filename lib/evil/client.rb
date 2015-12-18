@@ -1,9 +1,11 @@
-require "net/http"
-require "net/https"
 require "delegate"
+require "equalizer"
 require "hashie/mash"
 require "logger"
 require "mime-types"
+require "mustermann"
+require "net/http"
+require "net/https"
 require "securerandom"
 require "tempfile"
 
@@ -31,7 +33,7 @@ module Evil
     #
     def self.new(base_url)
       base_uri = BaseURI.parse base_url
-      request  = Request.build base_uri
+      request  = Request.new base_uri.path
       adapter  = Adapter.build base_uri
 
       super(base_uri, adapter, request)
@@ -73,7 +75,7 @@ module Evil
     # @return [String]
     #
     def uri
-      full_path = Request::Path.build(current_request)
+      full_path = current_request.full_path
       base_uri.dup.tap { |uri| uri.path = full_path }.to_s
     end
 
