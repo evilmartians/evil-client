@@ -51,7 +51,7 @@ module Evil::Client::RSpec
   #
   def receive_request(method, path = nil)
     receive(:send_request)
-      .tap { |mock| mock.singleton_class.instance_eval { include Stub } }
+      .tap { |mock| mock.extend Stub }
       .with(RequestMock.new(method, path))
   end
 

@@ -18,7 +18,7 @@ module Evil::Client::RSpec
     # @return [Boolean]
     #
     def ==(other)
-      to_proc[other]
+      to_proc[other] if other.is_a? Evil::Client::Request
     end
     alias_method :eql?, :==
 
