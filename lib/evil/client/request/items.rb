@@ -68,6 +68,17 @@ class Evil::Client::Request
       map(&:key)
     end
 
+    # Returns value by key of flattened hash
+    #
+    # @param [#to_s] key
+    #
+    # @return [Object]
+    #
+    def [](key)
+      item = detect { |item| item.key == key.to_s }
+      item && item.value
+    end
+
     # Checks whether items contains files
     #
     # @return [Boolean]

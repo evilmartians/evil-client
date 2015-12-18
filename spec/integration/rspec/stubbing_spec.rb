@@ -102,6 +102,18 @@ describe "stubbing client" do
       .to raise_error expectation_error
   end
 
+  it "supports body flattened #[]" do
+    allow(client).to receive_request(:post)
+      .where { |req| req.body['user[name]'] == "Theodorus" }
+      .and_respond(200)
+
+    expect { client.post user: { name: "Theodorus", id: 16 } }
+      .not_to raise_error
+
+    expect { client.post name: "Theodorus" }
+      .to raise_error expectation_error
+  end
+
   it "supports body #keys" do
     allow(client).to receive_request(:post)
       .where { |req| req.body.keys.include? "user[name]" }
