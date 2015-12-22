@@ -13,8 +13,7 @@ module Evil::Client::Errors
       @request  = request
       @response = raw_response
 
-      super "#{request.type.upcase} request to #{request.path}" \
-            " with params #{request.params}" \
+      super "#{request.method.upcase} request to #{request.path}" \
             " has responded with error (status #{response.status})."
     end
 

@@ -1,7 +1,19 @@
 [WIP] Evil::Client
 ==================
 
-DSL for dealing with remote REST APIs
+DSL built on top of `Net::HTTP` to communicate between microservices.
+
+It differs from other HTTP-clients by the following features:
+
+* building requests lazily
+* applying some opionated settings:
+  - encoding requests to `www-url-form-encoded`
+  - authomatically encoding requests to `multipart/form-data` when files being sent
+  - following Rails convention for encoding nested body and query
+  - expecting responses to be serialized in JSON
+  - mapping json responces to [hashies][mash]
+* [wip] supporting swagger specifications
+* providing RSpec stubs and matchers for the client out of the box
 
 Setup
 -----
@@ -11,24 +23,15 @@ The library is available as a gem `evil-client`.
 Usage
 -----
 
-### Configuring
-
-Inside Rails application, define a request ID for a remote API:
-
-```ruby
-@todo
-```
-
 ### Initialization
 
-Initialize a new client with `base_url` of a remote API:
+Initialize a new client with base url of a remote API:
 
 ```ruby
-client = Evil::Client.with base_url: "http://localhost"
-client.uri! # => "http://localhost"
+client = Evil::Client.new "https://localhost:10443/foo"
 ```
 
-We will use this client in all the examples below.
+*We will use client with these settings in the examples below.*
 
 **Roadmap**:
 
@@ -37,17 +40,20 @@ We will use this client in all the examples below.
 
 ### Request preparation
 
-Use methods `path`, `query` and `headers` to customize a request. You can call them in any order, so that every method adds new data to previously formed request:
+Use methods `path`, `query`, `body`, and `headers` to customize a request.
+
+You can call them in any order, so that every method adds new data to previously formed request:
 
 ```ruby
 client
   .path(:users, 1)
   .query(api_key: "foobar")
+  .body(baz: { qux: "QUX" })
   .path("/sms/3/")
   .headers(foo: :bar, bar: :baz)
 ```
 
-This will prepare a request to uri `http://localhost/users/1/sms/3?api_key=foobar` with headers:
+This will prepare a request to uri `https://localhost:443/users/1/sms/3?api_key=foobar` with body `baz[qux]=QUX` and headers:
 
 ```ruby
 {
@@ -65,17 +71,17 @@ The client is designed to work with JSON APIs, that's why default headers are ad
 - *either taken from Rack env `HTTP_X_REQUEST_ID` instead of `action_dispatch.request_id`,
 - *or skipped when no Rack env is available.*
 
-### Checking the uri
+### Checking the url
 
-The `#uri` method allows to view the current uri of the request without a query:
+The `#uri` method allows to view the current URI of the request:
 
 ```ruby
 client
   .path(:users, 1)
-  .query(api_key: "foobar")
+  .query(meta: { api_key: "foobar" })
 
-client.uri
-# => "http://localhost/users/1"
+client.url
+# => "http://localhost/users/1?meta[api_key]=foobar"
 
 client.path(:sms, 3).uri
 # => "http://localhost/users/1/sms/3"
@@ -91,7 +97,7 @@ client.path(:sms, 3).uri
 
 To send conventional requests use methods `get!`, `post!`, `patch!`, `put!` and `delete!` with a corresponding query or body.
 
-In a GET request the arguments will be added to previously formed query:
+Arguments of a GET request are added to previously formed query:
 
 ```ruby
 client
@@ -103,7 +109,7 @@ client
 # will send a GET request to URI: http://localhost/users/1?foo=bar&bar=baz&baz=qux
 ```
 
-In a POST request the arguments will be sent as a body. The preformed query is used as well:
+Arguments of a POST, PATCH, PUT and DELETE requests are added to the body. The preformed query is used as well:
 
 ```ruby
 client
@@ -115,28 +121,27 @@ client
 # will send a POST request to URI: http://localhost/users/1?foo=bar&bar=baz
 ```
 
-You can send a request using any "conventional" method you need (patch, put, delete):
+Use the `request!` for non-conventional HTTP method. You can send the method argument only.
+
+Because there is no common convention for custom methods, you can specify body or query explicitly:
 
 ```ruby
 client
   .path(:users, 1)
   .query(foo: :bar)
+  .body(baz: :qux)
   .query(bar: :baz)
-  .patch! baz: :qux
-
-# will send a PATCH request to URI: http://localhost/users/1?foo=bar&bar=baz
-```
-
-Use the `request!` for non-conventional HTTP method with an additional first argument:
-
-```ruby
-client
-  .path(:users, 1)
-  .query(foo: :bar)
-  .query(bar: :baz)
-  .request! :foo, baz: :qux
+  .request! :foo
 
 # will send a FOO request to URI: http://localhost/users/1?foo=bar&bar=baz
+```
+
+For example, you can send a request without body:
+
+```ruby
+client.path(:users, 1).headers('X-Foo' => 'Bar').request! :head
+
+# will send a HEAD request to URI: http://localhost/users/1
 ```
 
 **Roadmap**:
@@ -217,7 +222,7 @@ begin
 rescue Evil::Client::ResponseError => error
   # Suppose the server responded with text (not a valid JSON!) body "Wrong URL!" and status 404
   error.status    # => 404
-  error.request   # => #<Request @type="get" @path="http://localhost/unknown" ...>
+  error.request   # => #<Request @method="get" @path="http://localhost/unknown" ...>
   error.response  # => #<Response ...>
   error.content   # => { "error" => "Wrong URL!", "meta" => { "http_code" => 404 } }
 end
@@ -255,10 +260,111 @@ You can always check `error?` over the result of the safe request.
 
 - [ ] *A successful responses will also be validated against a corresponding API spec (swagger etc.)*
 
+## RSpec Helpers
+
+For testing a client of the remote API, the gem provides methods to stub an match requests.
+
+Load them in test environment via:
+
+```ruby
+require "evil/client/rspec"
+```
+
+This will stub the client so that it **raises exception in responce to any unstubbed request**.
+
+```ruby
+client = Evil::Client.new("http://example.com/users")
+
+client.post name: "Ian"
+# => #<Evil::Client::RSpec::UnknownRequestError ...>
+```
+
+You can switch off with behaviour by tagging some examples with `stub_client: false`:
+
+```ruby
+it "should not stub client", stub_client: false do
+# ...
+end
+```
+
+### Stubbing Requests
+
+To stub requests to the client use stubber:
+
+```ruby
+allow(client)
+  .to receive_request(method, path = nil)
+  .where { |req| ... }
+  .and_respond(status, body = nil)
+```
+
+Its syntax is pretty the same as RSpec original `allow(client).to receive(request).and_return(response)` with subtle differencies:
+
+* `receive_request(method, path = nil)` takes a method and optional path to be stubbed
+* `where { |req| ... }` adds the constraint for matching requests
+* `and_respond(status, body = nil)` takes an http status and optional body to be received
+
+```ruby
+allow(client)
+  .to receive_request(:post, "/users/:id")
+  .where { |req| req.body.include? name: "Peter" }
+  .where { |req| req.query.keys.include? "auth[key]" }
+  .and_respond(200, name: "Peter", confirmed: true)
+
+response =
+  client
+    .path(:users, 1)
+    .query(auth: { key: SecureRandom.hex(20) })
+    .post name: "Peter"
+
+response.name      # => "Peter"
+response.confirmed # => true
+```
+
+Unlike the original `with()` that **re-writes** previous constraints, the `where { |req| ... }` **accumulates** them and stubs only those requests that satisfies all constraints.
+
+Inside the block you can check any part of the request: `body`, `query`, `headers`, `path`.
+
+For `body`, `query` and `headers` you can check equality (`==` or `eql?`), inclusion (`include?`) or list of `keys` that [follows Rails convention][mustermann].
+
+The `path` can be checked for equality (`==` or `eql?`) against Rails path pattern:
+
+```ruby
+request.path == "/users/:id"
+```
+
+### Matching Requests
+
+Use expectations for clients:
+
+```ruby
+expect(client).to receive_request(method, body = nil)
+```
+
+The syntax is the same as described in the previous section.
+
+You can count requests, or check their order using the [original RSpec syntax][rspec-mocks-constraints]:
+
+```ruby
+expect(client).to receive_request(:post, "/users/:id").once.ordered
+```
+
+Usually, you don't need `where` in expectations. Instead stub the request and check whether it is called.
+
+If you still do use it, notice that `where` constraint is lazy.
+To apply it add either `and_respond`, or [any other finalizer method][rspec-mocks-finalizers].
+
+```ruby
+expect(client)
+  .to receive_request(:get, "/cities")
+  .where { |req| req.query.include? name: "R'lyeh" }
+  .and_call_original # switch to original implementation of unstubbed request
+```
+
 Compatibility
 -------------
 
-Tested under rubies [compatible to MRI 2.2+](.travis.yml).
+Tested under rubies [MRI 2.2+ and JRuby 9+](.travis.yml).
 
 Uses [RSpec][rspec] 3.0+ for testing.
 
@@ -281,3 +387,6 @@ See the [MIT LICENSE](LICENSE).
 [rspec]: http://rspec.org
 [swagger]: http://swagger.io
 [client-message]: http://www.rubydoc.info/gems/httpclient/HTTP/Message
+[rspec-mocks-constraints]: https://www.relishapp.com/rspec/rspec-mocks/v/3-4/docs/setting-constraints
+[rspec-mocks-finalizers]: https://relishapp.com/rspec/rspec-mocks/v/3-4/docs/configuring-responses
+[mustermann]: https://github.com/rkh/mustermann/blob/master/mustermann-rails/README.md#syntax

@@ -7,87 +7,66 @@ class Evil::Client
   #
   class Request
 
-    require_relative "request/base"
+    require_relative "request/item"
+    require_relative "request/items"
+    require_relative "request/request_id"
+
+    require_relative "request/path"
+    require_relative "request/method"
+    require_relative "request/query"
     require_relative "request/body"
     require_relative "request/headers"
-    require_relative "request/request_id"
-    require_relative "request/multipart"
 
-    # Initializes request with base url
+    # Initializes request with base path
     #
-    # @param [String] base_url
+    # @param [String] base_path
     #
-    def initialize(base_url)
-      @path = base_url.to_s.sub(%r{/+$}, "")
+    def initialize(base_path)
+      @path    = Path.new(base_path)
+      @headers = Headers.new
+      @body    = Body.new
+      @query   = Query.new
     end
 
-    # The type of the request
+    # @!attribute [r] method
     #
-    # @return ["get", "post"]
+    # @return [String] The method of sending the request
     #
-    attr_reader :type
+    attr_reader :method
 
-    # The request path
+    # @!attribute [r] path
     #
-    # @return [String]
+    # @return [Evil::Client::Request::Path] The object representing a path
     #
     attr_reader :path
 
-    # The request headers
+    # @!attribute [r] headers
     #
-    # @return [Hash<String, String>]
+    # @return [Evil::Client::Request::Headers] The object representing headers
     #
-    def headers
-      @headers ||= {}
-    end
+    attr_reader :headers
 
-    # The request body
+    # @!attribute [r] body
     #
-    # @return [Hash<String, String>]
+    # @return [Evil::Client::Request::Body] The object representing a body
     #
-    def body
-      @body ||= {}
-    end
+    attr_reader :body
 
-    # @!method flat_body
-    # The body represented as an array of triples [key, value, file?]
+    # @!attribute [r] query
     #
-    # @example
-    #   flat_body foo: { bar: [:BAZ, File.new("text.doc")] }
-    #   # => [["foo[bar][]", :BAZ, false], ["foo[bar][]", #<File...>, true]]
+    # @return [Evil::Client::Request::Query] The object representing a query
     #
-    # @return [Array<[String, Object]>]
-    #
-    def flat_body(data = nil, prefix = nil)
-      if prefix.nil?
-        body.map { |key, val| flat_body(val, key) }
-      elsif data.is_a? Hash
-        data.map { |key, val| flat_body(val, "#{prefix}[#{key}]") }
-      elsif data.is_a? Array
-        data.map { |val| flat_body(val, "#{prefix}[]") }
-      else
-        [[[prefix, data, file?(data)]]]
-      end.reduce(:+) || []
-    end
+    attr_reader :query
 
-    # The request query
+    # Returns a copy of the request with new parts added
     #
-    # @return [Hash<String, String>]
-    #
-    def query
-      @query ||= {}
-    end
-
-    # Returns a copy of the request with new parts added to the uri
-    #
-    # @param [#to_s, Array<#to_s>] parts
+    # @param [Array<#to_s>] values
     #
     # @return [Evil::Client::Request]
     #
-    def with_path(*parts)
-      paths    = parts.flat_map { |part| part.to_s.split("/").reject(&:empty?) }
-      new_path = [path, *paths].join("/")
-      clone_with { @path = new_path }
+    def with_path(values)
+      new_parts = path + values
+      clone_with { @path = new_parts }
     end
 
     # Returns a copy of the request with new headers being added
@@ -123,50 +102,49 @@ class Evil::Client
       clone_with { @body = new_body }
     end
 
-    # Returns a copy of the request with a type added
+    # Returns a copy of the request with new method
     #
-    # @param [String] type
+    # @param [#to_s] value
     #
     # @return [Evil::Client::Request]
     #
-    def with_type(type)
-      clone_with { @type = type }
+    def with_method(value)
+      clone_with { @method = Method.new(value) }
     end
 
-    # Checks whether a request is a multipart
+    # Full path of the request including relative path and query
     #
-    # @return [Boolean]
+    # @return [String]
     #
-    def multipart?
-      flat_body.detect { |_, _, file| file }
+    def full_path
+      [path.final, query.final].compact.join("?")
     end
 
-    # Returns parameters of the request: query, body, headers
-    #
-    # @return [Array]
-    #
-    def params
-      [query, Body.build(self), Headers.build(self)]
-    end
-
-    # Returns a standard array representation of the request
+    # Array representation of the request
+    # [method, path, body, headers]
     #
     # @see [Evil::Client::Adapter#call]
     #
     # @return [Array]
     #
     def to_a
-      [type, path, *params]
+      [method, full_path, body.final, headers.final(self)]
+    end
+
+    # Human-readable representations of the request
+    #
+    # @return [String]
+    #
+    def inspect
+      "#{method} #{full_path} with" \
+      " headers: #{headers.inspect}," \
+      " body: #{body.inspect}"
     end
 
     private
 
     def clone_with(&block)
       dup.tap { |instance| instance.instance_eval(&block) }
-    end
-
-    def file?(value)
-      value.respond_to?(:read) && value.respond_to?(:path)
     end
   end
 end

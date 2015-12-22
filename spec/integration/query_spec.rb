@@ -3,7 +3,7 @@ describe "query", :fake_api do
 
   let(:client) do
     Evil::Client
-      .with(base_url: "http://localhost/")
+      .new("http://localhost/")
       .query(foo: :bar)
       .query(bar: :baz)
   end

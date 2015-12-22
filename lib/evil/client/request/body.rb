@@ -1,31 +1,34 @@
 class Evil::Client::Request
-  # Utility to build a final body of a prepared request
+  # Represents a request query as an array of items following Rails convention
   #
-  # @api private
+  # @api public
   #
-  class Body < Base
+  class Body < Items
     # Returns the resulting body
     #
     # @return [String]
     #
-    def build
-      return if request.type == "get"
-      return to_multipart if request.multipart?
-      to_form_url
+    def final
+      return unless any?
+      multipart? ? to_multipart : to_line
     end
 
     private
 
+    def to_line
+      map(&:to_s).join("&")
+    end
+
     def to_multipart
-      Multipart.build(request)
+      [parts, "#{boundary}--", "", ""].flatten.join("\r\n")
     end
 
-    def to_form_url
-      URI.escape(plain_body)
+    def boundary
+      @boundary ||= "--#{SecureRandom.hex}"
     end
 
-    def plain_body
-      request.flat_body.map { |item| item[0..1].join("=") }.join("&")
+    def parts
+      [boundary].product map(&:to_part)
     end
   end
 end

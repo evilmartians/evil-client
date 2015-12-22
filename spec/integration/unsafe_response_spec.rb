@@ -1,5 +1,5 @@
-describe "unsafe response", :fake_api do
-  let(:client)  { Evil::Client.with(base_url: "http://localhost") }
+describe "unsafe response", stub_client: false do
+  let(:client)  { Evil::Client.new("http://localhost") }
   let(:request) { a_request(:get, "http://localhost") }
   let(:status)  { [200, "Ok"] }
   let(:body)    { nil }
@@ -46,7 +46,6 @@ describe "unsafe response", :fake_api do
       expect { subject }.to raise_error do |error|
         response = error.response
         expect(response.status).to eql 404
-        expect(response.reason).to eql "Not found"
       end
     end
 
@@ -56,7 +55,7 @@ describe "unsafe response", :fake_api do
         expect(error).to respond_to :request
         expect(error).to respond_to :response
         expect(error.content)
-          .to eq("error" => "", "meta" => { "http_code" => 404 })
+          .to eq("error" => true, "meta" => { "http_code" => 404 })
       end
     end
   end

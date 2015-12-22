@@ -5,7 +5,7 @@ script:   bundle  exec rspec
 rvm:
   - '2.2'
   - ruby-head
-  - rbx-2
+  # - rbx-2
   - jruby-9
   - jruby-head
 matrix:

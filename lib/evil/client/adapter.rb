@@ -1,47 +1,61 @@
 class Evil::Client
-  # Sends the request to remote API and processes the response
+  # Sends the request to remote API
   #
   # It is responsible for:
-  # * sending requests to the server
-  # * deserializing a response body
-  # * handling error responses
+  #
+  # * sending prepared requests to the server
+  # * deserializing a response body into the Request object
+  # * processing error responses
   #
   # @api private
   #
   class Adapter
-
     include Errors
 
     # @api private
     class << self
-      # @!attribute [rw] logger
+      # @!attribute [rw] default_logger
       #
-      # @return [::Logger, nil] The logger used by all connections
+      # @return [Logger, nil] The default logger
       #
-      attr_accessor :logger
+      attr_accessor :default_logger
+
+      # Builds the adapter depending on uri with customizable logger
+      #
+      # @param [URI] base_uri
+      # @param [Logger] logger
+      #
+      # @return [Evil::Client::Adapter]
+      #
+      def build(base_uri, logger = default_logger)
+        client = Net::HTTP.new base_uri.host, base_uri.port
+        new(client, logger)
+      end
     end
 
-    # Initializes the adapter to selected API <specification>
+    # Initializes the adapter with http(s) client and logger
     #
-    # @param [Evil::Client::API] api
+    # @param [Object] client
+    # @param [Logger] logger
     #
-    # @return [Evil::Client::Adapter]
-    #
-    def self.for_api(api)
-      new(base_url: api.base_url)
+    def initialize(client, logger)
+      @client = client
+      @logger = logger
     end
 
-    # @!method initialize(options)
-    # Initializes the adapter with base_url and optional logger
+    # @!attribute [r] client
     #
-    # @param [Hash] options
-    # @option options [String] :base_url
-    # @option options [String] :logger
+    # It should never be called in test env (raises an exception)
     #
-    def initialize(base_url:, **options)
-      @base_url = base_url
-      @logger   = options.fetch(:logger) { self.class.logger }
-    end
+    # @return [Net::HTTP] the underlying HTTP client
+    #
+    attr_reader :client
+
+    # @!attribute [r] logger
+    #
+    # @return [Logger] the logger used by the adapter
+    #
+    attr_reader :logger
 
     # Sends the request to API and returns either successful or errored response
     #
@@ -65,30 +79,19 @@ class Evil::Client
     def call!(request)
       response = send_request(request)
       return response.content if response.success?
+
       fail ResponseError.new(request, response)
     end
 
-    private
-
-    def connection
-      @connection ||= begin
-        client = HTTPClient.new(base_url: @base_url)
-        client.debug_dev = @logger
-        client
-      end
-    end
-
+    # The access point that sends prepared requests to remote client
+    #
+    # @param [Evil::Client::Request] request
+    #
+    # @return [Evil::Client::Response]
+    #
     def send_request(request)
-      raw_response = connection.request(*request.to_a)
-      Response.new(raw_response)
-    end
-
-    def handle_error(request, response)
-      if block_given?
-        yield(response)
-      else
-        fail ResponseError.new(request, response)
-      end
+      response = client.send_request(*request.to_a)
+      Response.new(response.code, response.body)
     end
   end
 end

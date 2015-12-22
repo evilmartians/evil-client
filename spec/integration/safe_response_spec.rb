@@ -1,5 +1,5 @@
-describe "safe response", :fake_api do
-  subject { Evil::Client.with(base_url: "http://localhost").get }
+describe "safe response", stub_client: false do
+  subject { Evil::Client.new("http://localhost").get }
 
   before do
     stub_request(:any, /localhost/)
@@ -63,7 +63,6 @@ describe "safe response", :fake_api do
 
     it "returns error hashie" do
       expect(subject).to be_error
-      expect(subject.error).to be_empty
       expect(subject.meta.http_code).to eql 404
     end
   end

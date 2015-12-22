@@ -8,14 +8,15 @@ class Evil::Client
     class Railtie < ::Rails::Railtie
       # Uses a railtie as a request ID provider
       initializer "evil.client.request_id" do |app|
-        app.middleware.use Request::RequestID.with("action_dispatch.request_id")
+        request_id = Request::RequestID
+        app.middleware.use request_id.with("action_dispatch.request_id")
       end
 
       # Sets logger for Rails dev/test environment
       if %w(development test).include? ::Rails.env
         initializer "evil.client.logger" do
           logger = Logger.new("log/evil_client.log", "daily")
-          Evil::Client::Adapter.logger = logger
+          Evil::Client::Adapter.default_logger = logger
         end
       end
     end

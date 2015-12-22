@@ -1,29 +1,45 @@
 class Evil::Client::Request
-  # Utility to build final headers of a prepared request
+  # Represents request headers as a plain stringified hash
+  #
+  # All specific knowledge about headers is contained here
   #
   # @api private
   #
-  class Headers < Base
-    # Returns the resulting headers
+  class Headers < Items
+    # Returns the final hash representing headers of the request
+    #
+    # @param [Request] request
     #
     # @return [Hash]
     #
-    def build
+    def final(request)
+      @request = request
       response_type_headers
-        .update(content_type_headers)
-        .update(request_id_headers)
-        .update(request.headers) # customized by user
-        .inject({}) { |h, (key, value)| h.merge(key.to_s => value.to_s) }
+        .merge(content_type_headers)
+        .merge(request_id_headers)
+        .merge(self)
+    end
+
+    # Returns headers as a plain hash
+    #
+    # @return [Hash]
+    #
+    def to_hash
+      inject({}) { |hash, item| hash.merge(item.key => item.value) }
     end
 
     private
 
+    def multipart?
+      @request.body.multipart?
+    end
+
     def request_id
-      @request_id ||= RequestID.value
+      RequestID.value
     end
 
     def content_type_headers
-      request.multipart? ? multipart_headers : form_url_headers
+      multipart? ? multipart_headers : form_url_headers
     end
 
     def response_type_headers
