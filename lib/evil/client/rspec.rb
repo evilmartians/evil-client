@@ -34,12 +34,8 @@ module Evil::Client::RSpec
   #
   # @return [undefined]
   #
-  def expect(value = nil)
-    if block_given?
-      super() { yield }
-    else
-      super coerce_evil_client(value)
-    end
+  def expect(value = nil, &block)
+    block ? super(&block) : super(coerce_evil_client(value))
   end
 
   # Provides gem-specific variant of `receive` mock matcher
