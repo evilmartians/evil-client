@@ -1,3 +1,0 @@
---asset LICENSE
---exclude lib/evil-client/version.rb
---output doc/api

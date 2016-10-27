@@ -1,6 +1,9 @@
 source "https://rubygems.org"
 
+# Specify your gem's dependencies in evil-client.gemspec
 gemspec
 
-gem "pry"
-gem "pry-byebug", platform: :mri
+group :development, :test do
+  gem "pry",        platform: :mri
+  gem "pry-byebug", platform: :mri
+end

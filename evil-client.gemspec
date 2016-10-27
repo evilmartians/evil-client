@@ -1,23 +1,24 @@
 Gem::Specification.new do |gem|
-  gem.name        = "evil-client"
-  gem.version     = "0.0.1"
-  gem.author      = ["Ravil Bayramgalin", "Andrew Kozin"]
-  gem.email       = ["brainopia@evilmartians.com", "nepalez@evilmartians.com"]
-  gem.homepage    = "https://github.com/evilmartians/evil-client"
-  gem.summary     = "DSL for dealing with REST resources"
-  gem.license     = "MIT"
+  gem.name     = "evil-client"
+  gem.version  = "0.2.0"
+  gem.author   = "Andrew Kozin (nepalez)"
+  gem.email    = "andrew.kozin@gmail.com"
+  gem.homepage = "https://github.com/evilmartians/evil-client"
+  gem.summary  = "Human-friendly DSL for building HTTP(s) clients in Ruby"
+  gem.license  = "MIT"
 
   gem.files            = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   gem.test_files       = gem.files.grep(/^spec/)
   gem.extra_rdoc_files = Dir["README.md", "LICENSE", "CHANGELOG.md"]
 
-  gem.required_ruby_version = ">= 2.2"
+  gem.required_ruby_version = ">= 2.3"
 
-  gem.add_runtime_dependency "equalizer", "~> 0.0.11"
-  gem.add_runtime_dependency "hashie", "~> 3.0"
-  gem.add_runtime_dependency "mustermann-rails", "~> 0.4.0"
-  gem.add_runtime_dependency "mime-types", "~> 2.0"
+  gem.add_runtime_dependency "dry-initializer", "~> 0.5.0"
+  gem.add_runtime_dependency "rack", "~> 2.0"
+  gem.add_runtime_dependency "mime-types", "~> 3.0"
 
-  gem.add_development_dependency "guard-rspec", "~> 4.0"
-  gem.add_development_dependency "webmock", "~> 1.22"
+  gem.add_development_dependency "dry-types", "~> 0.8.1"
+  gem.add_development_dependency "rspec", "~> 3.0"
+  gem.add_development_dependency "rake", "~> 10.0"
+  gem.add_development_dependency "webmock", "~> 2.1"
 end

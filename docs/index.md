@@ -1,26 +1,18 @@
-# Evil::Client
-
 Human-friendly DSL for writing HTTP(s) clients in Ruby
 
 [![Logo][evilmartians-logo]][evilmartians]
 
-[evilmartians]: https://evilmartians.com
-[evilmartians-logo]: https://evilmartians.com/badges/sponsored-by-evil-martians.svg
+# About
 
-## Intro
+The gem allows writing http(s) clients in a way close to [Swagger][swagger] specifications. Like in Swagger, you describe models and operations in domain-specific terms. In addition, the gem supports [settings][settings] and [scopes][scopes] for instantiating clients and sending requests in idiomatic Ruby.
 
+The gem stands away from mutable states and monkey patching when possible. To support multithreading, all instances are immutable (though not frozen to avoid performance loss). The gem's DSL is built on top of [dry-initializer][dry-initializer] gem, and supposes heavy usage of [dry-types][dry-types] system of contracts.
 
-The gem allows writing http(s) clients in a way close to [Swagger][swagger] specifications. Like in Swagger, you need to specify models and operations in domain-specific terms. In addition, the gem supports settings and scopes for instantiating clients and sending requests in idiomatic Ruby.
+For now the top-level DSL supports clients to **json** and **form data** APIs. Because of high variance of XML-based APIs, building their clients require more efforts on a middleware level, which is discussed in the [corresponding topic][xml].
 
-The gem stands away from mutable states and monkey patching when possible. To support multithreading all instances are immutable (though not frozen to avoid performance loss). Its DSL is backed on top of [dry-initializer][dry-initializer] gem, and supposes heavy usage of [dry-types][dry-types] system of contracts.
+The gem requires ruby 2.2+ and was tested under MRI and JRuby 9+.
 
-For now the top-level DSL supports clients to **json** and **form data** APIs. Because of high variance of XML-based APIs, building their client requires more efforts on a middleware level.
-
-[swagger]: http://swagger.io
-[dry-initializer]: http://dry-rb.org/gems./dry-initializer
-[dry-types]: http://dry-rb.org/gems./dry-types
-
-## Installation
+# Installation
 
 Add this line to your application's Gemfile:
 
@@ -40,7 +32,7 @@ Or install it yourself as:
 $ gem install evil-client
 ```
 
-## Synopsis
+# Example
 
 The following example gives an idea of how a client to remote API looks like when written on top of `Evil::Client` using [dry-types][dry-types]-based contracts.
 
@@ -65,7 +57,7 @@ class CatsClient < Evil::Client
     option :password, type: Dry::Types["strict.string"] # required!
   end
 
-  # Define a base url using
+  # Define a base url using settings
   base_url do |settings|
     "https://#{settings.domain}.example.com/api/v#{settings.version}/"
   end
@@ -125,6 +117,11 @@ cat_client.cats[4].call(age: 10, name: "Agamemnon", color: "tabby")
 # with a specified body and headers (authorization via basic_auth)
 ```
 
-## License
-
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+[swagger]: http://swagger.io
+[dry-initializer]: http://dry-rb.org/gems/dry-initializer
+[dry-types]: http://dry-rb.org/gems/dry-types
+[evilmartians]: https://evilmartians.com
+[evilmartians-logo]: https://evilmartians.com/badges/sponsored-by-evil-martians.svg
+[settings]:
+[scopes]:
+[xml]:

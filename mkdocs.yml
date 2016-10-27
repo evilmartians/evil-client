@@ -1,0 +1,21 @@
+---
+site_name: Evil::Client
+site_description: Human-friendly DSL for building HTTP(s) clients in Ruby
+repo_url: https://github.com/nepalez/evil-client
+site_author: Andrew Kozin
+theme: readthedocs
+pages:
+  - 'Synopsis': 'index.md'
+  - 'Details':
+    - 'Overview': 'overview.md'
+    - 'Model':    'model.md'
+    - 'Settings': 'settings.md'
+    - 'Base URL': 'base_url.md'
+    - 'Operations':
+      - 'HTTP method': 'http_method.md'
+      - 'Path': 'path.md'
+      - 'Security Definitions': 'security.md'
+      - 'Headers': 'headers.md'
+      - 'Query': 'query.md'
+      - 'Responses': 'responses.md'
+      - 'Documentation': 'documentation.md'
