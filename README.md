@@ -11,17 +11,6 @@ Human-friendly DSL for writing HTTP(s) clients in Ruby
 [![Code Climate][codeclimate-badger]][codeclimate]
 [![Inline docs][inch-badger]][inch]
 
-[codeclimate-badger]: https://img.shields.io/codeclimate/github/evilmartians/evil-client.svg?style=flat
-[codeclimate]: https://codeclimate.com/github/evilmartians/evil-client
-[gem-badger]: https://img.shields.io/gem/v/evil-client.svg?style=flat
-[gem]: https://rubygems.org/gems/evil-client
-[gemnasium-badger]: https://img.shields.io/gemnasium/evilmartians/evil-client.svg?style=flat
-[gemnasium]: https://gemnasium.com/evilmartians/evil-client
-[inch-badger]: http://inch-ci.org/github/evilmartians/evil-client.svg
-[inch]: https://inch-ci.org/github/evilmartians/evil-client
-[travis-badger]: https://img.shields.io/travis/evilmartians/evil-client/master.svg?style=flat
-[travis]: https://travis-ci.org/evilmartians/evil-client
-
 ## Intro
 
 The gem allows writing http(s) clients in a way close to [Swagger][swagger] specifications. Like in Swagger, you need to specify models and operations in domain-specific terms. In addition, the gem supports settings and scopes for instantiating clients and sending requests in idiomatic Ruby.
@@ -142,3 +131,14 @@ cat_client.cats[4].call(age: 10, name: "Agamemnon", color: "tabby")
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+[codeclimate-badger]: https://img.shields.io/codeclimate/github/evilmartians/evil-client.svg?style=flat
+[codeclimate]: https://codeclimate.com/github/evilmartians/evil-client
+[gem-badger]: https://img.shields.io/gem/v/evil-client.svg?style=flat
+[gem]: https://rubygems.org/gems/evil-client
+[gemnasium-badger]: https://img.shields.io/gemnasium/evilmartians/evil-client.svg?style=flat
+[gemnasium]: https://gemnasium.com/evilmartians/evil-client
+[inch-badger]: http://inch-ci.org/github/evilmartians/evil-client.svg
+[inch]: https://inch-ci.org/github/evilmartians/evil-client
+[travis-badger]: https://img.shields.io/travis/evilmartians/evil-client/master.svg?style=flat
+[travis]: https://travis-ci.org/evilmartians/evil-client
