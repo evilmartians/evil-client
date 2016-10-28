@@ -2,19 +2,33 @@
 
 Human-friendly DSL for writing HTTP(s) clients in Ruby
 
-[![Logo][evilmartians-logo]][evilmartians]
+<a href="https://evilmartians.com/">
+<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
 
-[evilmartians]: https://evilmartians.com
-[evilmartians-logo]: https://evilmartians.com/badges/sponsored-by-evil-martians.svg
+[![Gem Version][gem-badger]][gem]
+[![Build Status][travis-badger]][travis]
+[![Dependency Status][gemnasium-badger]][gemnasium]
+[![Code Climate][codeclimate-badger]][codeclimate]
+[![Inline docs][inch-badger]][inch]
+
+[codeclimate-badger]: https://img.shields.io/codeclimate/github/evilmartians/evil-client.svg?style=flat
+[codeclimate]: https://codeclimate.com/github/evilmartians/evil-client
+[gem-badger]: https://img.shields.io/gem/v/evil-client.svg?style=flat
+[gem]: https://rubygems.org/gems/evil-client
+[gemnasium-badger]: https://img.shields.io/gemnasium/evilmartians/evil-client.svg?style=flat
+[gemnasium]: https://gemnasium.com/evilmartians/evil-client
+[inch-badger]: http://inch-ci.org/github/evilmartians/evil-client.svg
+[inch]: https://inch-ci.org/github/evilmartians/evil-client
+[travis-badger]: https://img.shields.io/travis/evilmartians/evil-client/master.svg?style=flat
+[travis]: https://travis-ci.org/evilmartians/evil-client
 
 ## Intro
-
 
 The gem allows writing http(s) clients in a way close to [Swagger][swagger] specifications. Like in Swagger, you need to specify models and operations in domain-specific terms. In addition, the gem supports settings and scopes for instantiating clients and sending requests in idiomatic Ruby.
 
 The gem stands away from mutable states and monkey patching when possible. To support multithreading all instances are immutable (though not frozen to avoid performance loss). Its DSL is backed on top of [dry-initializer][dry-initializer] gem, and supposes heavy usage of [dry-types][dry-types] system of contracts.
 
-For now the top-level DSL supports clients to **json** and **form data** APIs. Because of high variance of XML-based APIs, building their client requires more efforts on a middleware level.
+For now the DSL supports clients to **json** and **form data** APIs out of the box. Because of high variance of XML-based APIs, building corresponding clients require more efforts on a middleware level.
 
 [swagger]: http://swagger.io
 [dry-initializer]: http://dry-rb.org/gems./dry-initializer
