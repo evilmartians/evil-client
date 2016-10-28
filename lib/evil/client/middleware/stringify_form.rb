@@ -11,7 +11,7 @@ class Evil::Client::Middleware
         hash[:headers]["content-type"] = "application/x-www-form-urlencoded"
         hash[:body_string] = env[:body]
                              .flat_map { |key, val| normalize(val, key) }
-                             .flat_map { |hash| stringify(hash) }
+                             .flat_map { |item| stringify(item) }
                              .join("&")
       end
     end
