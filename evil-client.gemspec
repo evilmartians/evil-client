@@ -14,11 +14,12 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = ">= 2.3"
 
   gem.add_runtime_dependency "dry-initializer", "~> 0.7.0"
-  gem.add_runtime_dependency "rack", "~> 2.0"
   gem.add_runtime_dependency "mime-types", "~> 3.0"
+  gem.add_runtime_dependency "rack"
 
   gem.add_development_dependency "dry-types", "~> 0.9"
   gem.add_development_dependency "rspec", "~> 3.0"
   gem.add_development_dependency "rake", "~> 11"
   gem.add_development_dependency "webmock", "~> 2.1"
+  gem.add_development_dependency "rubocop", "~> 0.44"
 end
