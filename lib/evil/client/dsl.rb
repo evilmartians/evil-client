@@ -13,6 +13,11 @@ class Evil::Client
       run Middleware::NormalizeHeaders
     end
 
+    # Adds [#operations] to a specific client's instances
+    def self.extended(klass)
+      klass.include Dry::Initializer.define -> { param :operations }
+    end
+
     # Helper to define params and options a for a client's constructor
     #
     # @example
@@ -78,24 +83,30 @@ class Evil::Client
       self
     end
 
-    # Takes constructor arguments and builds a final schema for the instance
+    # Takes constructor arguments and builds a final schema for an instance
+    # (All the instantiation magics goes here)
     #
     # @param  [Object] *args
     # @return [Hash<Symbol, Object>]
     #
-    def finalize(*args)
+    def new(*args)
       settings   = schema[:settings].new(*args)
-      uri        = URI(schema[:base_url].call(settings))
-      client     = schema[:connection].new(uri)
+      base_url   = schema[:base_url].call(settings)
       middleware = schema[:middleware].finalize(settings)
-      stack = Middleware.prepend.(middleware.(Middleware.append.(client)))
+      operations = schema[:operations].finalize(settings)
+      client     = schema[:connection].new URI(base_url)
+      connection = Middleware.prepend.(middleware.(Middleware.append.(client)))
 
-      { connection: stack, operations: schema[:operations].finalize(settings) }
+      data = operations.each_with_object({}) do |(key, schema), hash|
+        hash[key] = Evil::Client::Operation.new schema, connection
+      end
+
+      super(data)
     end
 
     private
 
-    BASE_URL = -> (_) { fail NotImplementedError.new "Base url not defined" }
+    BASE_URL = -> (_) { fail NotImplementedError.new "Base url is not defined" }
 
     def schema
       @schema ||= {

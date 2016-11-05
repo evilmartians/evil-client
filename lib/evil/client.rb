@@ -77,21 +77,6 @@ module Evil
     require_relative "client/operation"
     require_relative "client/dsl"
 
-    extend  DSL
-    include Dry::Initializer.define -> { param :operations }
-
-    # Builds a client instance with custom settings
-    def self.new(*settings)
-      super finalize(*settings)
-    end
-
-    private
-
-    def initialize(schema)
-      @operations = \
-        schema[:operations].each_with_object({}) do |(key, val), hash|
-          hash[key] = Operation.new val, schema[:connection]
-        end
-    end
+    extend DSL
   end
 end

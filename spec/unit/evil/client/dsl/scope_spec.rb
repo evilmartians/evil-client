@@ -3,6 +3,8 @@ RSpec.describe Evil::Client::DSL, ".scope" do
     class Test::Foo
       extend Evil::Client::DSL
 
+      base_url { "https://example.com" }
+
       scope :foo do
         param :bar
 
