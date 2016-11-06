@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name     = "evil-client"
-  gem.version  = "0.2.1"
+  gem.version  = "0.2.2"
   gem.author   = "Andrew Kozin (nepalez)"
   gem.email    = "andrew.kozin@gmail.com"
   gem.homepage = "https://github.com/evilmartians/evil-client"
@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency "dry-initializer", "~> 0.9.0"
   gem.add_runtime_dependency "mime-types", "~> 3.0"
-  gem.add_runtime_dependency "rack"
+  gem.add_runtime_dependency "rack", "~> 2"
 
   gem.add_development_dependency "dry-types", "~> 0.9"
   gem.add_development_dependency "rspec", "~> 3.0"
