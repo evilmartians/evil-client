@@ -138,7 +138,7 @@ RSpec.describe "operation with json body" do
     end
 
     it "requires mandatory arguments" do
-      expect { operation.call bar: 2, baz: 3 }.to raise_error(ArgumentError)
+      expect { operation.call bar: 2, baz: 3 }.to raise_error(KeyError)
     end
 
     it "applies type restrictions" do

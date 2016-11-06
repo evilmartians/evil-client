@@ -65,7 +65,7 @@ RSpec.describe "operation with query" do
 
   it "applies type restrictuions" do
     expect { client.operations[:filter].call id: 1, name: "Joe" }
-      .to raise_error(ArgumentError)
+      .to raise_error(KeyError)
   end
 
   it "supports nesting in a Rails style" do

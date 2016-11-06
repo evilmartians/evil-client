@@ -30,7 +30,7 @@ RSpec.describe "instantiation" do
     let(:client) { Test::Client.new(**options) }
 
     it "is rejected" do
-      expect { client }.to raise_error(ArgumentError)
+      expect { client }.to raise_error(KeyError)
     end
   end
 
@@ -45,8 +45,8 @@ RSpec.describe "instantiation" do
   context "with unexpected option settings:" do
     before { options[:foo] = "bar" }
 
-    it "is rejected" do
-      expect { client }.to raise_error(ArgumentError)
+    it "is accepted" do
+      expect { client }.not_to raise_error
     end
   end
 
@@ -54,7 +54,7 @@ RSpec.describe "instantiation" do
     before { options.delete :user }
 
     it "is rejected" do
-      expect { client }.to raise_error(ArgumentError)
+      expect { client }.to raise_error(KeyError)
     end
   end
 

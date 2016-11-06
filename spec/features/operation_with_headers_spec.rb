@@ -61,7 +61,7 @@ RSpec.describe "operation with headers" do
 
   it "requires mandatory headers" do
     expect { client.operations[:clear_data].call bar: "BAR", baz: "BAZ" }
-      .to raise_error(ArgumentError)
+      .to raise_error(KeyError)
   end
 
   it "applies type constraints" do

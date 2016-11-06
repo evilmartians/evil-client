@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = ">= 2.3"
 
-  gem.add_runtime_dependency "dry-initializer", "~> 0.7.0"
+  gem.add_runtime_dependency "dry-initializer", "~> 0.9.0"
   gem.add_runtime_dependency "mime-types", "~> 3.0"
   gem.add_runtime_dependency "rack"
 
