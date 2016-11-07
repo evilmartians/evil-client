@@ -25,8 +25,8 @@ class Evil::Client
         @attributes ||= []
       end
 
-      def option(name, type = nil, **opts)
-        super.tap { attributes << name.to_sym }
+      def option(name, type = nil, as: nil, **opts)
+        super.tap { attributes << (as || name).to_sym }
       end
       alias_method :attribute, :option
       alias_method :param, :option
