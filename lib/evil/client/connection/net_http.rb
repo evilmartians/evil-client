@@ -46,7 +46,7 @@ class Evil::Client
       end
 
       def build_uri(path, query)
-        base_uri.merge(path).tap { |uri| uri.query = query }
+        base_uri.merge(URI.encode(path)).tap { |uri| uri.query = query }
       end
 
       def handle(response)
