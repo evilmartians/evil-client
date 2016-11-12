@@ -6,11 +6,11 @@ RSpec.describe Evil::Client::Operation::Response do
       doc: "http://example.com/users",
       responses: {
         200 => {
-          coercer: proc { |body:, **| body.first.upcase.to_sym },
+          coercer: proc { |body| body.upcase.to_sym },
           raise:   false
         },
         400 => {
-          coercer: proc { |body:, **| body.first.upcase.to_sym },
+          coercer: proc { |body| body.upcase.to_sym },
           raise:   true
         }
       }

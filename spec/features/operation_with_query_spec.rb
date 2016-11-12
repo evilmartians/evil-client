@@ -21,7 +21,7 @@ RSpec.describe "operation with query" do
       end
 
       operation :search do
-        query model: Test::User
+        query type: Test::User
       end
     end
 

@@ -110,7 +110,7 @@ RSpec.describe "operation with form body" do
     before do
       class Test::Client < Evil::Client
         operation :example do
-          body format: "form", model: Test::User do
+          body format: "form", type: Test::User do
             attribute :foo
           end
         end

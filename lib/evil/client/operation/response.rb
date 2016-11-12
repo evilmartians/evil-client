@@ -15,12 +15,11 @@ class Evil::Client::Operation
     #
     def handle(array)
       status, header, body = array
-      response = Rack::Response.new(body, status, header)
 
-      handler = response_schema(response)
-      data    = handler[:coercer].call response: response,
-                                       body:     response.body,
-                                       header:   response.header
+      response = Rack::Response.new(body, status, header)
+      handler  = response_schema(response)
+      body     = response.body
+      data     = handler[:coercer][body.join("\n")] if body.any?
 
       handler[:raise] ? fail(ResponseError.new(schema, status, data)) : data
     end

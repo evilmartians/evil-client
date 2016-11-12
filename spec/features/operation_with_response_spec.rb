@@ -10,18 +10,18 @@ RSpec.describe "operation with query" do
         http_method :get
         path { "users" }
 
-        response 200
+        response 200, format: :plain
       end
 
       operation :example do
-        response 201 do |body:, header:, response:|
-          [body, header, response]
+        response 201, format: :plain do |body|
+          body.to_sym
         end
 
-        response 404, raise: true
+        response 404, raise: true, format: :plain
 
-        response 422, raise: true do |body:, header:, response:|
-          [body, header, response]
+        response 422, raise: true, format: :plain do |body|
+          body.to_sym
         end
       end
     end
@@ -36,9 +36,7 @@ RSpec.describe "operation with query" do
                                      headers: { "Foo" => "BAR" },
                                      body: "Hi!"
 
-    expect(subject).to be_kind_of Rack::Response
-    expect(subject.headers).to include "foo" => ["BAR"]
-    expect(subject.body).to eq ["Hi!"]
+    expect(subject).to eq "Hi!"
   end
 
   it "applies block to coerce data" do
@@ -46,13 +44,7 @@ RSpec.describe "operation with query" do
                                      headers: { "Foo" => "BAR" },
                                      body: "Hi!"
 
-    body, headers, response = subject
-
-    expect(response.headers).to include "foo" => ["BAR"]
-    expect(response.body).to eq ["Hi!"]
-
-    expect(body).to eq response.body
-    expect(headers).to eq response.headers
+    expect(subject).to eq :Hi!
   end
 
   it "raises ResponseError when necessary" do
@@ -63,9 +55,7 @@ RSpec.describe "operation with query" do
     begin
       subject
     rescue Evil::Client::Operation::ResponseError => error
-      expect(error.response).to be_kind_of Rack::Response
-      expect(error.response.headers).to include "foo" => ["BAR"]
-      expect(error.response.body).to eq ["Hi!"]
+      expect(error.response).to eq "Hi!"
     else
       fail
     end
@@ -79,13 +69,7 @@ RSpec.describe "operation with query" do
     begin
       subject
     rescue Evil::Client::Operation::ResponseError => error
-      body, headers, response = error.response
-
-      expect(response.headers).to include "foo" => ["BAR"]
-      expect(response.body).to eq ["Hi!"]
-
-      expect(body).to eq response.body
-      expect(headers).to eq response.headers
+      expect(error.response).to eq :Hi!
     else
       fail
     end

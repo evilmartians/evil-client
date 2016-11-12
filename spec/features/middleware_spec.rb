@@ -34,9 +34,7 @@ RSpec.describe "middleware" do
       operation :find do
         path { "some" }
         http_method :post
-        response 200 do |body:, **|
-          body.first
-        end
+        response 200, format: :plain
       end
     end
 

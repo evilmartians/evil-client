@@ -90,12 +90,21 @@ class CatsClient < Evil::Client
       attribute :age,   optional: true
     end
 
-    response 200 do |body:, **|
-      Cat.new JSON.parse(body) # define that the body should be wrapped to cat
+    # Parses json response and wraps it into Cat instance with additional
+    # parameter
+    response 200, format: :json, type: Cat do
+      attribute :success
     end
 
-    response 422, raise: true do |body:, **|
-      JSON.parse(body) # expect 422 to return json data
+    # Parses json response, wraps it into model with [#error] and raises
+    # an exception where [ResponseError#response] contains the model istance
+    response 422, format: :json, raise: true do
+      attribute :error
+    end
+
+    # Takes raw body and converts it into the hashie
+    response 404, raise: true do |body|
+      Hashie::Mash.new error: body
     end
   end
 

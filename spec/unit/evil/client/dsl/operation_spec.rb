@@ -126,7 +126,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
       let(:block) do
         proc do |_|
-          body model: Test::Foo
+          body type: Test::Foo
         end
       end
 
@@ -145,7 +145,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
       let(:block) do
         proc do |_|
-          body model: Test::Foo do
+          body type: Test::Foo do
             attribute :foo
             attribute :bar
           end
@@ -168,7 +168,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     let(:block) do
       proc do |settings|
-        query model: Test::Foo do
+        query type: Test::Foo do
           attribute settings.user
           attribute :bar
         end
@@ -190,7 +190,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     let(:block) do
       proc do |settings|
-        headers model: Test::Foo do
+        headers type: Test::Foo do
           attribute settings.user
           attribute :bar
         end
@@ -204,30 +204,167 @@ RSpec.describe Evil::Client::DSL::Operation do
   end
 
   context "with #response" do
-    let(:block) do
-      proc do |_|
-        response 200 do |value|
-          value.to_sym
-        end
+    let(:response_schema)  { subject[:responses][200] }
+    let(:response_raise)   { response_schema[:raise] }
+    let(:response_coercer) { response_schema[:coercer] }
 
-        response 404, raise: true do |value|
-          value.to_s
-        end
+    context "with plain format" do
+      let(:body)  { "foo" }
+      let(:block) { proc { |_| response 200, format: :plain } }
 
-        response 500, raise: true
+      it "works" do
+        expect(response_coercer.call(body)).to eq "foo"
       end
     end
 
-    it "defines :responses" do
-      responses = subject[:responses]
+    context "with plain format and handler" do
+      let(:body) { "foo" }
+      let(:block) do
+        proc do |_|
+          response 200, format: :plain do |body|
+            body.to_sym
+          end
+        end
+      end
 
-      expect(responses[200]).to include raise: false
-      expect(responses[404]).to include raise: true
-      expect(responses[500]).to include raise: true
+      it "applies coercer" do
+        expect(response_coercer.call(body)).to eq :foo
+      end
+    end
 
-      expect(responses[200][:coercer]["foo"]).to eq :foo
-      expect(responses[404][:coercer][:foo]).to eq "foo"
-      expect(responses[500][:coercer][response: :foo]).to eq :foo
+    context "with plain format and type" do
+      let(:body) { "0" }
+      let(:block) do
+        proc do |_|
+          response 200, format: :plain, type: Dry::Types["coercible.int"]
+        end
+      end
+
+      it "uses type" do
+        expect(response_coercer.call(body)).to eq 0
+      end
+    end
+
+    context "with plain format, coercer and type" do
+      let(:body) { "0" }
+      let(:block) do
+        proc do |_|
+          response 200, format: :plain, type: Dry::Types["coercible.string"] do |value|
+            value.to_i + 1
+          end
+        end
+      end
+
+      it "applies coercer and then type" do
+        expect(response_coercer.call(body)).to eq "1"
+      end
+    end
+
+    context "with json format" do
+      let(:body) { '{"foo":1,"baz":"qux"}' }
+      let(:block) { proc { |_| response 200, format: :json } }
+
+      it "returns parsed body" do
+        expect(response_coercer.call(body)).to eq "foo" => 1, "baz" => "qux"
+      end
+    end
+
+    context "with json format and handler" do
+      let(:body) { '{"foo":1,"baz":"qux"}' }
+      let(:block) do
+        proc do |_|
+          response 200, format: :json do |body|
+            body.keys
+          end
+        end
+      end
+
+      it "returns parsed and handled body" do
+        expect(response_coercer.call(body)).to eq %w(foo baz)
+      end
+    end
+
+    context "with json format and type" do
+      before do
+        class Test::Foo < Evil::Client::Model
+          attribute :foo
+        end
+      end
+
+      let(:body) { '{"foo":1,"baz":"qux"}' }
+      let(:block) do
+        proc do |_|
+          response 200, format: :json, type: Test::Foo
+        end
+      end
+
+      it "returns parsed and filtered body" do
+        expect(response_coercer.call(body)).to eq foo: 1
+      end
+    end
+
+    context "with json format, type and handler" do
+      before do
+        class Test::Foo < Evil::Client::Model
+          attribute :foo
+        end
+      end
+
+      let(:body) { '{"foo":1,"baz":"qux"}' }
+      let(:block) do
+        proc do |_|
+          response 200, format: :json, type: Test::Foo do |body|
+            body["foo"] = body["foo"].to_s
+            body
+          end
+        end
+      end
+
+      it "returns parsed, handled and filtered body" do
+        expect(response_coercer.call(body)).to eq Test::Foo.new(foo: "1")
+      end
+    end
+
+    context "with json format and filter" do
+      before do
+        class Test::Foo < Evil::Client::Model
+          attribute :foo
+        end
+      end
+
+      let(:body) { '{"foo":1,"baz":"qux"}' }
+      let(:block) do
+        proc do |_|
+          response 200, format: :json do
+            attribute :baz
+          end
+        end
+      end
+
+      it "returns parsed and filtered body" do
+        expect(response_coercer.call(body)).to eq baz: "qux"
+      end
+    end
+
+    context "with json format, type and filter" do
+      before do
+        class Test::Foo < Evil::Client::Model
+          attribute :foo
+        end
+      end
+
+      let(:body) { '{"foo":1,"baz":2}' }
+      let(:block) do
+        proc do |_|
+          response 200, format: :json, type: Test::Foo do
+            attribute :baz, Dry::Types["coercible.string"]
+          end
+        end
+      end
+
+      it "returns parsed and filtered body" do
+        expect(response_coercer.call(body)).to eq foo: 1, baz: "2"
+      end
     end
   end
 end

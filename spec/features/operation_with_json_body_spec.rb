@@ -108,7 +108,7 @@ RSpec.describe "operation with json body" do
     before do
       class Test::Client < Evil::Client
         operation :example do
-          body model: Test::User do
+          body type: Test::User do
             attribute :foo
           end
         end

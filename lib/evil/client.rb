@@ -41,7 +41,7 @@ require "rack"
 #         option :id, type: Dry::Types["coercible.int"].constrained(gt: 0)
 #       end
 #
-#       response 200, model: Cat
+#       response 200, type: Cat
 #       response 400, raise: true
 #       response 422, raise: true do |body:|
 #         JSON.parse(body.first)
