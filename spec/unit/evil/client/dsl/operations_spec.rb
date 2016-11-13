@@ -1,6 +1,8 @@
 describe Evil::Client::DSL::Operations do
   let(:operations) { described_class.new }
-  let(:settings)   { double(:settings, version: 1, user: "foo", password: "bar") }
+  let(:settings) do
+    double(:settings, version: 1, user: "foo", password: "bar")
+  end
 
   before do
     operations.register(nil) do |settings|

@@ -12,11 +12,11 @@ class Evil::Client
     # @return [Class]
     #
     def self.[](name = nil)
-      key = (name || REGISTRY.keys.first).to_sym
-
+      keys  = REGISTRY.keys
+      key   = (name || keys.first).to_sym
       klass = REGISTRY.fetch(key) do
-        fail ArgumentError.new "Connection '#{key}' is not registered." \
-                               " Use the following keys: #{REGISTRY.keys}"
+        raise ArgumentError.new "Connection '#{key}' is not registered." \
+                                " Use the following keys: #{keys}"
       end
 
       require_relative "connection/#{key}"
@@ -29,7 +29,7 @@ class Evil::Client
     # @return [Array]
     #
     def call(_env)
-      fail NotImplementedError
+      raise NotImplementedError
     end
   end
 end

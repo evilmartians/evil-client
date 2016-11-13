@@ -13,8 +13,8 @@ class Evil::Client::Operation
     def build(options)
       {
         format:       schema[:format],
-        http_method:  http_method,
-        path:         path.call(options),
+        http_method:  extract(:method),
+        path:         extract(:path).call(options),
         security:     schema[:security]&.call(options),
         files:        schema[:files]&.call(options),
         query:        schema[:query]&.new(options).to_h,
@@ -29,14 +29,9 @@ class Evil::Client::Operation
       @key ||= schema[:key]
     end
 
-    def http_method
-      return schema[:method] if schema[:method]
-      fail NotImplementedError.new "No method defined for operation '#{key}'"
-    end
-
-    def path
-      return schema[:path] if schema[:path]
-      fail NotImplementedError.new "Path not defined for operation '#{key}'"
+    def extract(property)
+      return schema[property] if schema[property]
+      raise NotImplementedError, "No #{property} defined for operation '#{key}'"
     end
   end
 end

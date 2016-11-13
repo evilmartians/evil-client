@@ -57,7 +57,7 @@ RSpec.describe "operation with query" do
     rescue Evil::Client::Operation::ResponseError => error
       expect(error.response).to eq "Hi!"
     else
-      fail
+      raise
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe "operation with query" do
     rescue Evil::Client::Operation::ResponseError => error
       expect(error.response).to eq :Hi!
     else
-      fail
+      raise
     end
   end
 
@@ -87,7 +87,7 @@ RSpec.describe "operation with query" do
       expect(error.response.headers).to include "foo" => ["BAR"]
       expect(error.response.body).to eq ["Hi!"]
     else
-      fail
+      raise
     end
   end
 end

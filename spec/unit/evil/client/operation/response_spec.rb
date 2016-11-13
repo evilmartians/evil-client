@@ -37,7 +37,7 @@ RSpec.describe Evil::Client::Operation::Response do
         expect(error.message).to include "find_user"
         expect(error.response).to eq :FOO
       else
-        fail
+        raise
       end
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe Evil::Client::Operation::Response do
         expect(error.response).to be_a Rack::Response
         expect(error.response.status).to eq 404
       else
-        fail
+        raise
       end
     end
   end

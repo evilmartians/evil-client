@@ -83,8 +83,8 @@ module Evil::Client::DSL
     def __valid_format__(format)
       formats = %w(json form)
       return format.to_s if formats.include? format.to_s
-      fail ArgumentError.new "Invalid format #{format} for body." \
-                             " Use one of formats: #{formats}"
+      raise ArgumentError.new "Invalid format #{format} for body." \
+                              " Use one of formats: #{formats}"
     end
 
     def __model__(type: nil, **, &block)

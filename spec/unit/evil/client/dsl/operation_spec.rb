@@ -249,9 +249,9 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { "0" }
       let(:block) do
         proc do |_|
-          response 200, format: :plain, type: Dry::Types["coercible.string"] do |value|
-            value.to_i + 1
-          end
+          response 200,
+                   format: :plain,
+                   type: Dry::Types["coercible.string"] { |val| val.to_i + 1 }
         end
       end
 

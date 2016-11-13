@@ -52,7 +52,7 @@ RSpec.describe Evil::Client::DSL::Security do
       end
     end
 
-    it "fails" do
+    it "raises" do
       expect { subject }.to raise_error ArgumentError
     end
   end

@@ -4,15 +4,6 @@ class Evil::Client
     require_relative "dsl/operations"
     require_relative "dsl/scope"
 
-    # Stack of default middleware before custom midleware and a connection
-    # This stack cannot be modified
-    DEFAULT_MIDDLEWARE = Middleware.new do
-      run Middleware::MergeSecurity
-      run Middleware::StringifyJson
-      run Middleware::StringifyQuery
-      run Middleware::NormalizeHeaders
-    end
-
     # Adds [#operations] to a specific client's instances
     def self.extended(klass)
       klass.include Dry::Initializer.define -> { param :operations }
@@ -106,7 +97,7 @@ class Evil::Client
 
     private
 
-    BASE_URL = -> (_) { fail NotImplementedError.new "Base url is not defined" }
+    BASE_URL = proc { raise NotImplementedError.new "Base url is not defined" }
 
     def schema
       @schema ||= {

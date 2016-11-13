@@ -25,7 +25,7 @@ RSpec.describe "operation with documentation" do
     rescue => error
       expect(error.message).to include "https://docs.example.com/v3/index.html"
     else
-      fail
+      raise
     end
   end
 
@@ -35,7 +35,7 @@ RSpec.describe "operation with documentation" do
     rescue => error
       expect(error.message).to include "https://docs.example.com/v3/findData"
     else
-      fail
+      raise
     end
   end
 end

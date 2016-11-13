@@ -21,7 +21,7 @@ class Evil::Client::Operation
       body     = response.body
       data     = handler[:coercer][body.join("\n")] if body.any?
 
-      handler[:raise] ? fail(ResponseError.new(schema, status, data)) : data
+      handler[:raise] ? raise(ResponseError.new(schema, status, data)) : data
     end
 
     private
@@ -32,7 +32,7 @@ class Evil::Client::Operation
 
     def response_schema(response)
       schema[:responses].fetch response.status do
-        fail UnexpectedResponseError.new(schema, response)
+        raise UnexpectedResponseError.new(schema, response)
       end
     end
   end
