@@ -12,10 +12,9 @@ class Evil::Client::Operation
     # @param  [Array] array Rack-compatible array of response data
     # @return [Object]
     #
-    # @raise  [Evil::Client::ResponseError]
-    #   if it is required by the schema
-    # @raise  [Evil::Client::UnexpectedResponseError]
-    #   if the response cannot be processed
+    # @raise [Evil::Client::ResponseError] when needed by the schema
+    # @raise [Evil::Client::UnexpectedResponseError]
+    #   when a response cannot be processed
     #
     def handle(response)
       status, _, body = response

@@ -17,13 +17,19 @@ Style/Documentation:
 Style/DoubleNegation:
   Enabled: false
 
-Style/NumericPredicate:
-  Enabled: false
-
 Style/LambdaCall:
   Enabled: false
 
+Style/MethodMissing:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
 Style/RaiseArgs:
+  Enabled: false
+
+Style/RescueModifier:
   Enabled: false
 
 Style/SingleLineMethods:
