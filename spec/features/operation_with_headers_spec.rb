@@ -12,7 +12,7 @@ RSpec.describe "operation with headers" do
           attribute :baz, optional: true
         end
 
-        response 200
+        response :success, 200
       end
 
       operation :clear_data do

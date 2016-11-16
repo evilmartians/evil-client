@@ -1,15 +1,18 @@
 class Evil::Client::Operation
   class UnexpectedResponseError < RuntimeError
-    attr_reader :response
+    attr_reader :status, :data
 
     private
 
-    def initialize(schema, response)
-      @response = response
+    def initialize(schema, status, data)
+      @status = status
+      @data   = data
 
       message = "Response to operation '#{schema[:key]}'" \
-                " has unexpected http status #{response.status}."
+                " with http status #{status} and body #{data}" \
+                " cannot be processed."
       message << " See #{schema[:doc]} for details." if schema[:doc]
+
       super message
     end
   end

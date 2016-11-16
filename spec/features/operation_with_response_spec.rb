@@ -10,17 +10,17 @@ RSpec.describe "operation with query" do
         http_method :get
         path { "users" }
 
-        response 200, format: :plain
+        response :success, 200, format: :plain
       end
 
       operation :example do
-        response 201, format: :plain do |body|
+        response :created, 201, format: :plain do |body|
           body.to_sym
         end
 
-        response 404, raise: true, format: :plain
+        response :not_found, 404, raise: true, format: :plain
 
-        response 422, raise: true, format: :plain do |body|
+        response :error, 422, raise: true, format: :plain do |body|
           body.to_sym
         end
       end
@@ -55,7 +55,7 @@ RSpec.describe "operation with query" do
     begin
       subject
     rescue Evil::Client::Operation::ResponseError => error
-      expect(error.response).to eq "Hi!"
+      expect(error.data).to eq "Hi!"
     else
       raise
     end
@@ -69,7 +69,7 @@ RSpec.describe "operation with query" do
     begin
       subject
     rescue Evil::Client::Operation::ResponseError => error
-      expect(error.response).to eq :Hi!
+      expect(error.data).to eq :Hi!
     else
       raise
     end
@@ -83,9 +83,7 @@ RSpec.describe "operation with query" do
     begin
       subject
     rescue Evil::Client::Operation::UnexpectedResponseError => error
-      expect(error.response).to be_kind_of Rack::Response
-      expect(error.response.headers).to include "foo" => ["BAR"]
-      expect(error.response.body).to eq ["Hi!"]
+      expect(error.data).to eq "Hi!"
     else
       raise
     end

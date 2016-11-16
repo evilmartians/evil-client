@@ -126,7 +126,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
       let(:block) do
         proc do |_|
-          body type: Test::Foo
+          body model: Test::Foo
         end
       end
 
@@ -145,7 +145,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
       let(:block) do
         proc do |_|
-          body type: Test::Foo do
+          body model: Test::Foo do
             attribute :foo
             attribute :bar
           end
@@ -168,7 +168,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     let(:block) do
       proc do |settings|
-        query type: Test::Foo do
+        query model: Test::Foo do
           attribute settings.user
           attribute :bar
         end
@@ -190,7 +190,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     let(:block) do
       proc do |settings|
-        headers type: Test::Foo do
+        headers model: Test::Foo do
           attribute settings.user
           attribute :bar
         end
@@ -204,13 +204,13 @@ RSpec.describe Evil::Client::DSL::Operation do
   end
 
   context "with #response" do
-    let(:response_schema)  { subject[:responses][200] }
+    let(:response_schema)  { subject[:responses][:success] }
     let(:response_raise)   { response_schema[:raise] }
     let(:response_coercer) { response_schema[:coercer] }
 
     context "with plain format" do
       let(:body)  { "foo" }
-      let(:block) { proc { |_| response 200, format: :plain } }
+      let(:block) { proc { |_| response :success, 200, format: :plain } }
 
       it "works" do
         expect(response_coercer.call(body)).to eq "foo"
@@ -221,7 +221,7 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { "foo" }
       let(:block) do
         proc do |_|
-          response 200, format: :plain do |body|
+          response :success, 200, format: :plain do |body|
             body.to_sym
           end
         end
@@ -236,7 +236,10 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { "0" }
       let(:block) do
         proc do |_|
-          response 200, format: :plain, type: Dry::Types["coercible.int"]
+          response :success,
+                   200,
+                   format: :plain,
+                   model: Dry::Types["coercible.int"]
         end
       end
 
@@ -249,9 +252,10 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { "0" }
       let(:block) do
         proc do |_|
-          response 200,
+          response :success,
+                   200,
                    format: :plain,
-                   type: Dry::Types["coercible.string"] { |val| val.to_i + 1 }
+                   model: Dry::Types["coercible.string"] { |val| val.to_i + 1 }
         end
       end
 
@@ -262,7 +266,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with json format" do
       let(:body) { '{"foo":1,"baz":"qux"}' }
-      let(:block) { proc { |_| response 200, format: :json } }
+      let(:block) { proc { |_| response :success, 200, format: :json } }
 
       it "returns parsed body" do
         expect(response_coercer.call(body)).to eq "foo" => 1, "baz" => "qux"
@@ -273,14 +277,14 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { '{"foo":1,"baz":"qux"}' }
       let(:block) do
         proc do |_|
-          response 200, format: :json do |body|
+          response :success, 200, format: :json do |body|
             body.keys
           end
         end
       end
 
       it "returns parsed and handled body" do
-        expect(response_coercer.call(body)).to eq %w(foo baz)
+        expect(response_coercer.call(body)).to eq data: %w(foo baz)
       end
     end
 
@@ -294,7 +298,7 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { '{"foo":1,"baz":"qux"}' }
       let(:block) do
         proc do |_|
-          response 200, format: :json, type: Test::Foo
+          response :success, 200, format: :json, model: Test::Foo
         end
       end
 
@@ -313,7 +317,7 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { '{"foo":1,"baz":"qux"}' }
       let(:block) do
         proc do |_|
-          response 200, format: :json, type: Test::Foo do |body|
+          response :success, 200, format: :json, model: Test::Foo do |body|
             body["foo"] = body["foo"].to_s
             body
           end
@@ -335,7 +339,7 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { '{"foo":1,"baz":"qux"}' }
       let(:block) do
         proc do |_|
-          response 200, format: :json do
+          response :success, 200, format: :json do
             attribute :baz
           end
         end
@@ -356,7 +360,7 @@ RSpec.describe Evil::Client::DSL::Operation do
       let(:body) { '{"foo":1,"baz":2}' }
       let(:block) do
         proc do |_|
-          response 200, format: :json, type: Test::Foo do
+          response :success, 200, format: :json, model: Test::Foo do
             attribute :baz, Dry::Types["coercible.string"]
           end
         end

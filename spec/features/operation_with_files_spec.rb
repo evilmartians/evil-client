@@ -5,7 +5,7 @@ RSpec.describe "operation with files" do
       operation :example do
         http_method :get
         path { "users" }
-        response 200
+        response :success, 200
 
         files do |file:, **|
           add file, type: "text/xml", charset: "utf-16", filename: "foo.xml"

@@ -2,6 +2,7 @@ module Evil::Client::DSL
   require_relative "security"
   require_relative "files"
   require_relative "response"
+  require_relative "responses"
 
   # Builds a schema for single operation
   class Operation
@@ -70,10 +71,12 @@ module Evil::Client::DSL
       @schema[:query] = __model__(options, &block)
     end
 
-    def response(*statuses, **options, &block)
-      statuses.each do |status|
-        @schema[:responses][status] = Response[block: block, **options]
-      end
+    def responses(options = {}, &block)
+      Responses.new(self, options, &block)
+    end
+
+    def response(name, status, **options, &block)
+      @schema[:responses][name] = Response[status, block: block, **options]
     end
 
     # ==========================================================================
@@ -87,13 +90,13 @@ module Evil::Client::DSL
                               " Use one of formats: #{formats}"
     end
 
-    def __model__(type: nil, **, &block)
-      if type && block
-        Class.new(type, &block)
+    def __model__(model: nil, **, &block)
+      if model && block
+        Class.new(model, &block)
       elsif block
         Class.new(Evil::Client::Model, &block)
-      elsif type
-        type
+      elsif model
+        model
       end
     end
   end

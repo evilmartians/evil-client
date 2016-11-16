@@ -14,7 +14,7 @@ RSpec.describe "scoping" do
           attribute :name
         end
 
-        response 200
+        response :success, 200
       end
 
       scope do

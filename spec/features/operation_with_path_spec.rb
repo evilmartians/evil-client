@@ -5,7 +5,7 @@ RSpec.describe "operation with path" do
       operation do
         http_method :get
         path { "users" }
-        response 200
+        response :success, 200
       end
 
       operation :find_users

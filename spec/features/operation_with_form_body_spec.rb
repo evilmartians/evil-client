@@ -9,7 +9,7 @@ RSpec.describe "operation with form body" do
       operation do
         http_method :get
         path { "users" }
-        response 200
+        response :success, 200
       end
     end
 
@@ -26,7 +26,7 @@ RSpec.describe "operation with form body" do
         operation do
           http_method :get
           path { "users" }
-          response 200
+          response :success, 200
 
           body format: "form" do
             attribute :foo
@@ -57,7 +57,7 @@ RSpec.describe "operation with form body" do
         operation do
           http_method :get
           path { "users" }
-          response 200
+          response :success, 200
 
           body format: "form" do
             attribute :foo
@@ -110,7 +110,7 @@ RSpec.describe "operation with form body" do
     before do
       class Test::Client < Evil::Client
         operation :example do
-          body format: "form", type: Test::User do
+          body format: "form", model: Test::User do
             attribute :foo
           end
         end

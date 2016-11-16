@@ -2,17 +2,18 @@ module Evil::Client::DSL
   # Builds a schema for response processor
   class Response
     extend Dry::Initializer::Mixin
+    param  :status
     option :raise,  default: proc { false }
     option :format, default: proc {}
+    option :model,  default: proc { nil }
     option :block,  default: proc { nil }
-    option :type,   default: proc { nil }
 
-    def self.[](options)
-      new(options).to_h
+    def self.[](*args)
+      new(*args).to_h
     end
 
     def to_h
-      { raise: raise, coercer: coercer }
+      { status: status.to_i, coercer: coercer, raise: raise }
     end
 
     private
@@ -26,12 +27,17 @@ module Evil::Client::DSL
     end
 
     def coercer
-      handlers = [parser, processor, finalizer].compact
+      handlers = [parser, processor, wrapper, finalizer].compact
       proc { |body| handlers.inject(body) { |obj, handler| handler.call(obj) } }
     end
 
     def parser
       proc { |body| JSON.parse(body) } if json?
+    end
+
+    def wrapper
+      return unless json?
+      proc { |data| Hash === data ? data : { data: data } }
     end
 
     def processor
@@ -45,9 +51,9 @@ module Evil::Client::DSL
     end
 
     def finalizer
-      case [type.nil?, addon.nil?]
-      when [false, true]  then type
-      when [false, false] then Class.new(type).tap(&addon)
+      case [model.nil?, addon.nil?]
+      when [false, true]  then model
+      when [false, false] then Class.new(model).tap(&addon)
       when [true,  false] then Class.new(Evil::Client::Model).tap(&addon)
       else nil
       end

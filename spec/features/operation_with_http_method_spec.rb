@@ -5,7 +5,7 @@ RSpec.describe "operation with http_method" do
       operation do |settings|
         http_method settings.version > 1 ? :post : :get
         path { "data" }
-        response 200
+        response :success, 200
       end
 
       operation :clear_data do

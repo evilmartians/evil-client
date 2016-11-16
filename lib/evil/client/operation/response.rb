@@ -11,29 +11,30 @@ class Evil::Client::Operation
     #
     # @param  [Array] array Rack-compatible array of response data
     # @return [Object]
-    # @raise  [Evil::Client::ResponseError] if it is required by the schema
     #
-    def handle(array)
-      status, header, body = array
+    # @raise  [Evil::Client::ResponseError]
+    #   if it is required by the schema
+    # @raise  [Evil::Client::UnexpectedResponseError]
+    #   if the response cannot be processed
+    #
+    def handle(response)
+      status, _, body = response
+      body = body.any? ? body.join("\n") : nil
 
-      response = Rack::Response.new(body, status, header)
-      handler  = response_schema(response)
-      body     = response.body
-      data     = handler[:coercer][body.join("\n")] if body.any?
+      handlers(status).each do |handler|
+        data = handler[:coercer][body] rescue next
+        raise ResponseError.new(schema, status, data) if handler[:raise]
+        return data
+      end
 
-      handler[:raise] ? raise(ResponseError.new(schema, status, data)) : data
+      raise UnexpectedResponseError.new(schema, status, body)
     end
 
     private
 
-    def name
-      @name ||= schema[:name]
-    end
-
-    def response_schema(response)
-      schema[:responses].fetch response.status do
-        raise UnexpectedResponseError.new(schema, response)
-      end
+    def handlers(status)
+      schema[:responses].values
+                        .select { |handler| handler[:status] == status }
     end
   end
 end

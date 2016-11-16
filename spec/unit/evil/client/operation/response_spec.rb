@@ -5,11 +5,13 @@ RSpec.describe Evil::Client::Operation::Response do
       key: :find_user,
       doc: "http://example.com/users",
       responses: {
-        200 => {
+        success: {
+          status:  200,
           coercer: proc { |body| body.upcase.to_sym },
           raise:   false
         },
-        400 => {
+        error: {
+          status:  400,
           coercer: proc { |body| body.upcase.to_sym },
           raise:   true
         }
@@ -35,7 +37,7 @@ RSpec.describe Evil::Client::Operation::Response do
         subject
       rescue Evil::Client::Operation::ResponseError => error
         expect(error.message).to include "find_user"
-        expect(error.response).to eq :FOO
+        expect(error.data).to eq :FOO
       else
         raise
       end
@@ -51,8 +53,8 @@ RSpec.describe Evil::Client::Operation::Response do
       rescue Evil::Client::Operation::UnexpectedResponseError => error
         expect(error.message).to include "find_user"
         expect(error.message).to include "http://example.com/users"
-        expect(error.response).to be_a Rack::Response
-        expect(error.response.status).to eq 404
+        expect(error.data).to eq "foo"
+        expect(error.status).to eq 404
       else
         raise
       end

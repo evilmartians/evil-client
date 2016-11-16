@@ -9,7 +9,7 @@ RSpec.describe "operation with query" do
       operation do
         http_method :get
         path { "users" }
-        response 200
+        response :success, 200
       end
 
       operation :filter do
@@ -21,7 +21,7 @@ RSpec.describe "operation with query" do
       end
 
       operation :search do
-        query type: Test::User
+        query model: Test::User
       end
     end
 

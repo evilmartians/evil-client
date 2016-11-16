@@ -5,7 +5,7 @@ RSpec.describe "operation with security" do
       operation do
         http_method :get
         path { "data" }
-        response 200
+        response :success, 200
       end
     end
 
@@ -29,7 +29,7 @@ RSpec.describe "operation with security" do
         operation do |settings|
           http_method :get
           path { "data" }
-          response 200
+          response :success, 200
 
           security do
             basic_auth settings.user, settings.password

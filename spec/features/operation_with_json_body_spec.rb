@@ -9,7 +9,7 @@ RSpec.describe "operation with json body" do
       operation do
         http_method :get
         path { "users" }
-        response 200
+        response :success, 200
       end
     end
 
@@ -26,7 +26,7 @@ RSpec.describe "operation with json body" do
         operation do
           http_method :get
           path { "users" }
-          response 200
+          response :success, 200
 
           body do
             attribute :foo
@@ -55,7 +55,7 @@ RSpec.describe "operation with json body" do
         operation do
           http_method :get
           path { "users" }
-          response 200
+          response :success, 200
 
           body do
             attribute :foo
@@ -108,7 +108,7 @@ RSpec.describe "operation with json body" do
     before do
       class Test::Client < Evil::Client
         operation :example do
-          body type: Test::User do
+          body model: Test::User do
             attribute :foo
           end
         end
