@@ -1,4 +1,4 @@
-RSpec.describe "operation with query" do
+RSpec.describe "operation with nested responses" do
   # see Test::Client definition in `/spec/support/test_client.rb`
   before do
     class Test::User < Evil::Client::Model
@@ -14,14 +14,18 @@ RSpec.describe "operation with query" do
       end
 
       operation :example do
-        response :created, 201, format: :plain do |body|
-          body.to_sym
-        end
+        responses format: :plain do
+          response :created, 201 do |body|
+            body.to_sym
+          end
 
-        response :not_found, 404, raise: true, format: :plain
+          responses raise: true do
+            response :not_found, 404
 
-        response :error, 422, raise: true, format: :plain do |body|
-          body.to_sym
+            response :error, 422 do |body|
+              body.to_sym
+            end
+          end
         end
       end
     end
