@@ -15,11 +15,13 @@ formats will be added.
   and different structures, like in the following example, where errors
   are returned with the same status 200 (not 4**) as success:
 
-    operation :update_user do
-      # ...
-      response :success, 200, model: User
-      response :error,   200, model: Error
-    end
+  ```ruby
+  operation :update_user do
+    # ...
+    response :success, 200, model: User
+    response :error,   200, model: Error
+  end
+  ```
 
   This time response handler will try processing a response using various
   definitions (in order of their declaration) until some suits. The hanlder
@@ -31,14 +33,18 @@ formats will be added.
 ## Added
 - Method `DSL#responses` to share options between response definitions (nepalez)
 
-    responses format: "json" do
-      responses raise: true do
-        response :failure,   400
-        response :not_found, 404
-      end
+  ```ruby
+  responses format: "json" do
+    responses raise: true do
+      response :failure,   400
+      response :not_found, 404
     end
+  end
+  ```
 
   This is the same as:
 
-    response :failure,   400, format: "json", raise: true
-    response :not_found, 404, format: "json", raise: true
+  ```ruby
+  response :failure,   400, format: "json", raise: true
+  response :not_found, 404, format: "json", raise: true
+  ```
