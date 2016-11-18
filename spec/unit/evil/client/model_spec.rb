@@ -1,9 +1,11 @@
 RSpec.describe Evil::Client::Model do
   before do
     class Test::User < Evil::Client::Model
-      option :name,  type: Dry::Types["strict.string"]
-      option :email, type: Dry::Types["strict.string"], default:  proc { nil }
-      option :phone, type: Dry::Types["strict.string"], optional: true
+      attributes type: Dry::Types["strict.string"] do
+        option :name
+        option :email, default:  proc { nil }
+        option :phone, optional: true
+      end
     end
 
     class Test::Order < Evil::Client::Model

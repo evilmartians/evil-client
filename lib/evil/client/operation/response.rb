@@ -32,8 +32,8 @@ class Evil::Client::Operation
     private
 
     def handlers(status)
-      schema[:responses].values
-                        .select { |handler| handler[:status] == status }
+      list = schema[:responses].values.select { |item| item[:status] == status }
+      list.reject { |item| item[:raise] } + list.select { |item| item[:raise] }
     end
   end
 end
