@@ -55,7 +55,6 @@ module Evil::Client::DSL
       when [false, true]  then model
       when [false, false] then Class.new(model).tap(&addon)
       when [true,  false] then Class.new(Evil::Client::Model).tap(&addon)
-      else nil
       end
     end
   end

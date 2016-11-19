@@ -36,6 +36,9 @@ Style/SingleLineMethods:
   Exclude:
     - spec/**/*_spec.rb
 
+Style/SingleLineBlockParams:
+  Enabled: false
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
