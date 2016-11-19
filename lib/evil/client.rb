@@ -1,6 +1,7 @@
 require "dry-initializer"
 require "mime-types"
 require "rack"
+require "json"
 
 # Absctract base class for clients to remote APIs
 #
