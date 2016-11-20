@@ -53,7 +53,7 @@ require "dry-types"
 
 class CatsClient < Evil::Client
   # describe a client-specific model of cat (the furry pinnacle of evolution)
-  class Cat < Evil::Client::Model
+  class Cat < Evil::Struct
     attribute :name,  type: Dry::Types["strict.string"], optional: true
     attribute :color, type: Dry::Types["strict.string"]
     attribute :age,   type: Dry::Types["coercible.int"], default: proc { 0 }

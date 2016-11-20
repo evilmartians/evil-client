@@ -30,7 +30,7 @@ Non-unicode symbols are encoded as defined in [RFC-3986][rfc-3986]
 Use [models][model] to provide validation of query data:
 
 ```ruby
-class Cat < Evil::Client::Model
+class Cat < Evil::Struct
   attribute :name,  type: Dry::Types["strict.string"], optional: true
   attribute :age,   type: Dry::Types["strict.int"],    default:  proc { 0 }
   attribute :color, type: Dry::Types["strict.string"]

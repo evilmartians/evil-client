@@ -43,6 +43,6 @@ RSpec.describe "scoping" do
   it "provides access to params over nested scopes" do
     client["qux"].users[7].update name: "baz"
 
-    expect(a_request(:put, path).with body: "name=baz").to have_been_made
+    expect(a_request(:put, path).with(body: "name=baz")).to have_been_made
   end
 end

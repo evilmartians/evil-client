@@ -8,13 +8,11 @@ AllCops:
 Style/Alias:
   Enabled: false
 
-Style/CaseEquality:
-  Enabled: false
+Style/FileName:
+  Exclude:
+    - lib/evil-client.rb
 
 Style/Documentation:
-  Enabled: false
-
-Style/DoubleNegation:
   Enabled: false
 
 Style/LambdaCall:
@@ -22,6 +20,10 @@ Style/LambdaCall:
 
 Style/MethodMissing:
   Enabled: false
+
+Style/MultilineMethodCallIndentation:
+  Exclude:
+    - spec/**.rb
 
 Style/NumericPredicate:
   Enabled: false
@@ -32,15 +34,19 @@ Style/RaiseArgs:
 Style/RescueModifier:
   Enabled: false
 
-Style/SingleLineMethods:
-  Exclude:
-    - spec/**/*_spec.rb
-
 Style/SingleLineBlockParams:
   Enabled: false
+
+Style/SingleLineMethods:
+  Exclude:
+    - spec/**.rb
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+Style/SymbolProc:
+  Exclude:
+    - spec/**.rb

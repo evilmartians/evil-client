@@ -4,10 +4,10 @@ They are needed to prepare and validate nested bodies and queries, as well as wr
 
 # Model Definition
 
-To define a model create a subclass of `Evil::Client::Model` and define its attributes.
+To define a model create a subclass of `Evil::Struct` and define its attributes.
 
 ```ruby
-class Cat < Evil::Client::Model
+class Cat < Evil::Struct
   attribute :name,  type: Dry::Types["strict.string"], optional: true
   attribute :age,   type: Dry::Types["coercible.int"], default: proc { 0 }
   attribute :color, type: Dry::Types["strict.string"]
@@ -40,7 +40,7 @@ Cat.new("name" => "Navuxodonosor II", "age" => 15, "color" => "black")
 You can use other (nested) models in type definitions:
 
 ```ruby
-class CatPack < Evil::Client::Model
+class CatPack < Evil::Struct
   attribute :cats, type: Dry::Types["array"].member(Cat)
 end
 
@@ -102,7 +102,7 @@ Nethertheless, there is an important difference between the implementations of n
 
 The main reason to define gem-specific model is the following. In `Dry::Struct` both the `optional` and `default` properties belong to value type constraint. The gem does not draw the line between attributes that are not set, and those that are set to `nil`.
 
-To the contrary, in [dry-initializer][dry-initializer] and `Evil::Client::Model` both `optional` and `default` properties describe not a value type by itself, but its relation to the model. An attribute value can be set to `nil`, or been kept in undefined state.
+To the contrary, in [dry-initializer][dry-initializer] and `Evil::Struct` both `optional` and `default` properties describe not a value type by itself, but its relation to the model. An attribute value can be set to `nil`, or been kept in undefined state.
 
 Let's see the difference on the example of `StructCat` and `ModelCat`:
 
@@ -112,7 +112,7 @@ class StructCat < Dry::Struct
   attribute :age,  type: Dry::Types["coercible.int"].default(0)
 end
 
-class ModelCat < Evil::Client::Model
+class ModelCat < Evil::Struct
   attribute :name, type: Dry::Types["strict.string"], optional: true
   attribute :age,  type: Dry::Types["coercible.int"], default: proc { 0 }
 end

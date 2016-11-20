@@ -119,7 +119,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with :model without block" do
       before do
-        class Test::Foo < Evil::Client::Model
+        class Test::Foo < Evil::Struct
           attribute :qux
         end
       end
@@ -138,7 +138,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with :model and block" do
       before do
-        class Test::Foo < Evil::Client::Model
+        class Test::Foo < Evil::Struct
           attribute :qux
         end
       end
@@ -161,7 +161,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
   context "with #query" do
     before do
-      class Test::Foo < Evil::Client::Model
+      class Test::Foo < Evil::Struct
         attribute :qux
       end
     end
@@ -183,7 +183,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
   context "with #headers" do
     before do
-      class Test::Foo < Evil::Client::Model
+      class Test::Foo < Evil::Struct
         attribute :qux
       end
     end
@@ -290,7 +290,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with json format and type" do
       before do
-        class Test::Foo < Evil::Client::Model
+        class Test::Foo < Evil::Struct
           attribute :foo
         end
       end
@@ -309,7 +309,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with json format, type and handler" do
       before do
-        class Test::Foo < Evil::Client::Model
+        class Test::Foo < Evil::Struct
           attribute :foo
         end
       end
@@ -331,7 +331,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with json format and filter" do
       before do
-        class Test::Foo < Evil::Client::Model
+        class Test::Foo < Evil::Struct
           attribute :foo
         end
       end
@@ -352,7 +352,7 @@ RSpec.describe Evil::Client::DSL::Operation do
 
     context "with json format, type and filter" do
       before do
-        class Test::Foo < Evil::Client::Model
+        class Test::Foo < Evil::Struct
           attribute :foo
         end
       end

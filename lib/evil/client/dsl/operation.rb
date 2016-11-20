@@ -94,7 +94,7 @@ module Evil::Client::DSL
       if model && block
         Class.new(model, &block)
       elsif block
-        Class.new(Evil::Client::Model, &block)
+        Class.new(Evil::Struct, &block)
       elsif model
         model
       end

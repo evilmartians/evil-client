@@ -37,7 +37,7 @@ module Evil::Client::DSL
 
     def wrapper
       return unless json?
-      proc { |data| Hash === data ? data : { data: data } }
+      proc { |data| data.is_a?(Hash) ? data : { data: data } }
     end
 
     def processor
@@ -54,7 +54,7 @@ module Evil::Client::DSL
       case [model.nil?, addon.nil?]
       when [false, true]  then model
       when [false, false] then Class.new(model).tap(&addon)
-      when [true,  false] then Class.new(Evil::Client::Model).tap(&addon)
+      when [true,  false] then Class.new(Evil::Struct).tap(&addon)
       end
     end
   end

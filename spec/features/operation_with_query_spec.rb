@@ -1,7 +1,7 @@
 RSpec.describe "operation with query" do
   # see Test::Client definition in `/spec/support/test_client.rb`
   before do
-    class Test::User < Evil::Client::Model
+    class Test::User < Evil::Struct
       attribute :name
     end
 

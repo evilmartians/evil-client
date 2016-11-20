@@ -9,7 +9,7 @@ operation :find_cat do |settings|
 end
 ```
 
-The syntax of the attribute declaration is exactly the same as of [Evil::Client::Model][model]. Type constraints and default values are available.
+The syntax of the attribute declaration is exactly the same as of [Evil::Struct][model]. Type constraints and default values are available.
 
 All values for the headers will be taken from a request options:
 

@@ -1,14 +1,14 @@
 RSpec.describe Evil::Client::Operation::Request do
   before do
-    class Test::Body < Evil::Client::Model
+    class Test::Body < Evil::Struct
       attribute :foo
     end
 
-    class Test::Query < Evil::Client::Model
+    class Test::Query < Evil::Struct
       attribute :bar
     end
 
-    class Test::Headers < Evil::Client::Model
+    class Test::Headers < Evil::Struct
       attribute :baz
     end
   end

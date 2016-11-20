@@ -1,4 +1,4 @@
-require "dry-initializer"
+require "evil-struct"
 require "mime-types"
 require "rack"
 require "json"
@@ -72,7 +72,6 @@ require "json"
 #
 module Evil
   class Client
-    require_relative "client/model"
     require_relative "client/connection"
     require_relative "client/middleware"
     require_relative "client/operation"
