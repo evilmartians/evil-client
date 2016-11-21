@@ -20,8 +20,8 @@ The gem stands away from mutable states and monkey patching when possible. To su
 For now the DSL supports clients to **json** and **form data** APIs out of the box. Because of high variance of XML-based APIs, building corresponding clients require more efforts on a middleware level.
 
 [swagger]: http://swagger.io
-[dry-initializer]: http://dry-rb.org/gems./dry-initializer
-[dry-types]: http://dry-rb.org/gems./dry-types
+[dry-initializer]: http://dry-rb.org/gems/dry-initializer
+[dry-types]: http://dry-rb.org/gems/dry-types
 
 ## Installation
 
