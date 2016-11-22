@@ -52,20 +52,20 @@ require "evil-client"
 require "dry-types"
 
 class CatsClient < Evil::Client
-  # describe a client-specific model of cat (the furry pinnacle of evolution)
+  # Prepare client-specific model of cat (the furry pinnacle of evolution)
   class Cat < Evil::Struct
-    attribute :name,  type: Dry::Types["strict.string"], optional: true
-    attribute :color, type: Dry::Types["strict.string"]
-    attribute :age,   type: Dry::Types["coercible.int"], default: proc { 0 }
+    attribute :name,  Dry::Types["strict.string"], optional: true
+    attribute :color, Dry::Types["strict.string"]
+    attribute :age,   Dry::Types["coercible.int"], default: proc { 0 }
   end
 
   # Define settings the client initialized with
   # The settings parameterizes operations when necessary
   settings do
-    param  :domain,   type: Dry::Types["strict.string"] # required!
-    option :version,  type: Dry::Types["coercible.int"], default: proc { 0 }
-    option :user,     type: Dry::Types["strict.string"] # required!
-    option :password, type: Dry::Types["strict.string"] # required!
+    param  :domain,   Dry::Types["strict.string"] # required!
+    option :version,  Dry::Types["coercible.int"], default: proc { 0 }
+    option :user,     Dry::Types["strict.string"] # required!
+    option :password, Dry::Types["strict.string"] # required!
   end
 
   # Define a base url using
@@ -85,15 +85,17 @@ class CatsClient < Evil::Client
     path { |id:, **| "cats/#{id}" } # id will be taken from request parameters
 
     body format: "json" do
-      attribute :name,  optional: true
-      attribute :color, optional: true
-      attribute :age,   optional: true
+      attributes optional: true do
+        attribute :name
+        attribute :color
+        attribute :age
+      end
     end
 
     # Parses json response and wraps it into Cat instance with additional
     # parameter
-    response 200, format: :json, type: Cat do
-      attribute :success
+    response 200, format: :json, model: Cat do
+      attribute :success # add response-specific attribute to the cat
     end
 
     # Parses json response, wraps it into model with [#error] and raises

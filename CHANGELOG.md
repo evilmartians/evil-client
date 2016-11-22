@@ -1,3 +1,13 @@
+# v0.3.1 2016-11-22
+
+## Fixed
+- Loading of 'json' from stdlib (nepalez)
+
+## Internal
+- Class `Evil::Client::Model` is extracted to `evil-struct` gem (nepalez)
+
+[Compare v0.3.0...v0.3.1](https://github.com/dry-rb/dry-initializer/compare/v0.3.0...v0.3.1)
+
 # v0.3.0 2016-11-18
 
 This version changes the way of processing responses. Instead of dealing
