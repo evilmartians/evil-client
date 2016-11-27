@@ -27,7 +27,7 @@ RSpec.describe Evil::Client::DSL::Operation do
     end
 
     it "defines :method" do
-      expect(subject[:method]).to eq "post"
+      expect(subject[:method].call).to eq "post"
     end
   end
 

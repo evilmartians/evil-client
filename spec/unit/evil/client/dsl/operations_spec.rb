@@ -21,7 +21,7 @@ describe Evil::Client::DSL::Operations do
   it "builds a proper schema" do
     find_user = subject[:find_user]
 
-    expect(find_user[:method]).to eq "get"
+    expect(find_user[:method].call).to eq "get"
     expect(find_user[:path].call(id: 7)).to eq "users/7"
     expect(find_user[:security].call)
       .to eq headers: { "authorization" => "Basic Zm9vOmJhcg==" }

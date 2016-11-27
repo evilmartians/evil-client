@@ -13,7 +13,7 @@ class Evil::Client::Operation
     def build(options)
       {
         format:      schema[:format],
-        http_method: schema[:method],
+        http_method: schema[:method].call(options),
         path:        schema[:path].call(options),
         security:    schema[:security]&.call(options),
         files:       schema[:files]&.call(options),

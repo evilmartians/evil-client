@@ -18,7 +18,7 @@ RSpec.describe Evil::Client::Operation::Request do
   let(:schema) do
     {
       format:   "multipart",
-      method:   "patch",
+      method:   proc { "patch" },
       path:     proc { |id:, **| "users/#{id}" },
       files:    Evil::Client::DSL::Files.new { |file:, **| add file },
       security: Evil::Client::DSL::Security.new { basic_auth "qux", "abc" },

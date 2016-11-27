@@ -27,8 +27,8 @@ module Evil::Client::DSL
       @schema[:doc] = value
     end
 
-    def http_method(value)
-      @schema[:method] = value.to_s.downcase
+    def http_method(value = nil, &block)
+      @schema = HttpMethod[schema, value, &block]
     end
 
     def path(value = nil, &block)
