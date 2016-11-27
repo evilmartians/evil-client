@@ -1,19 +1,7 @@
 module Evil::Client::DSL
-  require_relative "security"
-  require_relative "files"
-  require_relative "response"
-  require_relative "responses"
-
-  # Builds a schema for single operation
   class Operation
     attr_reader :schema
 
-    # Builds a schema for a single operation
-    #
-    # @param  [Object] settings
-    # @param  [Proc] block A block of definitions (should accept settings)
-    # @return [Hash<Symbol, Object>]
-    #
     def finalize(settings)
       @mutex.synchronize do
         @schema = @default.dup

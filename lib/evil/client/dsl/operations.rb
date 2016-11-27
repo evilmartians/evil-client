@@ -1,6 +1,4 @@
 module Evil::Client::DSL
-  require_relative "operation"
-
   # Container for operations definitions
   # Applies settings to definitions and returns a final schema
   class Operations
