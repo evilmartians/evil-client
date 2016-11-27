@@ -55,8 +55,8 @@ module Evil::Client::DSL
       @schema[:headers] = __model__(options, &block)
     end
 
-    def query(**options, &block)
-      @schema[:query] = __model__(options, &block)
+    def query(model: Evil::Struct, &block)
+      @schema = Query[schema, model: model, &block]
     end
 
     def responses(options = {}, &block)

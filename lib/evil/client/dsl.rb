@@ -5,6 +5,7 @@ class Evil::Client
     require_relative "dsl/files"
     require_relative "dsl/http_method"
     require_relative "dsl/path"
+    require_relative "dsl/query"
     require_relative "dsl/response"
     require_relative "dsl/responses"
     require_relative "dsl/security"
