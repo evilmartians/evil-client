@@ -2,6 +2,10 @@ class Evil::Client::Middleware
   class StringifyMultipart < Base
     require_relative "stringify_multipart/part"
 
+    def call(env, schema, options)
+      super build(env), schema, options
+    end
+
     private
 
     def build(env)

@@ -12,7 +12,7 @@ class Evil::Client
       #   :http_method, :path, :query_string, :body_string, :headers
       # @return [Array] Rack-compatible response [status, body, headers]
       #
-      def call(env)
+      def call(env, *)
         request = build_request(env)
         Net::HTTP.start base_uri.host, base_uri.port, opts do |http|
           handle http.request(request)

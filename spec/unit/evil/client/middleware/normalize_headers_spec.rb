@@ -7,8 +7,8 @@ RSpec.describe Evil::Client::Middleware::NormalizeHeaders do
     @result = env
   end
 
-  before  { allow(app).to receive(:call) { |env| update! env } }
-  subject { stack.call env }
+  before  { allow(app).to receive(:call) { |env, *| update! env } }
+  subject { stack.call env, {}, {} }
 
   it "normalizes headers" do
     subject

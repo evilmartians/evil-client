@@ -1,5 +1,9 @@
 class Evil::Client::Middleware
   class StringifyForm < Base
+    def call(env, schema, options)
+      super build(env), schema, options
+    end
+
     private
 
     def build(env)

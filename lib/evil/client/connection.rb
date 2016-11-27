@@ -24,11 +24,7 @@ class Evil::Client
     end
 
     # @abstract Sends request to the server and returns rack-compatible response
-    #
-    # @param  [Hash] env
-    # @return [Array]
-    #
-    def call(_env)
+    def call(_env, *)
       raise NotImplementedError
     end
   end

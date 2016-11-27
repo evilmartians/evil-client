@@ -16,8 +16,8 @@ class Evil::Client
     # @return [Object]
     #
     def call(**options)
-      req   = request.build(options)
-      array = connection.call(req)
+      env   = request.build(options)
+      array = connection.call(env, schema, options)
       response.handle(array)
     end
 

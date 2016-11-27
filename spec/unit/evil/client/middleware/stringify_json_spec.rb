@@ -5,8 +5,8 @@ RSpec.describe Evil::Client::Middleware::StringifyJson do
 
   let(:app) { double :app }
 
-  before  { allow(app).to receive(:call) { |env| update!(env) } }
-  subject { described_class.new(app).call(env) }
+  before  { allow(app).to receive(:call) { |env, *| update!(env) } }
+  subject { described_class.new(app).call(env, {}, {}) }
 
   context "with a body:" do
     let(:env) { { format: "json", body: { foo: :bar } } }

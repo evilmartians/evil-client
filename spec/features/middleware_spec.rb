@@ -5,13 +5,17 @@ RSpec.describe "middleware" do
         @app = app
       end
 
-      def call(_env)
-        @app.call path: "data/1",
-                  http_method: "get",
-                  format: "form",
-                  headers: { "baz" => "BAZ" },
-                  query: { "bar" => "baz" },
-                  body: { "qux" => 2 }
+      def call(_env, schema, options)
+        env = {
+          path: "data/1",
+          http_method: "get",
+          format: "form",
+          headers: { "baz" => "BAZ" },
+          query: { "bar" => "baz" },
+          body: { "qux" => 2 }
+        }
+
+        @app.call env, schema, options
       end
     end
 
@@ -20,8 +24,10 @@ RSpec.describe "middleware" do
         @app = app
       end
 
-      def call(env)
-        @app.call(env).tap { |rack_response| rack_response[2] = ["Hi!"] }
+      def call(env, *params)
+        response = @app.call(env, *params)
+        response[2] = ["Hi!"]
+        response
       end
     end
 

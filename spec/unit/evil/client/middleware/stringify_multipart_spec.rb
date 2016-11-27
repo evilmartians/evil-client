@@ -20,8 +20,8 @@ RSpec.describe Evil::Client::Middleware::StringifyMultipart do
     @result = result
   end
 
-  before  { allow(app).to receive(:call) { |env| update!(env) } }
-  subject { described_class.new(app).call(env) }
+  before  { allow(app).to receive(:call) { |env, *| update!(env) } }
+  subject { described_class.new(app).call(env, {}, {}) }
 
   context "with a multipart format:" do
     let(:body_string) { @result[:body_string] }

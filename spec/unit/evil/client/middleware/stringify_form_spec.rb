@@ -6,8 +6,8 @@ RSpec.describe Evil::Client::Middleware::StringifyForm do
     @result = env
   end
 
-  before  { allow(app).to receive(:call) { |env| update! env } }
-  subject { stack.call env }
+  before  { allow(app).to receive(:call) { |env, *| update! env } }
+  subject { stack.call env, {}, {} }
 
   context "with a non-empty body:" do
     let(:env) do

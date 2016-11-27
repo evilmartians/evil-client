@@ -7,7 +7,7 @@ RSpec.describe Evil::Client::Middleware::StringifyQuery do
   end
 
   before  { allow(app).to receive(:call) { |env| update! env } }
-  subject { stack.call env }
+  subject { stack.call env, {}, {} }
 
   context "with a non-empty query:" do
     let(:env) do
