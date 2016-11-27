@@ -4,8 +4,8 @@ RSpec.describe "operation with path" do
     class Test::Client < Evil::Client
       operation do
         http_method :get
-        path { "users" }
-        response :success, 200
+        path        "users"
+        response    :success, 200
       end
 
       operation :find_users
@@ -15,7 +15,7 @@ RSpec.describe "operation with path" do
       end
 
       operation :login do |settings|
-        path { "login/#{settings.token}" }
+        path "login/#{settings.token}"
       end
     end
 

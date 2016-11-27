@@ -1,7 +1,9 @@
 class Evil::Client
   # Defines a DSL to customize class-level settings of the specific client
   module DSL
+    require_relative "dsl/base"
     require_relative "dsl/files"
+    require_relative "dsl/path"
     require_relative "dsl/response"
     require_relative "dsl/responses"
     require_relative "dsl/security"

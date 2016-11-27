@@ -31,8 +31,8 @@ module Evil::Client::DSL
       @schema[:method] = value.to_s.downcase
     end
 
-    def path
-      @schema[:path] = ->(**opts) { yield(opts).gsub(%r{\A/+|/+\z}, "") }
+    def path(value = nil, &block)
+      @schema = Path[schema, value, &block]
     end
 
     def security(&block)
