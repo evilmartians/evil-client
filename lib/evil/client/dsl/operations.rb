@@ -22,12 +22,14 @@ module Evil::Client::DSL
       default = @schema[nil].finalize(settings)
       custom  = @schema.select { |key| key }
 
-      custom.each_with_object({}) do |(key, operation), hash|
+      schema = custom.each_with_object({}) do |(key, operation), hash|
         custom = operation.finalize(settings)
         hash[key] = default.merge(custom)
         hash[key][:format] ||= "json"
         hash[key][:responses] = default[:responses].merge(custom[:responses])
       end
+
+      Verifier.call(schema)
     end
 
     private

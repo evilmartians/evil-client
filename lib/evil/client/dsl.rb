@@ -5,6 +5,7 @@ class Evil::Client
     require_relative "dsl/response"
     require_relative "dsl/responses"
     require_relative "dsl/security"
+    require_relative "dsl/verifier"
     require_relative "dsl/operation"
     require_relative "dsl/operations"
     require_relative "dsl/scope"
