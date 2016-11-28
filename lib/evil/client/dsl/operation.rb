@@ -51,8 +51,8 @@ module Evil::Client::DSL
       @schema.delete :files
     end
 
-    def headers(**options, &block)
-      @schema[:headers] = __model__(options, &block)
+    def headers(model: Evil::Struct, &block)
+      @schema = Headers[schema, model: model, &block]
     end
 
     def query(model: Evil::Struct, &block)

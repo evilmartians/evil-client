@@ -3,6 +3,7 @@ class Evil::Client
   module DSL
     require_relative "dsl/base"
     require_relative "dsl/files"
+    require_relative "dsl/headers"
     require_relative "dsl/http_method"
     require_relative "dsl/path"
     require_relative "dsl/query"
