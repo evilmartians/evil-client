@@ -1,3 +1,15 @@
+# v0.3.2 2016-11-29
+
+On the road to v0.4.0
+
+## Fixed
+- Query and body encoding (nepalez)
+
+## Internal
+- Refactoring of some DSL classes (nepalez)
+
+[Compare v0.3.1...v0.3.2](https://github.com/dry-rb/dry-initializer/compare/v0.3.1...v0.3.2)
+
 # v0.3.1 2016-11-22
 
 ## Fixed
