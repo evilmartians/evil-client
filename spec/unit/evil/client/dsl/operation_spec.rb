@@ -284,7 +284,7 @@ RSpec.describe Evil::Client::DSL::Operation do
       end
 
       it "returns parsed and handled body" do
-        expect(response_coercer.call(body)).to eq data: %w(foo baz)
+        expect(response_coercer.call(body)).to eq data: %w[foo baz]
       end
     end
 

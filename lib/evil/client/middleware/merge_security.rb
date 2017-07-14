@@ -9,7 +9,7 @@ class Evil::Client::Middleware
     def build(env)
       env.dup.tap do |hash|
         security = hash.delete(:security).to_h
-        %i(headers body query).each do |key|
+        %i[headers body query].each do |key|
           next unless security[key]
           hash[key] ||= {}
           hash[key].update security[key]

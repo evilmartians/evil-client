@@ -15,6 +15,9 @@ Style/FileName:
   Exclude:
     - lib/evil-client.rb
 
+Style/Lambda:
+  Enabled: false
+
 Style/LambdaCall:
   Enabled: false
 

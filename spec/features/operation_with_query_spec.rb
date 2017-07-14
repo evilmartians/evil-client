@@ -70,7 +70,7 @@ RSpec.describe "operation with query" do
 
   it "supports nesting in a Rails style" do
     client.operations[:search].call name: {
-      "first": "John", last: "Doe", middle: %w(Juan Andre)
+      "first": "John", last: "Doe", middle: %w[Juan Andre]
     }
     query = [
       "name%5Bfirst%5D=John",

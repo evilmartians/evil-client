@@ -49,7 +49,7 @@ module Evil::Client::DSL
     # ==========================================================================
 
     def __validate__(part)
-      parts = %i(body query headers)
+      parts = %i[body query headers]
       return if parts.include? part
       raise ArgumentError.new "Wrong part '#{part}'. Use one of parts: #{parts}"
     end
