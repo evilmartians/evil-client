@@ -30,7 +30,7 @@ RSpec.describe "instantiation" do
     let(:client) { Test::Client.new(**options) }
 
     it "is rejected" do
-      expect { client }.to raise_error(KeyError)
+      expect { client }.to raise_error(StandardError)
     end
   end
 
@@ -54,7 +54,7 @@ RSpec.describe "instantiation" do
     before { options.delete :user }
 
     it "is rejected" do
-      expect { client }.to raise_error(KeyError)
+      expect { client }.to raise_error(ArgumentError)
     end
   end
 
