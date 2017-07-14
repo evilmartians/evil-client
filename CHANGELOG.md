@@ -1,26 +1,38 @@
-# v0.3.2 2016-11-29
+# Change Log
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog], and this project adheres
+to [Semantic Versioning].
+
+## [0.3.3] - [2017-07-14]
+
+On the road to v0.3.3
+
+### Fixed
+- dependency from 'securerandom' standard library (nepalez)
+
+### Added
+- variables for client settings and base_url (nepalez)
+
+# [0.3.2] - [2016-11-29]
 
 On the road to v0.4.0
 
-## Fixed
+### Fixed
 - Query and body encoding (nepalez)
 
-## Internal
+### Internal
 - Refactoring of some DSL classes (nepalez)
 
-[Compare v0.3.1...v0.3.2](https://github.com/dry-rb/dry-initializer/compare/v0.3.1...v0.3.2)
+## [0.3.1] - [2016-11-22]
 
-# v0.3.1 2016-11-22
-
-## Fixed
+### Fixed
 - Loading of 'json' from stdlib (nepalez)
 
-## Internal
+### Internal
 - Class `Evil::Client::Model` is extracted to `evil-struct` gem (nepalez)
 
-[Compare v0.3.0...v0.3.1](https://github.com/dry-rb/dry-initializer/compare/v0.3.0...v0.3.1)
-
-# v0.3.0 2016-11-18
+## [0.3.0] - [2016-11-18]
 
 This version changes the way of processing responses. Instead of dealing
 with raw rake responses, we add opinionated methods to gracefully process
@@ -29,8 +41,8 @@ responses from JSON or plain text.
 In the next minor versions processors for both "form" and "file" (multipart)
 formats will be added.
 
-## BREAKING CHANGES
-- Method `DSL#response` was redefined with a new signature (nepalez)
+### Changed
+- [BREAKING] Method `DSL#response` was redefined with a new signature (nepalez)
 
   The method takes 2 _mandatory_ positional params: unique name and
   integer status. This allows to process responses with the same status,
@@ -52,7 +64,7 @@ formats will be added.
   Names (the first param) are unique. When several definitions use the same name,
   only the last one will be applicable.
 
-## Added
+### Added
 - Method `DSL#responses` to share options between response definitions (nepalez)
 
   ```ruby
@@ -70,3 +82,9 @@ formats will be added.
   response :failure,   400, format: "json", raise: true
   response :not_found, 404, format: "json", raise: true
   ```
+
+[0.3.3]: https://github.com/evilmartians/evil-client/compare/v0.3.2...v0.3.3
+[0.3.2]: https://github.com/evilmartians/evil-client/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/evilmartians/evil-client/compare/v0.3.0...v0.3.1
+[Keep a Changelog]: http://keepachangelog.com/
+[Semantic Versioning]: http://semver.org/
