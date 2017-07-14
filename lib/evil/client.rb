@@ -2,6 +2,7 @@ require "evil-struct"
 require "mime-types"
 require "rack"
 require "json"
+require "securerandom"
 
 # Absctract base class for clients to remote APIs
 #
