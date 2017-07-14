@@ -17,7 +17,11 @@ class Evil::Client
 
     # Adds [#operations] to a specific client's instances
     def self.extended(klass)
-      klass.include Dry::Initializer.define -> { param :operations }
+      klass.include Dry::Initializer.define -> do
+        param :settings
+        param :base_url
+        param :operations
+      end
     end
 
     # Helper to define params and options a for a client's constructor
@@ -103,7 +107,7 @@ class Evil::Client
         hash[key] = Evil::Client::Operation.new schema, connection
       end
 
-      super(data)
+      super(settings, base_url, data)
     end
 
     private
