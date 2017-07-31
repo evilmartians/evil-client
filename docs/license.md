@@ -1,4 +1,8 @@
-Copyright (c) 2016 Andrew Kozin (aka nepalez), andrew.kozin@gmail.com
+# The MIT License (MIT)
+
+Copyright (c) 2015-2017 Andrew Kozin (nepalez),
+                        Ravil Bairamgalin (brainopia),
+                        Evil Martians (evilmartians)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

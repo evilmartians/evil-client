@@ -1,0 +1,16 @@
+---
+en:
+  evil:
+    client:
+      errors:
+        test/api:
+          users:
+            update:
+              token_present: "To update user id:%{id} you must provide a token"
+              name_present:  "The user has no name"
+        test/client:
+          valid_credentials: You should set either token or password to authenticate the client
+          crm:
+            users:
+              filter:
+                  filter_given: You should define some filter with either name, email, or id
