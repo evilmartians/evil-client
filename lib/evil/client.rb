@@ -8,7 +8,6 @@ require "i18n"
 require "mime-types"
 require "securerandom"
 require "dry-initializer"
-require "dry-memoizer"
 require "net/http"
 require "net/https"
 #

@@ -6,7 +6,6 @@ class Evil::Client
     require_relative "settings/validator"
 
     extend Dry::Initializer
-    extend Dry::Memoizer
 
     class << self
       # The schema klass settings belongs to
@@ -48,7 +47,10 @@ class Evil::Client
       #
       def let(key, &block)
         NameError.check!(key, RESERVED)
-        super
+        define_method(key) do
+          instance_variable_get(:"@#{key}") ||
+            instance_variable_set(:"@#{key}", instance_exec(&block))
+        end
         self
       end
 

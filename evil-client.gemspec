@@ -14,7 +14,6 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = ">= 2.3"
 
   gem.add_runtime_dependency "dry-initializer", "~> 1.4"
-  gem.add_runtime_dependency "dry-memoizer", "~> 0.0.1"
   gem.add_runtime_dependency "i18n", "~> 0.8.6"
   gem.add_runtime_dependency "mime-types", "~> 3.1"
   gem.add_runtime_dependency "rack", "~> 1"
