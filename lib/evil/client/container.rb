@@ -56,14 +56,6 @@ class Evil::Client
       settings.logger
     end
 
-    # Returns link to documentation
-    #
-    # @return [String, nil]
-    #
-    def link
-      Resolver::Link.call(schema, settings)
-    end
-
     private
 
     def initialize(schema, logger = nil, **opts)

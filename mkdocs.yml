@@ -22,7 +22,6 @@ pages:
     response:          helpers/response.md
     middleware:        helpers/middleware.md
     connection:        helpers/connection.md
-    link:              helpers/link.md
     logger:            helpers/logger.md
   'RSpec matcher':     rspec.md
   License: license.md

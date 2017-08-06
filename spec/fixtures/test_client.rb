@@ -7,7 +7,6 @@ module Test
     validate(:valid_credentials) { token.nil? ^ password.nil? }
 
     path { "https://#{subdomain}.example.com" }
-    link { "https://#{subdomain}.example.com/docs.html" }
 
     response(200)
     response(404) { raise "Not found" }

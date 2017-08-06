@@ -8,7 +8,6 @@ class Evil::Client
   #
   class Resolver
     # Loads concrete implementation of the abstract resolver
-    require_relative "resolver/link"
     require_relative "resolver/request"
     require_relative "resolver/middleware"
     require_relative "resolver/response"

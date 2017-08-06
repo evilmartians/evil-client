@@ -4,7 +4,7 @@ RSpec.describe Evil::Client::Schema::Scope do
   let(:schema) { described_class.new parent, :users }
   let(:block)  { proc { def self.foo; :FOO; end } }
   let(:dsl_methods) do
-    %i[operations scopes options schema settings inspect logger link]
+    %i[operations scopes options schema settings inspect logger]
   end
 
   it "subclasses the operation schema" do

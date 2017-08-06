@@ -54,36 +54,6 @@ RSpec.describe Evil::Client::Schema::Operation do
     end
   end
 
-  describe "#link" do
-    context "with block syntax" do
-      subject { schema.link(&block) }
-
-      it "adds block to definitions" do
-        expect { subject }
-          .to change { schema.definitions[:link] }
-          .to block
-      end
-
-      it "returns the schema itself" do
-        expect(subject).to eq schema
-      end
-    end
-
-    context "with plain syntax" do
-      subject { schema.link "foo" }
-
-      it "wraps value to block and adds it to definitions" do
-        expect { subject }
-          .to change { schema.definitions[:link]&.call }
-          .to "foo"
-      end
-
-      it "returns the schema itself" do
-        expect(subject).to eq schema
-      end
-    end
-  end
-
   describe "#http_method" do
     context "with block syntax" do
       subject { schema.http_method(&block) }

@@ -1,7 +1,6 @@
 class Evil::Client
   #
-  # Resolves a link to documentaton for the request
-  # from operation settings and schema
+  # Resolves a http_method for the request from operation settings and schema
   # @private
   #
   class Resolver::HttpMethod < Resolver

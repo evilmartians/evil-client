@@ -67,8 +67,7 @@ class Evil::Client
       @__children__ = {}
     end
 
-    RESERVED = %i[
-      operations scopes scope options schema settings inspect logger link
-    ].freeze
+    RESERVED = \
+      %i[operations scopes scope options schema settings inspect logger].freeze
   end
 end

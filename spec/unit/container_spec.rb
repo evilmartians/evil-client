@@ -20,7 +20,7 @@ RSpec.describe Evil::Client::Container do
            to_s: "MyApi.users",
            parent: nil,
            settings: settings_klass,
-           definitions: { link: -> { "https://example.com/api/users" } }
+           definitions: {}
   end
 
   describe ".new" do
@@ -102,14 +102,6 @@ RSpec.describe Evil::Client::Container do
 
     it "returns settings options" do
       expect(subject).to eq token: "qux", id: 7, language: "en_US", name: "Joe"
-    end
-  end
-
-  describe "#link" do
-    subject { container.link }
-
-    it "returns most customized link" do
-      expect(subject).to eq "https://example.com/api/users"
     end
   end
 end

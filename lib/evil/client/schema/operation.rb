@@ -32,16 +32,6 @@ class Evil::Client
       __define__(:path, value, block)
     end
 
-    # Adds link to documentation to the schema
-    #
-    # @param  [#to_s, nil] value
-    # @param  [Proc] block
-    # @return [self]
-    #
-    def link(value = nil, &block)
-      __define__(:link, value, block)
-    end
-
     # Adds http method definition to the schema
     #
     # @see https://tools.ietf.org/html/rfc7231#section-4
