@@ -1,41 +1,44 @@
 ---
 AllCops:
-  DisplayCopNames:    true
-  DisplayStyleGuide:  true
-  StyleGuideCopsOnly: true
-  TargetRubyVersion:  2.3
+  DisplayCopNames:   true
+  TargetRubyVersion: 2.3
 
-Style/CaseEquality:
+Lint/AmbiguousBlockAssociation:
   Enabled: false
 
-Style/Documentation:
+Metrics/BlockLength:
+  Enabled: false
+
+Style/Alias:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
   Enabled: false
 
 Style/FileName:
   Exclude:
     - lib/evil-client.rb
 
-Style/Lambda:
+Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/LambdaCall:
-  Enabled: false
-
-Style/MethodMissing:
-  Enabled: false
-
-Style/MultilineMethodCallIndentation:
-  Exclude:
-    - spec/**.rb
-
-Style/NumericPredicate:
+Style/ModuleFunction:
   Enabled: false
 
 Style/RaiseArgs:
   Enabled: false
 
 Style/RescueModifier:
-  Enabled: false
+  Exclude:
+    - '**/*_spec.rb'
+
+Style/Semicolon:
+  Exclude:
+    - '**/*_spec.rb'
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+
+Style/SingleLineMethods:
+  Exclude:
+    - '**/*_spec.rb'

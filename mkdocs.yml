@@ -1,21 +1,27 @@
+# The structure of documentation at readthedocs.com
 ---
 site_name: Evil::Client
-site_description: Human-friendly DSL for building HTTP(s) clients in Ruby
+site_description: Human-friendly DSL for building HTTP(s) clients to remote API
 repo_url: https://github.com/nepalez/evil-client
 site_author: Andrew Kozin
 theme: readthedocs
 pages:
-  - 'Synopsis': 'index.md'
-  - 'Details':
-    - 'Overview': 'overview.md'
-    - 'Model':    'model.md'
-    - 'Settings': 'settings.md'
-    - 'Base URL': 'base_url.md'
-    - 'Operations':
-      - 'HTTP method': 'http_method.md'
-      - 'Path': 'path.md'
-      - 'Security Definitions': 'security.md'
-      - 'Headers': 'headers.md'
-      - 'Query': 'query.md'
-      - 'Responses': 'responses.md'
-      - 'Documentation': 'documentation.md'
+  Synopsis: index.md
+  Helpers:
+    scope:             helpers/scope.md
+    operation:         helpers/operation.md
+    option:            helpers/option.md
+    let:               helpers/let.md
+    validate:          helpers/validate.md
+    path:              helpers/path.md
+    http_method:       helpers/http_method.md
+    security:          helpers/security.md
+    headers:           helpers/headers.md
+    query:             helpers/query.md
+    'body and format': helpers/body.md
+    response:          helpers/response.md
+    middleware:        helpers/middleware.md
+    connection:        helpers/connection.md
+    logger:            helpers/logger.md
+  'RSpec matcher':     rspec.md
+  License: license.md
