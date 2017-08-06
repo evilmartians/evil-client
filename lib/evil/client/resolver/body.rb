@@ -11,8 +11,8 @@ class Evil::Client
   class Resolver::Body < Resolver
     private
 
-    def initialize(settings, schema)
-      super(settings, schema, :body)
+    def initialize(schema, settings)
+      super(schema, settings, :body)
     end
 
     def __call__
