@@ -4,15 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
-## [1.0.0] To be released
+## [1.0.0] [2017-08-06]
 
-This is a new reincarnation of the gem. I totally re-wrote its the very
+This is a total new reincarnation of the gem. I've changed its
 architecture for consistency and unification reasons. This version is
 backward-incompatible to all the previous ones up to the [0.3.3].
 
 Its DSL was re-written and regularized as well. While the idea of the gem
 remains about the same as before, its implementation has been changed
-in many important details.
+drastically in many important details.
 
 ### [BREAKING] Changed
 
