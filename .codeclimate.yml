@@ -2,17 +2,6 @@
 engines:
   rubocop:
     enabled: true
-    checks:
-      Rubocop/Style/FrozenStringLiteralComment:
-        enabled: false
-      Rubocop/Style/Documentation:
-        enabled: false
-      Rubocop/Style/ClassAndModuleChildren:
-        enabled: false
-      Rubocop/Style/SpaceInLambdaLiteral:
-        enabled: false
-      Style/SingleLineBlockParams:
-        enabled: false
 ratings:
   paths:
     - "lib/**.rb"
