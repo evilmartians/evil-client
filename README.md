@@ -70,7 +70,7 @@ class CatsClient < Evil::Client
       path        { "cats/#{id}" } # added to root path
       http_method :patch # you can use plain syntax instead of a block
       format      "json"
-      body        { options.reject { |key, _val| key == :id } }
+      body        { options.except(:id, :version) } # [#slice] is available too
 
       # Parses json response and wraps it into Cat instance with additional
       # parameter

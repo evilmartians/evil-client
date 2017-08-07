@@ -108,7 +108,7 @@ class Evil::Client
     # @return [Hash<Symbol, Object>]
     #
     def options
-      @__options__
+      Options.new @__options__
     end
 
     # @!attribute logger
