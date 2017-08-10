@@ -355,7 +355,7 @@ formats will be added.
   response :not_found, 404, format: "json", raise: true
   ```
 
-[1.1.1]: https://github.com/evilmartians/evil-client/compare/v1.0.0...v1.1.0
+[1.1.0]: https://github.com/evilmartians/evil-client/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/evilmartians/evil-client/compare/v0.3.3...v1.0.0
 [0.3.3]: https://github.com/evilmartians/evil-client/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/evilmartians/evil-client/compare/v0.3.1...v0.3.2
