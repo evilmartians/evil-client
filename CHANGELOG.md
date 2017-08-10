@@ -29,6 +29,10 @@ Some syntax sugar has been added to both the client and its RSpec helpers.
 - RSpec matcher `perform_operation` has been dropped in favor of
   `stub_client_operation` and `expect_client_operation` (nepalez)
 
+- Unnecessary instance methods inherited from [Object] are removed
+  from various classes to avoid name conflicts with user-provided
+  scopes and operations (nepalez)
+
 ## [1.0.0] [2017-08-06]
 
 This is a total new reincarnation of the gem. I've changed its
