@@ -1,7 +1,7 @@
-RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
+RSpec.describe Evil::Client::RSpec, "#expect_client_operation" do
   include described_class
   before { load "spec/fixtures/test_client.rb" }
-  before { stub_evil_client_operation.to_return }
+  before { stub_client_operation.to_return }
 
   let(:client)  { Test::Client.new(subdomain: "x", user: "y", token: "z") }
   let(:perform) { client.crm(version: 7).users.fetch id: 5 }
@@ -12,7 +12,7 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:klass) { Test::Client }
 
     it "passes" do
-      expect { expect_evil_client_operation(klass).to_have_been_performed }
+      expect { expect_client_operation(klass).to_have_been_performed }
         .not_to raise_error
     end
   end
@@ -21,7 +21,7 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:klass) { Evil::Client }
 
     it "passes" do
-      expect { expect_evil_client_operation(klass).to_have_been_performed }
+      expect { expect_client_operation(klass).to_have_been_performed }
         .not_to raise_error
     end
   end
@@ -30,7 +30,7 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:klass) { String }
 
     it "fails" do
-      expect { expect_evil_client_operation(klass).to_have_been_performed }
+      expect { expect_client_operation(klass).to_have_been_performed }
         .to raise_error RSpec::Expectations::ExpectationNotMetError
     end
   end
@@ -40,9 +40,9 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:name)  { "crm.users.fetch" }
 
     it "passes" do
-      expect {
-        expect_evil_client_operation(klass, name).to_have_been_performed
-      }.not_to raise_error
+      expect do
+        expect_client_operation(klass, name).to_have_been_performed
+      end.not_to raise_error
     end
   end
 
@@ -51,9 +51,9 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:name)  { "crm.users" }
 
     it "fails" do
-      expect {
-        expect_evil_client_operation(klass, name).to_have_been_performed
-      }.to raise_error RSpec::Expectations::ExpectationNotMetError
+      expect do
+        expect_client_operation(klass, name).to_have_been_performed
+      end.to raise_error RSpec::Expectations::ExpectationNotMetError
     end
   end
 
@@ -62,9 +62,9 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:name)  { /crm\.users/ }
 
     it "passes" do
-      expect {
-        expect_evil_client_operation(klass, name).to_have_been_performed
-      }.not_to raise_error
+      expect do
+        expect_client_operation(klass, name).to_have_been_performed
+      end.not_to raise_error
     end
   end
 
@@ -73,9 +73,9 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:name)  { /^crm.users$/ }
 
     it "fails" do
-      expect {
-        expect_evil_client_operation(klass, name).to_have_been_performed
-      }.to raise_error RSpec::Expectations::ExpectationNotMetError
+      expect do
+        expect_client_operation(klass, name).to_have_been_performed
+      end.to raise_error RSpec::Expectations::ExpectationNotMetError
     end
   end
 
@@ -87,11 +87,11 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     end
 
     it "passes" do
-      expect {
-        expect_evil_client_operation(klass, name)
+      expect do
+        expect_client_operation(klass, name)
           .with(opts)
           .to_have_been_performed
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 
@@ -103,11 +103,11 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     end
 
     it "passes" do
-      expect {
-        expect_evil_client_operation(klass, name)
+      expect do
+        expect_client_operation(klass, name)
           .with { |o| o == opts }
           .to_have_been_performed
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 
@@ -119,11 +119,11 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     end
 
     it "fails" do
-      expect {
-        expect_evil_client_operation(klass, name)
+      expect do
+        expect_client_operation(klass, name)
           .with { |o| o == opts }
           .to_have_been_performed
-      }.to raise_error RSpec::Expectations::ExpectationNotMetError
+      end.to raise_error RSpec::Expectations::ExpectationNotMetError
     end
   end
 
@@ -133,11 +133,11 @@ RSpec.describe Evil::Client::RSpec, "#expect_evil_client_operation" do
     let(:opts)  { hash_including subdomain: "x" }
 
     it "passes" do
-      expect {
-        expect_evil_client_operation(klass, name)
+      expect do
+        expect_client_operation(klass, name)
           .with(opts)
           .to_have_been_performed
-      }.not_to raise_error
+      end.not_to raise_error
     end
   end
 end

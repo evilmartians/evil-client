@@ -8,11 +8,11 @@ class Evil::Client
     require_relative "rspec/allow_stub"
     require_relative "rspec/expect_stub"
 
-    def stub_evil_client_operation(klass = Evil::Client, name = nil)
+    def stub_client_operation(klass = Evil::Client, name = nil)
       AllowStub.new(klass, name)
     end
 
-    def expect_evil_client_operation(klass, name = nil)
+    def expect_client_operation(klass, name = nil)
       ExpectStub.new(klass, name)
     end
 

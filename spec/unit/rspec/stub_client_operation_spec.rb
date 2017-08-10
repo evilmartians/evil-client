@@ -1,4 +1,4 @@
-RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
+RSpec.describe Evil::Client::RSpec, "#stub_client_operation" do
   include described_class
   before { load "spec/fixtures/test_client.rb" }
 
@@ -9,38 +9,38 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:klass) { Test::Client }
 
     it "stubs the call with nil" do
-      stub_evil_client_operation(klass).to_return nil
+      stub_client_operation(klass).to_return nil
 
       expect(perform).to be_nil
     end
 
     it "stubs the call with any object" do
       result = double
-      stub_evil_client_operation(klass).to_return result
+      stub_client_operation(klass).to_return result
 
       expect(perform).to eq result
     end
 
     it "stubs the call with the original implementation" do
-      stub_evil_client_operation(klass).to_call_original
+      stub_client_operation(klass).to_call_original
 
       expect(perform).to eq [200, {}, []]
     end
 
     it "stubs the call with StandardError" do
-      stub_evil_client_operation(klass).to_raise
+      stub_client_operation(klass).to_raise
 
       expect { perform }.to raise_error StandardError
     end
 
     it "stubs the call with an exception of given type" do
-      stub_evil_client_operation(klass).to_raise(TypeError)
+      stub_client_operation(klass).to_raise(TypeError)
 
       expect { perform }.to raise_error TypeError
     end
 
     it "stubs the call with given exception" do
-      stub_evil_client_operation(klass).to_raise(TypeError, "foobar")
+      stub_client_operation(klass).to_raise(TypeError, "foobar")
 
       expect { perform }.to raise_error TypeError, /foobar/
     end
@@ -50,14 +50,14 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:klass) { Evil::Client }
 
     it "stubs the call" do
-      stub_evil_client_operation(klass).to_return
+      stub_client_operation(klass).to_return
       expect(perform).to be_nil
     end
   end
 
   context "without params" do
     it "stubs the call" do
-      stub_evil_client_operation.to_return
+      stub_client_operation.to_return
       expect(perform).to be_nil
     end
   end
@@ -66,7 +66,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:klass) { String }
 
     it "don't stubs the call" do
-      stub_evil_client_operation(klass).to_return
+      stub_client_operation(klass).to_return
       expect { perform }.to raise_error RSpec::Mocks::MockExpectationError
     end
   end
@@ -76,7 +76,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:name)  { "crm.users.fetch" }
 
     it "stubs the call" do
-      stub_evil_client_operation(klass, name).to_return
+      stub_client_operation(klass, name).to_return
       expect(perform).to be_nil
     end
   end
@@ -86,7 +86,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:name)  { "crm.users" }
 
     it "don't stubs the call" do
-      stub_evil_client_operation(klass, name).to_return
+      stub_client_operation(klass, name).to_return
       expect { perform }.to raise_error RSpec::Mocks::MockExpectationError
     end
   end
@@ -96,7 +96,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:name)  { /crm\.users/ }
 
     it "stubs the call" do
-      stub_evil_client_operation(klass, name).to_return
+      stub_client_operation(klass, name).to_return
       expect(perform).to be_nil
     end
   end
@@ -106,7 +106,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:name)  { /^crm.users$/ }
 
     it "don't stubs the call" do
-      stub_evil_client_operation(klass, name).to_return
+      stub_client_operation(klass, name).to_return
       expect { perform }.to raise_error RSpec::Mocks::MockExpectationError
     end
   end
@@ -119,7 +119,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     end
 
     it "stubs the call" do
-      stub_evil_client_operation(klass, name).with(opts).to_return
+      stub_client_operation(klass, name).with(opts).to_return
       expect(perform).to be_nil
     end
   end
@@ -132,12 +132,12 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     end
 
     it "stubs the call" do
-      stub_evil_client_operation(klass, name).with { |o| o == opts }.to_return
+      stub_client_operation(klass, name).with { |o| o == opts }.to_return
       expect(perform).to be_nil
     end
 
     it "stubs the call to any returned value" do
-      stub_evil_client_operation(klass, name).with { |o| true }.to_return 42
+      stub_client_operation(klass, name).with { |_o| true }.to_return 42
       expect(perform).to eq 42
     end
   end
@@ -150,7 +150,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     end
 
     it "don't stubs the call" do
-      stub_evil_client_operation(klass, name).with { |o| o == opts }.to_return
+      stub_client_operation(klass, name).with { |o| o == opts }.to_return
       expect { perform }.to raise_error RSpec::Mocks::MockExpectationError
     end
   end
@@ -161,7 +161,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_evil_client_operation" do
     let(:opts)  { hash_including subdomain: "x" }
 
     it "stubs the call" do
-      stub_evil_client_operation(klass, name).with(opts).to_return
+      stub_client_operation(klass, name).with(opts).to_return
       expect(perform).to be_nil
     end
   end

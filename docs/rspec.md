@@ -40,12 +40,12 @@ RSpec.describe CatsClient, "cats.fetch" do
   let(:scope)  { client.cats(version: 1) }
 
   it "fetches a cat by id" do
-    stub_evil_client_operation(CatsClient, "cats.fetch")
+    stub_client_operation(CatsClient, "cats.fetch")
       .with(token: "foo", version: 1, id: 8) # full hash of collected options
       .to_return 8 # returned value by operation
 
     expect(scope.fetch(id: 8)).to eq 8
-    expect_evil_client_operation(CatsClient, "cats.fetch")
+    expect_client_operation(CatsClient, "cats.fetch")
       .to_have_been_performed
   end
 end
@@ -56,49 +56,49 @@ end
 To select stubbed operations you can specify client class:
 
 ```ruby
-stub_evil_client_operation(CatsClient)
+stub_client_operation(CatsClient)
 ```
 
 or its superclass
 
 ```ruby
-stub_evil_client_operation(Evil::Client)
+stub_client_operation(Evil::Client)
 ```
 
 or leave it for default `Evil::Client`:
 
 ```ruby
-stub_evil_client_operation()
+stub_client_operation()
 ```
 
 or add a fully qualified name of the operation (for **exact** matching):
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch")
+stub_client_operation(CatsClient, "cats.fetch")
 ```
 
 or regexp for partial matching:
 
 ```ruby
-stub_evil_client_operation(CatsClient, /fetch/)
+stub_client_operation(CatsClient, /fetch/)
 ```
 
 or use method `with` to check options exactly:
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch").with(token: "foo", version: 1, id: 8)
+stub_client_operation(CatsClient, "cats.fetch").with(token: "foo", version: 1, id: 8)
 ```
 
 or partially:
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch").with(hash_including(id: 8))
+stub_client_operation(CatsClient, "cats.fetch").with(hash_including(id: 8))
 ```
 
 or via block:
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch").with { |opts| opts[:id] == 8 }
+stub_client_operation(CatsClient, "cats.fetch").with { |opts| opts[:id] == 8 }
 ```
 
 ## Return value
@@ -106,19 +106,19 @@ stub_evil_client_operation(CatsClient, "cats.fetch").with { |opts| opts[:id] == 
 You **must** define some value returned by a stub:
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch").to_return(8)
+stub_client_operation(CatsClient, "cats.fetch").to_return(8)
 ```
 
 or fall back to original implementation:
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch").to_call_original
+stub_client_operation(CatsClient, "cats.fetch").to_call_original
 ```
 
 or raise an exception:
 
 ```ruby
-stub_evil_client_operation(CatsClient, "cats.fetch").to_raise StandardError, "Wrong id"
+stub_client_operation(CatsClient, "cats.fetch").to_raise StandardError, "Wrong id"
 ```
 
 ## Some Hint
