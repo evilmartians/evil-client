@@ -20,7 +20,14 @@ Some syntax sugar has been added to both the client and its RSpec helpers.
 
 - Every container has reference to its `#client` along the standalone `#name`
   of its schema. This allows to select operation containers by
-  `#client`, `#name`, `#options` to stub their methods `#call`. (nepalez)
+  `#client`, `#name`, `#options` to stub their methods `#call` (nepalez)
+
+- RSpec stubs and expectations for operations (nepalez, palkan)
+
+### Removed
+
+- RSpec matcher `perform_operation` has been dropped in favor of
+  `stub_client_operation` and `expect_client_operation` (nepalez)
 
 ## [1.0.0] [2017-08-06]
 
