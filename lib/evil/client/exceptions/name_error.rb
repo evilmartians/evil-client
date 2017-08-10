@@ -10,23 +10,21 @@ class Evil::Client
     # @return [Symbol] if name is valid
     # @raise  [self] if name isn't valid
     #
-    def self.check!(name, forbidden = [])
+    def self.check!(name)
       name = name.to_sym
-      return name if name[FORMAT] && !forbidden.include?(name)
-      raise new(name, forbidden)
+      return name if name[Names::FORMAT] && !Names::FORBIDDEN.include?(name)
+      raise new(name)
     end
 
     private
 
-    def initialize(name, forbidden)
+    def initialize(name)
       super "Invalid name :#{name}." \
             " It should contain latin letters in the lower case, digits," \
             " and underscores only; have minimum 2 chars;" \
             " start from a letter; end with either letter or digit." \
-            " The following names: '#{forbidden.join("', '")}'" \
+            " The following names: '#{Names::FORBIDDEN.join("', '")}'" \
             " are already used by Evil::Client."
     end
-
-    FORMAT = /^[a-z]([a-z\d_])*[a-z\d]$/
   end
 end

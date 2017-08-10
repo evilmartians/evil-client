@@ -7,6 +7,7 @@ require "yaml"
 require "i18n"
 require "mime-types"
 require "securerandom"
+require "delegate"
 require "dry-initializer"
 require "net/http"
 require "net/https"
@@ -18,6 +19,9 @@ module Evil
   # Absctract base class for clients to remote APIs
   #
   class Client
+    require_relative "client/names"
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     require_relative "client/exceptions/definition_error"
     require_relative "client/exceptions/name_error"
     require_relative "client/exceptions/response_error"
@@ -25,6 +29,7 @@ module Evil
     require_relative "client/exceptions/validation_error"
 
     require_relative "client/chaining"
+    require_relative "client/options"
     require_relative "client/settings"
     require_relative "client/schema"
     require_relative "client/container"

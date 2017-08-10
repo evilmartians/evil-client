@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [1.1.0] To be released ASAP
+
+Some syntax sugar has been added to both the client and its RSpec helpers.
+
+### Added
+
+- Assigned options are wrapped into simple delegator with rails-like methods
+  `#slice` and `#except`. This helps when you need to select part of assigned
+  options for some part of a request (nepalez)
+
+  Remember the options are collected from the very root of the client,
+  so at the endpoint operation there could be a lot of options
+  related to other endpoints, or to a different part of the request.
+
+- Every container has reference to its `#client` along the standalone `#name`
+  of its schema. This allows to select operation containers by
+  `#client`, `#name`, `#options` to stub their methods `#call` (nepalez)
+
+- RSpec stubs and expectations for operations (nepalez, palkan)
+
+### Removed
+
+- RSpec matcher `perform_operation` has been dropped in favor of
+  `stub_client_operation` and `expect_client_operation` (nepalez)
+
+- Unnecessary instance methods inherited from [Object] are removed
+  from various classes to avoid name conflicts with user-provided
+  scopes and operations (nepalez)
+
 ## [1.0.0] [2017-08-06]
 
 This is a total new reincarnation of the gem. I've changed its
@@ -326,6 +355,7 @@ formats will be added.
   response :not_found, 404, format: "json", raise: true
   ```
 
+[1.1.0]: https://github.com/evilmartians/evil-client/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/evilmartians/evil-client/compare/v0.3.3...v1.0.0
 [0.3.3]: https://github.com/evilmartians/evil-client/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/evilmartians/evil-client/compare/v0.3.1...v0.3.2

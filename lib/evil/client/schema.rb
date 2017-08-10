@@ -9,6 +9,8 @@ class Evil::Client
   # definitions.
   #
   class Schema
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     # Loads concrete implementations of the abstract schema
     require_relative "schema/operation"
     require_relative "schema/scope"
@@ -33,7 +35,7 @@ class Evil::Client
     #
     # @return [Evil::Client]
     #
-    attr_reader :client # TODO: add spec
+    attr_reader :client
 
     # The human-friendly representation of the schema
     #

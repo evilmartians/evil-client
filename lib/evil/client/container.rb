@@ -5,6 +5,8 @@ class Evil::Client
   # and methods to build sub-scope/operation or perform the current operation.
   #
   class Container
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     # Loads concrete implementations of the abstract container
     require_relative "container/scope"
     require_relative "container/operation"
@@ -17,6 +19,18 @@ class Evil::Client
     # @return [Evil::Client::Settings]
     attr_reader :settings
 
+    # The client of the [#schema]
+    # @return [Class]
+    def client
+      schema.client
+    end
+
+    # The name of the current schema
+    # @return [String]
+    def name
+      schema.to_s
+    end
+
     # Options assigned to the [#settings]
     #
     # These are opts given to the [#initializer],
@@ -24,7 +38,7 @@ class Evil::Client
     #
     # @return [Hash<Symbol, Object>]
     def options
-      @options ||= settings.options
+      settings.options
     end
 
     # The human-friendly representation of the scope instance
@@ -34,7 +48,7 @@ class Evil::Client
     #
     # @return [String]
     def to_s
-      "#<#{schema} #{options.map { |key, val| "@#{key}=#{val}" }.join(', ')}>"
+      "#<#{name} #{options.map { |key, val| "@#{key}=#{val}" }.join(', ')}>"
     end
     alias_method :to_str,  :to_s
     alias_method :inspect, :to_s

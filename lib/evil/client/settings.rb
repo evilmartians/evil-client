@@ -3,9 +3,9 @@ class Evil::Client
   # Container for settings assigned to some operation or scope.
   #
   class Settings
+    Names.clean(self) # Remove unnecessary methods from the instance
     require_relative "settings/validator"
-
-    extend Dry::Initializer
+    extend ::Dry::Initializer
 
     class << self
       # The schema klass settings belongs to
@@ -34,7 +34,7 @@ class Evil::Client
       # @return      [self]
       #
       def option(key, type = nil, as: key.to_sym, **opts)
-        NameError.check!(as, RESERVED)
+        NameError.check!(as)
         super
         self
       end
@@ -46,7 +46,7 @@ class Evil::Client
       # @return [self]
       #
       def let(key, &block)
-        NameError.check!(key, RESERVED)
+        NameError.check!(key)
         define_method(key) do
           instance_variable_get(:"@#{key}") ||
             instance_variable_set(:"@#{key}", instance_exec(&block))
@@ -97,10 +97,6 @@ class Evil::Client
       rescue => error
         raise ValidationError, error.message
       end
-
-      # @private
-      RESERVED = \
-        %i[options datetime scope logger basic_auth key_auth token_auth].freeze
     end
 
     # The processed hash of options contained by the instance of settings
@@ -108,7 +104,7 @@ class Evil::Client
     # @return [Hash<Symbol, Object>]
     #
     def options
-      @__options__
+      Options.new @__options__
     end
 
     # @!attribute logger

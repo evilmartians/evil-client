@@ -175,6 +175,11 @@ RSpec.describe Evil::Client::Settings do
     it "slices declared options from the assigned ones" do
       expect(subject).to eq id: 42
     end
+
+    it "responds to #slice and #except" do
+      expect(subject).to respond_to :slice
+      expect(subject).to respond_to :except
+    end
   end
 
   describe "#datetime" do

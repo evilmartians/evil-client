@@ -39,7 +39,7 @@ class Evil::Client
     # @return [self]
     #
     def scope(name, &block)
-      key = NameError.check!(name, RESERVED)
+      key = NameError.check!(name)
       TypeError.check! self, key, :scope
       @__children__[key] ||= self.class.new(self, key)
       @__children__[key].instance_exec(&block)
@@ -53,7 +53,7 @@ class Evil::Client
     # @return [self]
     #
     def operation(name, &block)
-      key = NameError.check!(name, RESERVED)
+      key = NameError.check!(name)
       TypeError.check! self, key, :operation
       @__children__[key] ||= self.class.superclass.new(self, key)
       @__children__[key].instance_exec(&block)
@@ -66,8 +66,5 @@ class Evil::Client
       super
       @__children__ = {}
     end
-
-    RESERVED = \
-      %i[operations scopes scope options schema settings inspect logger].freeze
   end
 end
