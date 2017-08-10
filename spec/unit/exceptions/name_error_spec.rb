@@ -1,10 +1,9 @@
 RSpec.describe Evil::Client::NameError do
-  let(:error)     { described_class.new name, forbidden }
-  let(:name)      { "foo" }
-  let(:forbidden) { %i[foo bar] }
+  let(:error) { described_class.new name }
+  let(:name)  { "object_id" }
 
   describe ".check!" do
-    subject { described_class.check! name, forbidden }
+    subject { described_class.check! name }
 
     context "with a valid name" do
       let(:name) { "qux_3" }
@@ -55,7 +54,7 @@ RSpec.describe Evil::Client::NameError do
     end
 
     context "with a forbidden name" do
-      let(:name) { "foo" }
+      let(:name) { "object_id" }
 
       it "raises itself" do
         expect { subject }.to raise_error described_class
@@ -67,11 +66,7 @@ RSpec.describe Evil::Client::NameError do
     subject { error.message }
 
     it "builds a proper error message" do
-      expect(subject).to eq "Invalid name :foo." \
-        " It should contain latin letters in the lower case," \
-        " digits, and underscores only; have minimum 2 chars;" \
-        " start from a letter; end with either letter or digit." \
-        " The following names: 'foo', 'bar' are already used by Evil::Client."
+      expect(subject).to include "Invalid name :object_id."
     end
   end
 end

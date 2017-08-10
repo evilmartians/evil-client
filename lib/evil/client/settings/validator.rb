@@ -55,7 +55,7 @@ class Evil::Client
     end
 
     def validate!(settings, block)
-      settings.instance_eval(&block) && true
+      settings.instance_exec(&block) && true
     rescue => error
       settings&.logger&.error(self) { "broken for #{settings} with #{error}" }
       raise

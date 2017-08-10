@@ -19,6 +19,9 @@ module Evil
   # Absctract base class for clients to remote APIs
   #
   class Client
+    require_relative "client/names"
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     require_relative "client/exceptions/definition_error"
     require_relative "client/exceptions/name_error"
     require_relative "client/exceptions/response_error"

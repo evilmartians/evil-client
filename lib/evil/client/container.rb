@@ -5,6 +5,8 @@ class Evil::Client
   # and methods to build sub-scope/operation or perform the current operation.
   #
   class Container
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     # Loads concrete implementations of the abstract container
     require_relative "container/scope"
     require_relative "container/operation"

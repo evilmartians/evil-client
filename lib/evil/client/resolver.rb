@@ -7,6 +7,8 @@ class Evil::Client
   # (request, middleware or response).
   #
   class Resolver
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     # Loads concrete implementation of the abstract resolver
     require_relative "resolver/request"
     require_relative "resolver/middleware"

@@ -9,6 +9,8 @@ class Evil::Client
   # for scope/operation instance whose options reload the [#parent]'s ones.
   #
   class Builder
+    Names.clean(self) # Remove unnecessary methods from the instance
+
     # Load concrete implementations for the abstact builder
     require_relative "builder/scope"
     require_relative "builder/operation"
