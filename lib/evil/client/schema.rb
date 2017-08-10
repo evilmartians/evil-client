@@ -33,7 +33,7 @@ class Evil::Client
     #
     # @return [Evil::Client]
     #
-    attr_reader :client # TODO: add spec
+    attr_reader :client
 
     # The human-friendly representation of the schema
     #

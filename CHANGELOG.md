@@ -18,6 +18,10 @@ Some syntax sugar has been added to both the client and its RSpec helpers.
   so at the endpoint operation there could be a lot of options
   related to other endpoints, or to a different part of the request.
 
+- Every container has reference to its `#client` along the standalone `#name`
+  of its schema. This allows to select operation containers by
+  `#client`, `#name`, `#options` to stub their methods `#call`. (nepalez)
+
 ## [1.0.0] [2017-08-06]
 
 This is a total new reincarnation of the gem. I've changed its

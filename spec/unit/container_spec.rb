@@ -1,4 +1,5 @@
 RSpec.describe Evil::Client::Container do
+  let(:klass)     { double :class }
   let(:container) { described_class.new schema, logger, opts }
   let(:logger)    { Logger.new log }
   let(:log)       { StringIO.new }
@@ -18,6 +19,7 @@ RSpec.describe Evil::Client::Container do
   let(:schema) do
     double :schema,
            to_s: "MyApi.users",
+           client: klass,
            parent: nil,
            settings: settings_klass,
            definitions: {}
@@ -34,6 +36,14 @@ RSpec.describe Evil::Client::Container do
     it "logs initialized settings" do
       subject
       expect(log.string).to include container.settings.to_s
+    end
+  end
+
+  describe "#name" do
+    subject { container.name }
+
+    it "returns human-friendly representation of the schema" do
+      expect(subject).to eq "MyApi.users"
     end
   end
 
@@ -94,6 +104,14 @@ RSpec.describe Evil::Client::Container do
 
     it "returns current settings" do
       expect(subject).to be_a settings_klass
+    end
+  end
+
+  describe "#client" do
+    subject { container.client }
+
+    it "returns current client" do
+      expect(subject).to eq klass
     end
   end
 
