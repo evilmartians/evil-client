@@ -10,6 +10,7 @@ Human-friendly DSL for writing HTTP(s) clients in Ruby
 [![Dependency Status][gemnasium-badger]][gemnasium]
 [![Code Climate][codeclimate-badger]][codeclimate]
 [![Inline docs][inch-badger]][inch]
+[![Documentation Status][readthedocs-badger]][readthedocs]
 
 ## Intro
 
@@ -37,7 +38,7 @@ $ gem install evil-client
 
 ## Synopsis
 
-The following example gives an idea of how a client to remote API looks like when written on top of `Evil::Client`.
+The following example gives an idea of how a client to remote API looks like when written on top of `Evil::Client`. See [full documentation][readthedocs] for more details.
 
 ```ruby
 require "evil-client"
@@ -119,3 +120,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 [swagger]: http://swagger.io
 [travis-badger]: https://img.shields.io/travis/evilmartians/evil-client/master.svg?style=flat
 [travis]: https://travis-ci.org/evilmartians/evil-client
+[readthedocs-badger]: https://readthedocs.org/projects/evilclient/badge/?version=latest
+[readthedocs]: http://evilclient.readthedocs.io/en/latest
