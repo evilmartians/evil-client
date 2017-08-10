@@ -6,22 +6,22 @@ repo_url: https://github.com/nepalez/evil-client
 site_author: Andrew Kozin
 theme: readthedocs
 pages:
-  Synopsis: index.md
-  Helpers:
-    scope:             helpers/scope.md
-    operation:         helpers/operation.md
-    option:            helpers/option.md
-    let:               helpers/let.md
-    validate:          helpers/validate.md
-    path:              helpers/path.md
-    http_method:       helpers/http_method.md
-    security:          helpers/security.md
-    headers:           helpers/headers.md
-    query:             helpers/query.md
-    'body and format': helpers/body.md
-    response:          helpers/response.md
-    middleware:        helpers/middleware.md
-    connection:        helpers/connection.md
-    logger:            helpers/logger.md
-  'RSpec matcher':     rspec.md
-  License: license.md
+  - Synopsis: index.md
+  - Helpers:
+    - scope:             helpers/scope.md
+    - operation:         helpers/operation.md
+    - option:            helpers/option.md
+    - let:               helpers/let.md
+    - validate:          helpers/validate.md
+    - path:              helpers/path.md
+    - http_method:       helpers/http_method.md
+    - security:          helpers/security.md
+    - headers:           helpers/headers.md
+    - query:             helpers/query.md
+    - 'body and format': helpers/body.md
+    - response:          helpers/response.md
+    - middleware:        helpers/middleware.md
+    - connection:        helpers/connection.md
+    - logger:            helpers/logger.md
+  - 'RSpec matcher':     rspec.md
+  - License: license.md
