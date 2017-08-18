@@ -93,6 +93,14 @@ RSpec.describe Evil::Client do
     klass.new(token: "foo", version: 1)
   end
 
+  describe "#settings" do
+    subject { client.settings }
+
+    it "returns settings assigned to client settings" do
+      expect(subject.token).to eq "foo"
+    end
+  end
+
   describe "#options" do
     subject { client.options }
 

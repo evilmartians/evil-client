@@ -125,6 +125,14 @@ module Evil
       @scope.scopes
     end
 
+    # Settings of the client
+    #
+    # @return (see Evil::Client::Container#settings)
+    #
+    def settings
+      @scope.settings
+    end
+
     # Options assigned to the client
     #
     # @return (see Evil::Client::Container#options)
