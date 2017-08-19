@@ -21,6 +21,34 @@ RSpec.describe Evil::Client::Settings do
     end
   end
 
+  describe ".policy" do
+    context "for the root schema settings" do
+      subject { klass.policy }
+
+      it "subclasses Evil::Client::Policy" do
+        expect(subject.superclass).to eq Evil::Client::Policy
+      end
+
+      it "refers back to the settings" do
+        expect(subject.settings).to eq klass
+      end
+    end
+
+    context "for the scope settings" do
+      let(:scope_schema) { double :scope_schema }
+      let(:scope_klass)  { klass.for(scope_schema) }
+      subject { scope_klass.policy }
+
+      it "subclasses policy of parent settings" do
+        expect(subject.superclass).to eq klass.policy
+      end
+
+      it "refers back to the settings" do
+        expect(subject.settings).to eq scope_klass
+      end
+    end
+  end
+
   describe ".option" do
     it "is defined by Dry::Initializer DSL" do
       expect(klass).to be_a Dry::Initializer

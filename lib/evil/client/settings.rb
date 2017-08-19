@@ -7,6 +7,8 @@ class Evil::Client
     require_relative "settings/validator"
     extend ::Dry::Initializer
 
+    @policy = Policy
+
     class << self
       # Subclasses itself for a given schema
       #
@@ -74,6 +76,14 @@ class Evil::Client
             instance_variable_set(:"@#{key}", instance_exec(&block))
         end
         self
+      end
+
+      # Policy class that collects all the necessary validators
+      #
+      # @return [Class] a subclass of [Tram::Policy] named after the scope
+      #
+      def policy
+        @policy ||= superclass.policy.for(self)
       end
 
       # Define validator for the attribute
