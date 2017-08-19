@@ -66,7 +66,7 @@ class CatsClient < Evil::Client
       option :age,   optional: true
 
       let(:data) { options.select { |key, _| %i(name color age).include? key } }
-      validate(:data_present) { !data.empty? }
+      validate   { errors.add :no_filters if data.empty? }
 
       path        { "cats/#{id}" } # added to root path
       http_method :patch # you can use plain syntax instead of a block

@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [2.0.0] [2017-08-19]
+
+### Changed
+
+- In this version I've changed interface for validations by switching
+  to [tram-policy] based validation  (nepalez)
+
+  Instead of giving name to validator:
+
+  ```ruby
+  validate :name_present { name != "" }
+  ```
+
+  You should use `errors.add` with the name for exception
+
+  ```ruby
+  validate { errors.add :blank_name if name == "" }
+  ```
+
+  This time the exception will be risen with all validation errors at once,
+  not only the first one.
+
+- The `:en` locale is always used for translations (nepalez)
+
+  You don't need to make this locale available -- this is made under the hood!
+
 ## [1.1.0] [2017-08-10]
 
 Some syntax sugar has been added to both the client and its RSpec helpers.

@@ -1,6 +1,8 @@
 Use `validate` helper to check interconnection between several options.
 
-The helper takes name (unique for a current scope) and a block. Validation fails when a block returns falsey value.
+It takes a block, where all options are available. You should call method
+`errors.add :some_key, **some_options` or `errors.add "some message"`
+to invalidate options.
 
 ```ruby
 class CatsAPI < Evil::Client
@@ -10,15 +12,15 @@ class CatsAPI < Evil::Client
 
   # All requests should be made with either token or user/password
   # This is required by any request
-  validate(:valid_credentials) { token ^ password }
-  validate(:password_given)    { user ^ !password }
+  validate { errors.add :wrong_credentials unless token.nil? ^ password.nil? }
+  validate { errors.add :missed_password   unless user.nil? ^ !password }
 
   scope :cats do
     option :version, proc(&:to_i)
 
     # Check that operation of cats scope include token after API v1
     # This doesn't affect other subscopes of CatsAPI root scope
-    validate(:token_based) { token || version.zero? }
+    validate { errors.add :missed_token unless token || version.zero? }
   end
 
   # ...
@@ -27,7 +29,12 @@ end
 CatsAPI.new password: "foo" # raises Evil::Client::ValidationError
 ```
 
-The error message is translated using i18n gem. You should provide translations for a corresponding scope:
+The error message is translated using i18n gem in **english** locale.
+You don't need to add `:en` to `I18n.available_locales`, we make it
+under the hood and then restore previous settings.
+
+All you need is to provide translations for a corresponding scope which is
+`en.evil.client.errors.{class_name}.{scopes and operations}` as shown below.
 
 ```yaml
 # config/locales/evil-client.en.yml
@@ -37,15 +44,15 @@ en:
     client:
       errors:
         cats_api:
-          valid_credentials: "Provide either a token or a password"
-          password_given:    "User and password should accompany one another"
+          wrong_credentials: "Provide either a token or a password"
+          missed_password:   "User and password should accompany one another"
           cats:
-            token_based: "The token is required for operations with cats in API v1+"
+            missed_token: "The token is required for operations with cats in API v1+"
 ```
 
-The root scope for error messages is `{locale}.evil.client.errors.{class_name}` as shown above.
+Alternatively you can call `errors.add "some message"` without any translation. Only symbolic keys are translated via i18n, while string messages used in exceptions as is. This time you don't need adding translation at all.
 
-Remember, that you can initialize client with some valid options, and then reload that options in a nested subscope/operation. All validations defined from the root of the client will be used for any set of options. See the example:
+Remember, that you can initialize client with some valid options, and then reload that options in a nested subscope/operation. All validations defined from the root of the client will be used for any set of options. For example:
 
 ```ruby
 client = CatsAPI.new token: "foo"
@@ -58,11 +65,11 @@ cats.fetch id: 3
 # valid
 
 cats.fetch id: 3, token: nil
-# fails due to 'valid_credentials' is broken
+# fails due to wrong credentials
 
 cats.fetch id: 3, token: nil, user: "andy", password: "qux"
 # valid
 
 cats.fetch id: 3, token: nil, user: "andy", password: "qux", version: 1
-# fails due to 'cats.token_based' is broken
+# fails due to missed token
 ```

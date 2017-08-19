@@ -10,7 +10,10 @@ class CatsClient < Evil::Client
   option :password,  proc(&:to_s)
   option :subdomain, proc(&:to_s)
 
-  validate(:valid_subdomain) { %w[wild domestic].include? subdomain }
+  validate do
+    return if %w[wild domestic].include? subdomain
+    errors.add :invalid_subdomain, subdomain: subdomain
+  end
 
   path { "https://#{subdomain}.example.com/" }
   http_method "get"
@@ -39,7 +42,7 @@ class CatsClient < Evil::Client
     # scope-specific options
     option :version, proc(&:to_i)
 
-    validate(:supported_version) { version < 5 }
+    validate { errors.add :wrong_version unless version < 5 }
 
     # scope-specific redefinition of the root settings
     http_method { version.zero? ? :get : :post }

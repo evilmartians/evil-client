@@ -24,7 +24,7 @@ class Evil::Client
       #
       # @return [Class]
       #
-      attr_reader :schema
+      attr_reader :schema, :locale
 
       # Human-friendly representation of settings class
       #
@@ -104,9 +104,19 @@ class Evil::Client
       def new(logger, opts = {})
         logger&.debug(self) { "initializing with options #{opts}..." }
         opts = Hash(opts).each_with_object({}) { |(k, v), o| o[k.to_sym] = v }
-        super logger, opts
+        in_english { super logger, opts }
       rescue => error
         raise ValidationError, error.message
+      end
+
+      private
+
+      def in_english(&block)
+        available_locales = I18n.available_locales
+        I18n.available_locales = %i[en]
+        I18n.with_locale(:en, &block)
+      ensure
+        I18n.available_locales = available_locales
       end
     end
 
@@ -154,12 +164,10 @@ class Evil::Client
     private
 
     def initialize(logger, **options)
-      @logger = logger
       super(options)
-
-      logger&.debug(self) { "initialized" }
+      @logger = logger
       self.class.policy[self].validate!
-      logger&.debug(self) { "validated successfully" }
+      logger&.debug(self) { "initialized" }
     end
   end
 end

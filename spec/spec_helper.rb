@@ -24,9 +24,7 @@ RSpec.configure do |config|
     # Prepare the Test namespace for constants defined in specs
     module Test; end
     # Load translations
-    en_translations = yaml_fixture_file "locales/en.yml"
-    I18n.available_locales = %i[en]
-    I18n.backend.store_translations :en, en_translations["en"]
+    I18n.load_path += Dir["spec/fixtures/locales/*.yml"]
   end
 
   config.after(:each) do
