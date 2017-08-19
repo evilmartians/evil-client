@@ -4,7 +4,6 @@ class Evil::Client
   #
   class Settings
     Names.clean(self) # Remove unnecessary methods from the instance
-    require_relative "settings/validator"
     extend ::Dry::Initializer
 
     @policy = Policy
@@ -86,23 +85,14 @@ class Evil::Client
         @policy ||= superclass.policy.for(self)
       end
 
-      # Define validator for the attribute
+      # Add validation rule to the [#policy]
       #
-      # @param [#to_sym] key The name of the attribute
       # @param [Proc] block  The body of new attribute
       # @return [self]
       #
-      def validate(key, &block)
-        validators[key] = Validator.new(@schema, key, &block)
+      def validate(&block)
+        policy.validate(&block)
         self
-      end
-
-      # Collection of validators to check initialized settings
-      #
-      # @return [Hash<Symbol, Evil::Client::Validator>]
-      #
-      def validators
-        @validators ||= {}
       end
 
       # Builds settings with options
@@ -168,22 +158,8 @@ class Evil::Client
       super(options)
 
       logger&.debug(self) { "initialized" }
-      __validate__!
-    end
-
-    def __validate__!
-      __validators__.reverse.each { |validator| validator.call(self) }
-    end
-
-    def __validators__
-      klass = self.class
-      [].tap do |list|
-        loop do
-          list.concat klass.validators.values
-          klass = klass.superclass
-          break if klass == Evil::Client::Settings
-        end
-      end
+      self.class.policy[self].validate!
+      logger&.debug(self) { "validated successfully" }
     end
   end
 end

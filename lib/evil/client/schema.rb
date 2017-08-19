@@ -84,8 +84,8 @@ class Evil::Client
     # @param  (see Evil::Client::Settings.validate)
     # @return [self]
     #
-    def validate(key, &block)
-      settings.validate(key, &block)
+    def validate(&block)
+      settings.validate(&block)
       self
     end
 

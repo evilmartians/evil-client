@@ -102,7 +102,7 @@ RSpec.describe Evil::Client::Settings do
   describe ".validate" do
     before do
       klass.param :name
-      klass.validate(:name_present) { name.to_s != "" }
+      klass.validate { errors.add :name_present if name.to_s == "" }
     end
 
     let(:options) { { "name" => "" } }
@@ -110,14 +110,7 @@ RSpec.describe Evil::Client::Settings do
     it "adds validation for an instance" do
       # see spec/fixtures/locale/en.yml
       expect { settings }
-        .to raise_error(Evil::Client::ValidationError, "The user has no name")
-    end
-
-    it "gives logger to validators" do
-      settings rescue nil
-
-      expect(log.string).to include "#{klass.schema}.validator[:name_present]"
-      expect(log.string).to include "failed"
+        .to raise_error(Evil::Client::ValidationError, /The user has no name/)
     end
   end
 

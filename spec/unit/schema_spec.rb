@@ -143,10 +143,10 @@ RSpec.describe Evil::Client::Schema do
 
   describe "#validate" do
     before  { allow(schema.settings).to receive(:validate) }
-    subject { schema.validate(:id_present) {} }
+    subject { schema.validate {} }
 
     it "is delegated to settings" do
-      expect(schema.settings).to receive(:validate).with(:id_present)
+      expect(schema.settings).to receive(:validate)
       subject
     end
 

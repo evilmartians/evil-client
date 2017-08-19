@@ -4,7 +4,8 @@ module Test
     option :user
     option :token,    optional: true
     option :password, optional: true
-    validate(:valid_credentials) { token.nil? ^ password.nil? }
+
+    validate { errors.add :valid_credentials unless token.nil? ^ password.nil? }
 
     path { "https://#{subdomain}.example.com" }
 
@@ -25,7 +26,7 @@ module Test
           option :id,    optional: true
           option :email, optional: true
 
-          validate(:filter_given) { name || id || email }
+          validate { errors.add :filter_given unless name || id || email }
 
           http_method   :get
           response(200) { |*res| res.last.flat_map { |item| JSON.parse(item) } }
