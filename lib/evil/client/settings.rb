@@ -8,11 +8,33 @@ class Evil::Client
     extend ::Dry::Initializer
 
     class << self
-      # The schema klass settings belongs to
+      # Subclasses itself for a given schema
+      #
+      # @param  [Class] schema
+      # @return [Class] a subclass for the schema
+      #
+      def for(schema)
+        Class.new(self).tap do |klass|
+          klass.send(:instance_variable_set, :@schema, schema)
+        end
+      end
+
+      # Reference to the schema klass the settings belongs to
       #
       # @return [Class]
       #
       attr_reader :schema
+
+      # Human-friendly representation of settings class
+      #
+      # @return [String]
+      #
+      def name
+        super || @schema.to_s
+      end
+      alias_method :to_s,    :name
+      alias_method :to_str,  :name
+      alias_method :inspect, :name
 
       # Only options can be defined for the settings container
       # @private
@@ -72,17 +94,6 @@ class Evil::Client
       def validators
         @validators ||= {}
       end
-
-      # Human-friendly representation of settings class
-      #
-      # @return [String]
-      #
-      def name
-        super || @schema.to_s
-      end
-      alias_method :to_s,    :name
-      alias_method :to_str,  :name
-      alias_method :inspect, :name
 
       # Builds settings with options
       #

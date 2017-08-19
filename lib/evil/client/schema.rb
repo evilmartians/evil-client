@@ -55,9 +55,7 @@ class Evil::Client
     # @return [Class]
     #
     def settings
-      @settings ||= Class.new(parent&.settings || Settings).tap do |klass|
-        klass.send(:instance_variable_set, :@schema, self)
-      end
+      @settings ||= (parent&.settings || Settings).for(self)
     end
 
     # Adds an option to the [#settings] class
