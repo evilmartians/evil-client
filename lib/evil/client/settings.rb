@@ -125,7 +125,7 @@ class Evil::Client
     # @return [Hash<Symbol, Object>]
     #
     def options
-      Options.new @__options__
+      @options ||= Options.new self.class.dry_initializer.attributes(self)
     end
 
     # @!attribute logger

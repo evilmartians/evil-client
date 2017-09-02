@@ -43,6 +43,7 @@ class Evil::Client
       send
       settings
       singleton_class
+      tap
       to_s
       to_str
       token_auth
