@@ -8,6 +8,7 @@ require "bundler/setup"
 require "webmock/rspec"
 require "rspec/its"
 require "timecop"
+require "tempfile"
 require "evil/client"
 require "evil/client/rspec"
 
