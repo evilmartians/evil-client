@@ -37,11 +37,22 @@ class Evil::Client
       #
       def let(key, &block)
         NameError.check!(key)
+        lets[key.to_sym] = block
+
         define_method(key) do
           instance_variable_get(:"@#{key}") ||
             instance_variable_set(:"@#{key}", instance_exec(&block))
         end
+
         self
+      end
+
+      # Definitions for virtual attributes
+      #
+      # @return [Hash<Symbol, Proc>]
+      #
+      def lets
+        @lets ||= {}
       end
 
       # Policy object for model instances
@@ -61,6 +72,29 @@ class Evil::Client
         policy.validate(&block)
         self
       end
+
+      # Merges [.option]-s, virtual attributes [.let] and [.validation]-s
+      # from another model into the current one.
+      #
+      # @param  [Evil::Client::Model] other
+      # @return [self]
+      #
+      # rubocop: disable Metrics/AbcSize
+      def extend(other)
+        return super if other.instance_of? Module
+
+        unless other.ancestors.include? Evil::Client::Model
+          raise TypeError, "#{other} is not a subclass of Evil::Client::Model"
+        end
+
+        other.dry_initializer.options.each do |definition|
+          option definition.source, definition.options
+        end
+
+        other.lets.each { |key, block| let(key, &block) }
+        other.policy.all.each { |validator| policy.local << validator }
+      end
+      # rubocop: enable Metrics/AbcSize
 
       # Model instance constructor
       #

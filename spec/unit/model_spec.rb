@@ -84,4 +84,50 @@ RSpec.describe Evil::Client::Model do
       end
     end
   end
+
+  describe ".extend" do
+    before do
+      class Test::Other < described_class
+        option :first_name, optional: true
+        option :last_name,  optional: true
+
+        let(:name) { [first_name, last_name].compact.join(" ") }
+
+        validate { errors.add :empty_name if name == "" }
+      end
+
+      class Test::Model < described_class
+        extend Test::Other
+        option :email, optional: true
+      end
+    end
+
+    let(:options) do
+      { first_name: "Joe", last_name: "Doe", email: "joe@example.com" }
+    end
+
+    subject { model }
+
+    it "behaves like a model" do
+      expect(subject).to be_a klass
+      expect(subject.email).to eq "joe@example.com"
+    end
+
+    it "injects options from the other model" do
+      expect(subject.first_name).to eq "Joe"
+      expect(subject.last_name).to  eq "Doe"
+    end
+
+    it "injects memoizers from the other model" do
+      expect(subject.name).to eq "Joe Doe"
+    end
+
+    context "with invalid options" do
+      let(:options) { { email: "joe@example.com" } }
+
+      it "injects validators from the other model" do
+        expect { subject }.to raise_error(StandardError, /name/)
+      end
+    end
+  end
 end

@@ -15,6 +15,14 @@ to [Semantic Versioning].
 - Module `Evil::Client::Dictionary` (nepalez)
   Describes a yaml dictionary-based collection of items
 
+- Helper method `extend` to inject a model into another model, or settings (nepalez)
+
+  ```ruby
+  operation :update_user do
+    extend User # takes option-s, let-s, and validate-s from User
+  end
+  ```
+
 ## [2.0.0] [2017-09-02]
 
 ### Changed
@@ -392,11 +400,13 @@ formats will be added.
   response :not_found, 404, format: "json", raise: true
   ```
 
-[1.1.0]: https://github.com/evilmartians/evil-client/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/evilmartians/evil-client/compare/v0.3.3...v1.0.0
-[0.3.3]: https://github.com/evilmartians/evil-client/compare/v0.3.2...v0.3.3
-[0.3.2]: https://github.com/evilmartians/evil-client/compare/v0.3.1...v0.3.2
-[0.3.1]: https://github.com/evilmartians/evil-client/compare/v0.3.0...v0.3.1
 [Keep a Changelog]: http://keepachangelog.com/
 [Semantic Versioning]: http://semver.org/
 [dry-initializer]: http://github.com/dry-rb/dry-initalizer
+[0.3.1]: https://github.com/evilmartians/evil-client/compare/v0.3.0...v0.3.1
+[0.3.2]: https://github.com/evilmartians/evil-client/compare/v0.3.1...v0.3.2
+[0.3.3]: https://github.com/evilmartians/evil-client/compare/v0.3.2...v0.3.3
+[1.0.0]: https://github.com/evilmartians/evil-client/compare/v0.3.3...v1.0.0
+[1.1.0]: https://github.com/evilmartians/evil-client/compare/v1.0.0...v1.1.0
+[2.0.0]: https://github.com/evilmartians/evil-client/compare/v1.1.0...v2.0.0
+[2.1.0]: https://github.com/evilmartians/evil-client/compare/v2.0.0...v2.1.0
