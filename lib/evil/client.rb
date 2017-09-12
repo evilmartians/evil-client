@@ -30,6 +30,7 @@ module Evil
     require_relative "client/chaining"
     require_relative "client/options"
     require_relative "client/policy"
+    require_relative "client/model"
     require_relative "client/settings"
     require_relative "client/schema"
     require_relative "client/container"
@@ -37,7 +38,6 @@ module Evil
     require_relative "client/connection"
     require_relative "client/formatter"
     require_relative "client/resolver"
-
     require_relative "client/dictionary"
 
     include Chaining

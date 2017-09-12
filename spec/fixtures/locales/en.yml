@@ -14,3 +14,5 @@ en:
             users:
               filter:
                   filter_given: You should define some filter with either name, email, or id
+        test/model:
+          name_present: "The user has no name"

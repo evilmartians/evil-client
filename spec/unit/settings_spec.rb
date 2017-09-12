@@ -26,11 +26,12 @@ RSpec.describe Evil::Client::Settings do
       subject { klass.policy }
 
       it "subclasses Evil::Client::Policy" do
-        expect(subject.superclass).to eq Evil::Client::Policy
+        expect(subject.superclass).to eq described_class.policy
+        expect(described_class.policy.superclass).to eq Evil::Client::Policy
       end
 
       it "refers back to the settings" do
-        expect(subject.settings).to eq klass
+        expect(subject.model).to eq klass
       end
     end
 
@@ -44,7 +45,7 @@ RSpec.describe Evil::Client::Settings do
       end
 
       it "refers back to the settings" do
-        expect(subject.settings).to eq scope_klass
+        expect(subject.model).to eq scope_klass
       end
     end
   end

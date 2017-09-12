@@ -22,10 +22,10 @@ RSpec.describe Evil::Client::Policy do
     end
 
     it "keeps reference to the settings" do
-      expect(subject.settings).to eq settings
+      expect(subject.model).to eq settings
     end
 
-    it "takes the name from settings clsass" do
+    it "takes the name from settings class" do
       expect(subject.name).to eq "Foo.policy"
     end
   end
