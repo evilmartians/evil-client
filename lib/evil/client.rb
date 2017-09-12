@@ -143,6 +143,17 @@ module Evil
       @scope.options
     end
 
+    # Human-readable representation of the client
+    #
+    # @return [String]
+    #
+    def inspect
+      vars = options.map { |k, v| "@#{k}=#{v}" }.join(", ")
+      "#<#{self.class}:#{format('0x%014x', object_id)} #{vars}>"
+    end
+    alias to_s   inspect
+    alias to_str inspect
+
     private
 
     def initialize(**options)
