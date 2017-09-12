@@ -38,6 +38,8 @@ module Evil
     require_relative "client/formatter"
     require_relative "client/resolver"
 
+    require_relative "client/dictionary"
+
     include Chaining
 
     class << self
