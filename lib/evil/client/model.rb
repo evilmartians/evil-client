@@ -44,6 +44,10 @@ class Evil::Client
         self
       end
 
+      # Policy object for model instances
+      #
+      # @return [Evil::Client::Policy]
+      #
       def policy
         @policy ||= superclass.policy.for(self)
       end
@@ -58,6 +62,11 @@ class Evil::Client
         self
       end
 
+      # Model instance constructor
+      #
+      # @param  [Hash] op Model options
+      # @return [Evil::Client::Model]
+      #
       def new(op = {})
         op = Hash(op).each_with_object({}) { |(k, v), obj| obj[k.to_sym] = v }
         super(op).tap { |item| in_english { policy[item].validate! } }

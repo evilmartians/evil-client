@@ -4,9 +4,9 @@ class Evil::Client
   #
   class Policy < Tram::Policy
     class << self
-      # Subclasses itself for a settings class
+      # Subclasses itself for a model class
       #
-      # @param  [Class] settings Settings class to validate
+      # @param  [Class] model Settings class to validate
       # @return [Class]
       #
       def for(model)

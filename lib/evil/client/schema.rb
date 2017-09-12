@@ -60,8 +60,8 @@ class Evil::Client
 
     # Adds an option to the [#settings] class
     #
-    # @param  (see Evil::Client::Settings.option)
-    # @option (see Evil::Client::Settings.option)
+    # @param  (see Evil::Client::Model.option)
+    # @option (see Evil::Client::Model.option)
     # @return [self]
     #
     def option(key, type = nil, **opts)
@@ -71,7 +71,7 @@ class Evil::Client
 
     # Adds a memoized method to the [#settings] class
     #
-    # @param  (see Evil::Client::Settings.let)
+    # @param  (see Evil::Client::Model.let)
     # @return [self]
     #
     def let(key, &block)
@@ -81,7 +81,7 @@ class Evil::Client
 
     # Adds validator to the [#settings] class
     #
-    # @param  (see Evil::Client::Settings.validate)
+    # @param  (see Evil::Client::Model.validate)
     # @return [self]
     #
     def validate(&block)

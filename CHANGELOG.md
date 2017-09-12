@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [2.1.0] [WIP]
+
+### Added
+
+- Class `Evil::Client::Model` (nepalez)
+  Describes standalone model with `.option`, `.let`, and `.validate` extracted
+  from `Evil::Client::Settings`.
+
+- Module `Evil::Client::Dictionary` (nepalez)
+  Describes a yaml dictionary-based collection of items
+
 ## [2.0.0] [2017-09-02]
 
 ### Changed
