@@ -37,11 +37,7 @@ class Evil::Client
       alias_method :to_str,  :name
       alias_method :inspect, :name
 
-      # Only options can be defined for the settings container
-      # @private
-      def param(*args)
-        option(*args)
-      end
+      undef_method :param
 
       # Creates or updates the settings' initializer
       #

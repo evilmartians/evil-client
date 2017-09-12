@@ -66,22 +66,9 @@ RSpec.describe Evil::Client::Settings do
     end
   end
 
-  describe ".param" do
-    before do
-      klass.param :id,    optional: true
-      klass.param :email, optional: true
-    end
-
-    subject { settings.options }
-
-    it "acts like .option" do
-      expect(subject).to eq id: 42
-    end
-  end
-
   describe ".let" do
     before do
-      klass.param :id
+      klass.option :id
       klass.let(:square_id) { id**2 }
     end
 
@@ -101,7 +88,7 @@ RSpec.describe Evil::Client::Settings do
 
   describe ".validate" do
     before do
-      klass.param :name
+      klass.option :name
       klass.validate { errors.add :name_present if name.to_s == "" }
     end
 
