@@ -6,14 +6,16 @@ class Evil::Client
     # Exception to be risen when item cannot be found in a dictionary
     Error = Class.new(ArgumentError)
 
-    # Filename of config YAML file containing dictionary items
+    # Raw data for the dictionary items
     # @return [String]
-    attr_reader :config
+    def raw
+      @raw ||= []
+    end
 
-    # List of all dictionary items
+    # List of the dictionary items
     # @return [Array<Evil::Client::Dictionary>]
     def all
-      @all ||= YAML.load_file(config).map { |item| new(item) }
+      @all ||= raw.map { |item| new(item) }
     end
 
     # Iterates by dictionary items
@@ -44,13 +46,16 @@ class Evil::Client
     end
 
     class << self
-      # Builds dictionary from YAML config file
+      # Loads [#raw] dictionary from YAML config file
       #
-      # @param  [String] filename
+      # @param  [String] path
       # @return [self]
       #
-      def [](filename)
-        @config = filename
+      def [](path)
+        file, paths = path.to_s.split("#")
+        list = YAML.load_file(file)
+        keys = paths.to_s.split("/").map(&:to_sym)
+        @raw = keys.any? ? Hash(list).dig(*keys) : list
         self
       end
 
@@ -58,14 +63,14 @@ class Evil::Client
 
       def extended(klass)
         super
-        klass.send :instance_variable_set, :@config, @config
-        @config = nil
+        klass.send :instance_variable_set, :@raw, @raw.to_a
+        @raw = nil
       end
 
       def included(klass)
         super
-        klass.class_eval "def config; '#{@config}'; end"
-        @config = nil
+        klass.send :define_method, :raw, &@raw.method(:to_a)
+        @raw = nil
       end
     end
   end
