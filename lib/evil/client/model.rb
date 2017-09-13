@@ -107,6 +107,8 @@ class Evil::Client
       rescue => error
         raise ValidationError, error.message
       end
+      alias call new
+      alias []   call
 
       private
 
