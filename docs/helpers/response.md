@@ -32,6 +32,31 @@ response 400, 422 do |_status, *|
 end
 ```
 
+In case if you want to implement hierarchical processing of errors from more specific to certain operations or scopes to common errors of whole API, you can call `super!` method from response handler when you want to delegate handling to parent scope:
+
+```ruby
+class YourAPI < Evil::Client
+  scope :entities do
+    operation :create do
+      response(409) do |_, _, body|
+        data = JSON.parse(body.first)
+        case data.dig("errors", 0, "errorId")
+        when 35021
+          raise YourAPI::AlreadyExists, data.dig("errors", 0, "message")
+        else
+          super!
+        end
+      end
+    end
+  end
+
+  response(409) do |_, _, body|
+    data = JSON.parse(body.first)
+    raise EbayAPI::Error, data.dig("errors", 0, "message")
+  end
+end
+```
+
 When you use client-specific [middleware], the `response` block will receive the result already processed by the whole middleware stack. The helper will serve a final step of its handling. Its result wouldn't be processed further in any way.
 
 If a remote API will respond with a status, not defined for the operation, the `Evil::Client::ResponseError` will be risen. The exception carries both the response, and all its parts (status, headers, and body).

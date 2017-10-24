@@ -5,16 +5,18 @@ RSpec.describe Evil::Client::Resolver::Response, ".call" do
   let(:logger)   { Logger.new log }
   let(:response) { [201, { "Content-Language" => "en" }, ["success"]] }
 
+  let(:root_response_handler) { proc { |*args| args } }
   let(:root_schema) do
     double :my_parent_schema,
-           definitions: { responses: { 201 => proc { |*args| args } } },
+           definitions: { responses: { 201 => root_response_handler } },
            parent: nil
   end
 
+  let(:response_handler) { proc { |_, _, body| body.first } }
   let(:schema) do
     double :my_schema,
            definitions: {
-             responses: { 201 => proc { |_, _, body| body.first } }
+             responses: { 201 => response_handler }
            },
            parent: root_schema
   end
@@ -50,6 +52,24 @@ RSpec.describe Evil::Client::Resolver::Response, ".call" do
 
     it "applies root schema to response" do
       expect(subject).to eq response
+    end
+  end
+
+  context "when root definition reloaded but schema handler skips response" do
+    let(:response_handler) do
+      proc { |_, _, _| super! }
+    end
+
+    it "applies root schema to response" do
+      expect(subject).to eq response
+    end
+
+    context "when root definition skips response handling too" do
+      let(:root_response_handler) { proc { super! } }
+
+      it "raises Evil::Client::ResponseError" do
+        expect { subject }.to raise_error Evil::Client::ResponseError
+      end
     end
   end
 
