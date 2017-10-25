@@ -31,7 +31,7 @@ class Evil::Client
 
       left  = __stringify_keys__(left)
       right = __stringify_keys__(right)
-      right.keys.each { |key| left[key] = __deep_merge__ left[key], right[key] }
+      right.each_key { |key| left[key] = __deep_merge__ left[key], right[key] }
 
       left
     end

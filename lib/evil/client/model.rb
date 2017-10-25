@@ -104,7 +104,7 @@ class Evil::Client
       def new(op = {})
         op = Hash(op).each_with_object({}) { |(k, v), obj| obj[k.to_sym] = v }
         super(op).tap { |item| in_english { policy[item].validate! } }
-      rescue => error
+      rescue StandardError => error
         raise ValidationError, error.message
       end
       alias call new

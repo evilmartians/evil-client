@@ -195,7 +195,7 @@ RSpec.describe Evil::Client::Settings do
   end
 
   describe "#datetime" do
-    let(:time) { DateTime.parse "2017-07-21 16:58:00 UTC" }
+    let(:time) { Time.parse "2017-07-21 16:58:00 UTC" }
     subject { settings.datetime value }
 
     context "with a parceable string" do

@@ -61,12 +61,8 @@ module Evil
       # Sets a custom connection, or resets it to a default one
       #
       # @param  [#call, nil] connection
-      # @return [self]
       #
-      def connection=(connection)
-        @connection = connection
-        self
-      end
+      attr_writer :connection
 
       # Schema for the root scope of the client
       #
@@ -108,7 +104,6 @@ module Evil
     #
     def logger=(logger)
       @scope.logger = logger
-      self
     end
 
     # Operations defined at the root of the client

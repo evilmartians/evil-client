@@ -20,7 +20,7 @@ class Evil::Client
 
     def __uri__(path)
       URI path
-    rescue => error
+    rescue StandardError => error
       raise __definition_error__(error.message)
     end
 
