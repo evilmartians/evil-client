@@ -15,6 +15,9 @@ Style/Alias:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Style/DateTime:
+  Enabled: false
+
 Style/FileName:
   Exclude:
     - lib/evil-client.rb

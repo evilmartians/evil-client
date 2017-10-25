@@ -46,7 +46,7 @@ class Evil::Client
       yield.tap do |obj|
         logger&.debug(self.class) { "resolved #{self} to #{obj.inspect}" }
       end
-    rescue => err
+    rescue StandardError => err
       logger&.error(self.class) { "failed to resolve #{self}: #{err.message}" }
       raise
     end
