@@ -23,6 +23,36 @@ to [Semantic Versioning].
   end
   ```
 
+- Method to pass response handling to parent scopes by @Envek ([#21](https://github.com/evilmartians/evil-client/pull/21]))
+
+  Allow to handle specific cases in operations and common cases in parent scopes.
+
+  ```ruby
+  scope :entities do
+    operation :create do
+      response(409) do |_, _, (data, *)|
+        super! unless data["errorCode"] == "201"
+        raise YourAPI::AlreadyExists, data["errorMessage"]
+      end
+    end
+
+    response(409) do |_, _, (data, *)|
+      raise YourAPI::Error, data.dig["errorsMessage"]
+    end
+  end
+  ```
+
+### Fixed
+
+- Generation of English error messages in case of using non-English locales
+
+### Changed
+
+- Version requirement for tram-policy is limited due to regression in 0.2.4
+
+  See https://github.com/tram-rb/tram-policy/commit/874c8f61399dbe174c158fec729d16c2b1ffb2fd#r26432444
+
+
 ## [2.0.0] [2017-09-02]
 
 ### Changed
