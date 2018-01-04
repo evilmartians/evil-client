@@ -113,13 +113,11 @@ class Evil::Client
       private
 
       def in_english(&block)
-        unless I18n.available_locales.include?(:en)
-          available_locales = I18n.available_locales
-          I18n.available_locales += %i[en]
-        end
+        available_locales = Array I18n.available_locales
+        I18n.available_locales = available_locales | %i[en]
         I18n.with_locale(:en, &block)
       ensure
-        I18n.available_locales = available_locales if available_locales
+        I18n.available_locales = available_locales
       end
     end
   end
