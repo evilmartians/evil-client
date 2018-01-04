@@ -32,11 +32,13 @@ class Evil::Client
       alias_method :to_sym,  :name
       alias_method :inspect, :name
 
-      private
-
+      # Redefines translation scope for the policy
+      #
+      # @return[Array<Symbol>]
+      #
       def scope
         @scope ||= %i[evil client errors] << \
-                   Tram::Policy::Inflector.underscore(model.to_s)
+                   Tram::Policy::Inflector.underscore(model.to_s).to_sym
       end
     end
 

@@ -79,22 +79,11 @@ class Evil::Client
       # @param  [Evil::Client::Model] other
       # @return [self]
       #
-      # rubocop: disable Metrics/AbcSize
       def extend(other)
         return super if other.instance_of? Module
-
-        unless other.ancestors.include? Evil::Client::Model
-          raise TypeError, "#{other} is not a subclass of Evil::Client::Model"
-        end
-
-        other.dry_initializer.options.each do |definition|
-          option definition.source, definition.options
-        end
-
-        other.lets.each { |key, block| let(key, &block) }
-        other.policy.all.each { |validator| policy.local << validator }
+        validate_model other
+        extend_model   other
       end
-      # rubocop: enable Metrics/AbcSize
 
       # Model instance constructor
       #
@@ -118,6 +107,23 @@ class Evil::Client
         I18n.with_locale(:en, &block)
       ensure
         I18n.available_locales = available_locales
+      end
+
+      def validate_model(other)
+        return if other.ancestors.include? Evil::Client::Model
+        raise TypeError, "#{other} is not a subclass of Evil::Client::Model"
+      end
+
+      def extend_model(other)
+        other.dry_initializer.options.each do |definition|
+          option definition.source, definition.options
+        end
+
+        other.lets.each { |key, block| let(key, &block) }
+
+        other.policy.validators.each do |validator|
+          policy.local_validators << validator
+        end
       end
     end
   end
