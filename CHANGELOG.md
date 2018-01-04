@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
-## [2.1.0] [WIP]
+## [2.1.1] [2018-01-05]
+
+### Changed
+
+- Dependency from [tram-policy] was updated to v2.3+ (nepalez)
+
+## [2.1.0] [2018-01-04]
 
 ### Added
 
@@ -23,7 +29,7 @@ to [Semantic Versioning].
   end
   ```
 
-- Method to pass response handling to parent scopes by @Envek ([#21](https://github.com/evilmartians/evil-client/pull/21]))
+- Method to pass response handling to parent scopes (Envek)
 
   Allow to handle specific cases in operations and common cases in parent scopes.
 
@@ -44,11 +50,11 @@ to [Semantic Versioning].
 
 ### Fixed
 
-- Generation of English error messages in case of using non-English locales
+- Generation of English error messages in case of using non-English locales (Envek)
 
 ### Changed
 
-- Version requirement for tram-policy is limited due to regression in 0.2.4
+- Version requirement for tram-policy is limited due to regression in 0.2.4 (Envek)
 
   See https://github.com/tram-rb/tram-policy/commit/874c8f61399dbe174c158fec729d16c2b1ffb2fd#r26432444
 
@@ -432,7 +438,8 @@ formats will be added.
 
 [Keep a Changelog]: http://keepachangelog.com/
 [Semantic Versioning]: http://semver.org/
-[dry-initializer]: http://github.com/dry-rb/dry-initalizer
+[dry-initializer]: https://github.com/dry-rb/dry-initalizer
+[tram-policy]: https://github.com/tram-rb/tram-policy
 [0.3.1]: https://github.com/evilmartians/evil-client/compare/v0.3.0...v0.3.1
 [0.3.2]: https://github.com/evilmartians/evil-client/compare/v0.3.1...v0.3.2
 [0.3.3]: https://github.com/evilmartians/evil-client/compare/v0.3.2...v0.3.3
