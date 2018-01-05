@@ -35,18 +35,18 @@ RSpec.describe "scope options" do
   context "when required options missed" do
     subject { client.crm }
 
-    it "raises Evil::Client::ValidationError" do
+    it "raises StandardError" do
       expect { subject }
-        .to raise_error Evil::Client::ValidationError, /version/
+        .to raise_error StandardError, /version/
     end
   end
 
   context "when some validation failed" do
     subject { crm.users(token: nil) }
 
-    it "raises Evil::Client::ValidationError" do
+    it "raises StandardError" do
       expect { subject }
-        .to raise_error Evil::Client::ValidationError, /token/
+        .to raise_error StandardError, /token/
     end
   end
 end

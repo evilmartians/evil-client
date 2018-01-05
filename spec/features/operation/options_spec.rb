@@ -48,24 +48,24 @@ RSpec.describe "operation options" do
   context "when required options missed" do
     subject { users.operations[:create].new(language: "it") }
 
-    it "raises Evil::Client::ValidationError" do
-      expect { subject }.to raise_error Evil::Client::ValidationError, /name/
+    it "raises StandardError" do
+      expect { subject }.to raise_error StandardError, /name/
     end
   end
 
   context "when operation validation failed" do
     subject { users.operations[:filter].new }
 
-    it "raises Evil::Client::ValidationError" do
-      expect { subject }.to raise_error Evil::Client::ValidationError, /id/
+    it "raises StandardError" do
+      expect { subject }.to raise_error StandardError, /id/
     end
   end
 
   context "when scope validation failed" do
     subject { users.operations[:fetch].new id: 8, token: nil }
 
-    it "raises Evil::Client::ValidationError" do
-      expect { subject }.to raise_error Evil::Client::ValidationError, /token/
+    it "raises StandardError" do
+      expect { subject }.to raise_error StandardError, /token/
     end
   end
 end

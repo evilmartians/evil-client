@@ -25,7 +25,6 @@ module Evil
     require_relative "client/exceptions/name_error"
     require_relative "client/exceptions/response_error"
     require_relative "client/exceptions/type_error"
-    require_relative "client/exceptions/validation_error"
 
     require_relative "client/chaining"
     require_relative "client/options"

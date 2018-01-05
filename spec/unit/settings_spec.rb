@@ -98,7 +98,7 @@ RSpec.describe Evil::Client::Settings do
     it "adds validation for an instance" do
       # see spec/fixtures/locale/en.yml
       expect { settings }
-        .to raise_error(Evil::Client::ValidationError, /The user has no name/)
+        .to raise_error(StandardError, /The user has no name/)
     end
   end
 
@@ -161,8 +161,8 @@ RSpec.describe Evil::Client::Settings do
     context "with wrong options" do
       before { klass.option :user, as: :customer }
 
-      it "raises Evil::Client::ValidationError" do
-        expect { subject }.to raise_error Evil::Client::ValidationError, /user/
+      it "raises StandardError" do
+        expect { subject }.to raise_error StandardError, /user/
       end
     end
   end
