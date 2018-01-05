@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.0.0] [2018-01-05]
+
+### [BREAKING] Changed
+
+- Stop re-raising exceptions in model constructors, and remove `Evil::Client::ValidationError` (nepalez)
+
+  Instead of ValidationError, the original StandardError exceptions will be risen.
+  
+  See [the issue #22 by Envek](https://github.com/evilmartians/evil-client/issues/22)
+
 ## [2.1.1] [2018-01-05]
 
 ### Changed
@@ -447,3 +457,5 @@ formats will be added.
 [1.1.0]: https://github.com/evilmartians/evil-client/compare/v1.0.0...v1.1.0
 [2.0.0]: https://github.com/evilmartians/evil-client/compare/v1.1.0...v2.0.0
 [2.1.0]: https://github.com/evilmartians/evil-client/compare/v2.0.0...v2.1.0
+[2.1.1]: https://github.com/evilmartians/evil-client/compare/v2.1.0...v2.1.1
+[3.0.0]: https://github.com/evilmartians/evil-client/compare/v2.1.1...v3.0.0
