@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.0.1] [2018-01-05]
+
+### Added
+- update dependency from [tram-policy] to v.0.3.1 (nepalez)
+  
+  In this version `validate` fixed so that it allows returning from block definition
+
 ## [3.0.0] [2018-01-05]
 
 ### [BREAKING] Changed
@@ -18,7 +25,7 @@ to [Semantic Versioning].
 
 ### Changed
 
-- Dependency from [tram-policy] was updated to v2.3+ (nepalez)
+- Dependency from [tram-policy] was updated to v0.2.3+ (nepalez)
 
 ## [2.1.0] [2018-01-04]
 
