@@ -6,6 +6,10 @@ AllCops:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+Naming/FileName:
+  Exclude:
+    - lib/evil-client.rb
+
 Metrics/BlockLength:
   Enabled: false
 
@@ -17,10 +21,6 @@ Style/ClassAndModuleChildren:
 
 Style/DateTime:
   Enabled: false
-
-Style/FileName:
-  Exclude:
-    - lib/evil-client.rb
 
 Style/FrozenStringLiteralComment:
   Enabled: false
