@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.0.2] [2018-03-01]
+
+### Changed
+- Allow to use 0.4.x and 1.x versions of [tram-policy] with ability for 
+  lazy translation of error messages (@Envek)
+
 ## [3.0.1] [2018-01-05]
 
 ### Added
@@ -466,3 +472,5 @@ formats will be added.
 [2.1.0]: https://github.com/evilmartians/evil-client/compare/v2.0.0...v2.1.0
 [2.1.1]: https://github.com/evilmartians/evil-client/compare/v2.1.0...v2.1.1
 [3.0.0]: https://github.com/evilmartians/evil-client/compare/v2.1.1...v3.0.0
+[3.0.1]: https://github.com/evilmartians/evil-client/compare/v3.0.0...v3.0.1
+[3.0.2]: https://github.com/evilmartians/evil-client/compare/v3.0.1...v3.0.2
