@@ -10,6 +10,7 @@ require "delegate"
 require "tram-policy"
 require "net/http"
 require "net/https"
+require "base64"
 #
 # Namespace for gems created by Evil Martians
 #
