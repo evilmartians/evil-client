@@ -47,6 +47,10 @@ class Evil::Client
       to_s
       to_str
       token_auth
+      load_dependency
+      unloadable
+      require_or_load
+      require_dependency
     ].freeze
 
     # Matches whether a name can be used in operations/scopes/options
