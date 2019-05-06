@@ -7,13 +7,13 @@ RSpec.describe Evil::Client::Resolver::Request, ".call" do
   let(:root_schema) do
     double :my_parent_schema,
            definitions: {
-             body:        proc { %W[v#{version}] },
-             format:      proc { :form },
-             headers:     proc { { "Foo" => "BAR" } },
+             body: proc { %W[v#{version}] },
+             format: proc { :form },
+             headers: proc { { "Foo" => "BAR" } },
              http_method: proc { :get },
-             query:       proc { { version: version } },
-             security:    proc { token_auth token },
-             path:        proc { "https://myhost.com/api/v#{version}" }
+             query: proc { { version: version } },
+             security: proc { token_auth token },
+             path: proc { "https://myhost.com/api/v#{version}" }
            },
            parent: nil
   end
@@ -22,13 +22,13 @@ RSpec.describe Evil::Client::Resolver::Request, ".call" do
     double :my_schema,
            to_s: "MySchema.users.fetch",
            definitions: {
-             body:        proc { { version: "v#{version}" } },
-             format:      proc { :json if version > 76 },
-             headers:     proc { { "Baz" => "QUX" } },
+             body: proc { { version: "v#{version}" } },
+             format: proc { :json if version > 76 },
+             headers: proc { { "Baz" => "QUX" } },
              http_method: proc { :post if version > 75 },
-             query:       proc { { verbose: true } },
-             security:    proc { token_auth token, prefix: "Bearer" },
-             path:        proc { "users/#{id}" }
+             query: proc { { verbose: true } },
+             security: proc { token_auth token, prefix: "Bearer" },
+             path: proc { "users/#{id}" }
            },
            parent: root_schema
   end
@@ -38,26 +38,26 @@ RSpec.describe Evil::Client::Resolver::Request, ".call" do
 
   let(:environment) do
     {
-      "REQUEST_METHOD"  => "POST",
-      "SCRIPT_NAME"     => "",
-      "PATH_INFO"       => "/api/v77/users/43",
-      "QUERY_STRING"    => "version=77&verbose=true",
-      "SERVER_NAME"     => "myhost.com",
-      "SERVER_PORT"     => 443,
-      "HTTP_Variables"  => {
+      "REQUEST_METHOD" => "POST",
+      "SCRIPT_NAME" => "",
+      "PATH_INFO" => "/api/v77/users/43",
+      "QUERY_STRING" => "version=77&verbose=true",
+      "SERVER_NAME" => "myhost.com",
+      "SERVER_PORT" => 443,
+      "HTTP_Variables" => {
         "Foo" => "BAR",
         "Baz" => "QUX",
         "Authorization" => "Bearer eoiqopr==",
-        "Content-Type"  => "application/json"
+        "Content-Type" => "application/json"
       },
-      "rack.version"      => Rack::VERSION,
-      "rack.input"        => '{"version":"v77"}',
-      "rack.url_scheme"   => "https",
-      "rack.multithread"  => false,
+      "rack.version" => Rack::VERSION,
+      "rack.input" => '{"version":"v77"}',
+      "rack.url_scheme" => "https",
+      "rack.multithread" => false,
       "rack.multiprocess" => false,
-      "rack.run_once"     => false,
-      "rack.hijack?"      => false,
-      "rack.logger"       => logger
+      "rack.run_once" => false,
+      "rack.hijack?" => false,
+      "rack.logger" => logger
     }
   end
 

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.0.3] [2019-05-06]
+
+### Added
+- Support of `dry-initializer` v3+ (nepalez)
+
+### Fixed
+- Don't remove ActiveSupport::Dependencies::Loadable methods (DarthSim)
+- Fix name error base 64 (Andrey)
+
 ## [3.0.2] [2018-03-01]
 
 ### Changed

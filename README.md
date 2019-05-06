@@ -7,7 +7,6 @@ Human-friendly DSL for writing HTTP(s) clients in Ruby
 
 [![Gem Version][gem-badger]][gem]
 [![Build Status][travis-badger]][travis]
-[![Dependency Status][gemnasium-badger]][gemnasium]
 [![Code Climate][codeclimate-badger]][codeclimate]
 [![Inline docs][inch-badger]][inch]
 [![Documentation Status][readthedocs-badger]][readthedocs]
@@ -113,8 +112,6 @@ The gem is available as open source under the terms of the [MIT License](http://
 [dry-initializer]: http://dry-rb.org/gems/dry-initializer
 [gem-badger]: https://img.shields.io/gem/v/evil-client.svg?style=flat
 [gem]: https://rubygems.org/gems/evil-client
-[gemnasium-badger]: https://img.shields.io/gemnasium/evilmartians/evil-client.svg?style=flat
-[gemnasium]: https://gemnasium.com/evilmartians/evil-client
 [inch-badger]: http://inch-ci.org/github/evilmartians/evil-client.svg
 [inch]: https://inch-ci.org/github/evilmartians/evil-client
 [swagger]: http://swagger.io

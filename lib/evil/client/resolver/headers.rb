@@ -34,6 +34,7 @@ class Evil::Client
       keys = data.keys.map(&:to_s)
       wrong = keys.reject { |key| key[VALID_KEY] }.map(&:inspect)
       return keys unless wrong.any?
+
       raise __definition_error__ "inacceptable headers #{wrong.join(', ')}"
     end
 
@@ -41,6 +42,6 @@ class Evil::Client
       data.values.map { |v| v.respond_to?(:map) ? v.map(&:to_s) : v.to_s }
     end
 
-    VALID_KEY = /^.+$/
+    VALID_KEY = /^.+$/.freeze
   end
 end

@@ -28,21 +28,21 @@ class Evil::Client
     # rubocop: disable Metrics/AbcSize
     def environment
       {
-        "REQUEST_METHOD"    => http_method,
-        "PATH_INFO"         => uri.path,
-        "SCRIPT_NAME"       => "",
-        "QUERY_STRING"      => Formatter.call(query, :form),
-        "SERVER_NAME"       => uri.host,
-        "SERVER_PORT"       => uri.port,
-        "HTTP_Variables"    => headers,
-        "rack.version"      => Rack::VERSION,
-        "rack.url_scheme"   => uri.scheme,
-        "rack.input"        => Formatter.call(body, format, boundary: boundary),
-        "rack.multithread"  => false,
+        "REQUEST_METHOD" => http_method,
+        "PATH_INFO" => uri.path,
+        "SCRIPT_NAME" => "",
+        "QUERY_STRING" => Formatter.call(query, :form),
+        "SERVER_NAME" => uri.host,
+        "SERVER_PORT" => uri.port,
+        "HTTP_Variables" => headers,
+        "rack.version" => Rack::VERSION,
+        "rack.url_scheme" => uri.scheme,
+        "rack.input" => Formatter.call(body, format, boundary: boundary),
+        "rack.multithread" => false,
         "rack.multiprocess" => false,
-        "rack.run_once"     => false,
-        "rack.hijack?"      => false,
-        "rack.logger"       => @__settings__&.logger
+        "rack.run_once" => false,
+        "rack.hijack?" => false,
+        "rack.logger" => @__settings__&.logger
       }
     end
     # rubocop: enable Metrics/MethodLength

@@ -3,26 +3,26 @@ RSpec.describe Evil::Client::Connection, ".call" do
   let(:log)    { StringIO.new }
   let(:env) do
     {
-      "REQUEST_METHOD"  => "POST",
-      "SCRIPT_NAME"     => "",
-      "PATH_INFO"       => "/api/v77/users/43",
-      "QUERY_STRING"    => "version=77&verbose=true",
-      "SERVER_NAME"     => "foo.com",
-      "SERVER_PORT"     => 443,
-      "HTTP_Variables"  => {
+      "REQUEST_METHOD" => "POST",
+      "SCRIPT_NAME" => "",
+      "PATH_INFO" => "/api/v77/users/43",
+      "QUERY_STRING" => "version=77&verbose=true",
+      "SERVER_NAME" => "foo.com",
+      "SERVER_PORT" => 443,
+      "HTTP_Variables" => {
         "Foo" => "BAR",
         "Baz" => "QUX",
         "Authorization" => "Bearer eoiqopr==",
-        "Content-Type"  => "application/json"
+        "Content-Type" => "application/json"
       },
-      "rack.version"      => Rack::VERSION,
-      "rack.input"        => "name=Andrew&age=46",
-      "rack.url_scheme"   => "https",
-      "rack.multithread"  => false,
+      "rack.version" => Rack::VERSION,
+      "rack.input" => "name=Andrew&age=46",
+      "rack.url_scheme" => "https",
+      "rack.multithread" => false,
       "rack.multiprocess" => false,
-      "rack.run_once"     => false,
-      "rack.hijack?"      => false,
-      "rack.logger"       => logger
+      "rack.run_once" => false,
+      "rack.hijack?" => false,
+      "rack.logger" => logger
     }
   end
 
@@ -33,14 +33,14 @@ RSpec.describe Evil::Client::Connection, ".call" do
               "Foo" => "BAR",
               "Baz" => "QUX",
               "Authorization" => "Bearer eoiqopr==",
-              "Content-Type"  => "application/json"
+              "Content-Type" => "application/json"
             }
   end
 
   before do
-    stub_request(:any, //).to_return status:  200,
+    stub_request(:any, //).to_return status: 200,
                                      headers: { "Content-Language" => "en_AU" },
-                                     body:    "Done!"
+                                     body: "Done!"
   end
 
   subject { described_class.call(env) }

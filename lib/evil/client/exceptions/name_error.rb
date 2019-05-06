@@ -13,6 +13,7 @@ class Evil::Client
     def self.check!(name)
       name = name.to_sym
       return name if name[Names::FORMAT] && !Names::FORBIDDEN.include?(name)
+
       raise new(name)
     end
 

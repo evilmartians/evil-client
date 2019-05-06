@@ -21,6 +21,7 @@ class Evil::Client
       @operations ||= \
         schema.operations.each_with_object({}) do |(key, sub_schema), obj|
           next unless key
+
           obj[key] = Builder::Operation.new(sub_schema, settings)
         end
     end

@@ -44,7 +44,7 @@ RSpec.describe "operation request" do
     let(:head) do
       {
         "Authorization" => "Basic YW5keTpmb28=",
-        "Content-Type"  => "application/json"
+        "Content-Type" => "application/json"
       }
     end
   end
@@ -58,7 +58,7 @@ RSpec.describe "operation request" do
     let(:head) do
       {
         "Authorization" => "Basic YW5keTpmb28=",
-        "Content-Type"  => "application/json"
+        "Content-Type" => "application/json"
       }
     end
   end
@@ -73,7 +73,7 @@ RSpec.describe "operation request" do
     let(:head) do
       {
         "Authorization" => "Basic YW5keTpmb28=",
-        "Content-Type"  => "application/json"
+        "Content-Type" => "application/json"
       }
     end
   end
@@ -87,7 +87,7 @@ RSpec.describe "operation request" do
     let(:head) do
       {
         "Authorization" => "Basic YW5keTpmb28=",
-        "Content-Type"  => "application/x-www-form-urlencoded"
+        "Content-Type" => "application/x-www-form-urlencoded"
       }
     end
   end

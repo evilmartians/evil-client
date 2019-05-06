@@ -54,6 +54,6 @@ class Evil::Client
     ].freeze
 
     # Matches whether a name can be used in operations/scopes/options
-    FORMAT = /^[a-z]([a-z\d_])*[a-z\d]$/
+    FORMAT = /^[a-z]([a-z\d_])*[a-z\d]$/.freeze
   end
 end

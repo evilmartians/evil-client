@@ -13,6 +13,7 @@ class Evil::Client
 
     def method_missing(name, *args, &block)
       return super unless respond_to_missing? name
+
       (operations[name] || scopes[name]).call(*args)
     end
   end

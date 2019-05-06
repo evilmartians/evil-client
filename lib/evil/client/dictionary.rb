@@ -32,6 +32,7 @@ class Evil::Client
     #
     def call(item)
       return item if all.include? item
+
       raise Error, "#{item} is absent in the dictionary #{self}"
     end
 

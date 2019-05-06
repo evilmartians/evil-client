@@ -23,6 +23,7 @@ class Evil::Client
     def __normalize__(data)
       return if data.nil?
       raise __definition_error__("#{data} is not a hash") unless data.is_a? Hash
+
       __stringify_keys__(data)
     end
 

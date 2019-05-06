@@ -15,6 +15,7 @@ class Evil::Client
     def self.check!(schema, name, type)
       return if type == :scope && schema.operations[name].nil?
       return if type == :operation && schema.scopes[name].nil?
+
       raise new(name, type)
     end
 

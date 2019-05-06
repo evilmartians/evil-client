@@ -46,8 +46,8 @@ class Evil::Client
       yield.tap do |obj|
         logger&.debug(self.class) { "resolved #{self} to #{obj.inspect}" }
       end
-    rescue StandardError => err
-      logger&.error(self.class) { "failed to resolve #{self}: #{err.message}" }
+    rescue StandardError => e
+      logger&.error(self.class) { "failed to resolve #{self}: #{e.message}" }
       raise
     end
 
@@ -56,6 +56,7 @@ class Evil::Client
         schema = @__schema__
         loop do
           break unless schema
+
           block  = schema.definitions.dig(*@__keys__)
           schema = schema.parent
           blocks.unshift block if block

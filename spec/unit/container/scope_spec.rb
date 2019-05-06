@@ -15,10 +15,10 @@ RSpec.describe Evil::Client::Container::Scope do
 
   let(:schema) do
     double :schema,
-           parent:     nil,
-           settings:   settings_klass,
+           parent: nil,
+           settings: settings_klass,
            operations: { update: update_schema },
-           scopes:     { admins: admins_schema }
+           scopes: { admins: admins_schema }
   end
 
   it "is a subclass of base container" do

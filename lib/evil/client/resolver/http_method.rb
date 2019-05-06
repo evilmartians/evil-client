@@ -15,6 +15,7 @@ class Evil::Client
         value = instance_exec(&__blocks__.last)&.to_s&.upcase if __blocks__.any?
         raise __not_defined_error__    if value.to_s == ""
         raise __invalid_error__(value) unless LIST.include? value
+
         value
       end
     end

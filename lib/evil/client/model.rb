@@ -81,6 +81,7 @@ class Evil::Client
       #
       def extend(other)
         return super if other.instance_of? Module
+
         validate_model other
         extend_model   other
       end
@@ -109,6 +110,7 @@ class Evil::Client
 
       def validate_model(other)
         return if other.ancestors.include? Evil::Client::Model
+
         raise TypeError, "#{other} is not a subclass of Evil::Client::Model"
       end
 

@@ -12,20 +12,20 @@ RSpec.describe Evil::Client::Container::Operation do
   let(:connection) { Evil::Client::Connection }
   let(:schema) do
     double :schema,
-           to_s:     "MyApi.users.update",
-           client:   double(:client, connection: connection),
-           parent:   nil,
+           to_s: "MyApi.users.update",
+           client: double(:client, connection: connection),
+           parent: nil,
            settings: settings_klass,
            definitions: {
-             path:        -> { "https://example.com/users/#{id}" },
+             path: -> { "https://example.com/users/#{id}" },
              http_method: -> { "PATCH" },
-             format:      -> { :json },
-             security:    -> { { headers: { "Authentication" => token } } },
-             headers:     -> { { "Content-Language" => language } },
-             query:       -> { { language: language } },
-             body:        -> { { name: name } },
-             middleware:  -> { Test::Middleware },
-             responses:   { 200 => proc { |_, _, body| JSON.parse body.first } }
+             format: -> { :json },
+             security: -> { { headers: { "Authentication" => token } } },
+             headers: -> { { "Content-Language" => language } },
+             query: -> { { language: language } },
+             body: -> { { name: name } },
+             middleware: -> { Test::Middleware },
+             responses: { 200 => proc { |_, _, body| JSON.parse body.first } }
            }
   end
 
@@ -54,9 +54,9 @@ RSpec.describe Evil::Client::Container::Operation do
     let(:request) do
       a_request(:patch, "https://example.com/users/7?language=en_US") do |r|
         expect(r.body).to eq '{"name":"Joe"}'
-        expect(r.headers).to include "Authentication"   => "qux",
+        expect(r.headers).to include "Authentication" => "qux",
                                      "Content-Language" => "en_US",
-                                     "Accept-Language"  => "ru_RU"
+                                     "Accept-Language" => "ru_RU"
       end
     end
 

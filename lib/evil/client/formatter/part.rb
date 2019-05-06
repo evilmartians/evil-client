@@ -37,7 +37,7 @@ module Evil::Client::Formatter
     end
 
     def extract_name(filename, number)
-      filename ? filename : "Part#{number}"
+      filename || "Part#{number}"
     end
 
     def extract_content(source)
