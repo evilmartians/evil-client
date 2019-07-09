@@ -7,7 +7,6 @@ Human-friendly DSL for writing HTTP(s) clients in Ruby
 
 [![Gem Version][gem-badger]][gem]
 [![Build Status][travis-badger]][travis]
-[![Code Climate][codeclimate-badger]][codeclimate]
 [![Inline docs][inch-badger]][inch]
 [![Documentation Status][readthedocs-badger]][readthedocs]
 
