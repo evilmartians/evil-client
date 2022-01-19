@@ -36,6 +36,7 @@ class Evil::Client
       operation
       operations
       options
+      public_send
       schema
       scope
       scopes
