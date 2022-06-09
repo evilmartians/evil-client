@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.0.5] [2022-20-01]
+
+### Fixed
+- Don't remove public_send method from Scope (@mrexox)
+
 ## [3.0.4] [2019-07-10]
 
 ### Added
