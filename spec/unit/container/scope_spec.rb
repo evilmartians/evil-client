@@ -1,5 +1,5 @@
 RSpec.describe Evil::Client::Container::Scope do
-  let(:scope)  { described_class.new schema, nil, opts }
+  let(:scope)  { described_class.new schema, nil, **opts }
   let(:opts) { { token: "qux", id: 7, language: "en_US", name: "Joe", age: 9 } }
   let(:update_schema) { double :update_schema, name: :update }
   let(:admins_schema) { double :admins_schema, name: :admins }

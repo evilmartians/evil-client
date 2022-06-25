@@ -22,7 +22,7 @@ class Evil::Client
       return to_form(source) if format == :form
       return to_text(source) if format == :text
 
-      to_multipart(source, opts)
+      to_multipart(source, **opts)
     end
 
     private
@@ -43,8 +43,8 @@ class Evil::Client
       Form.call source
     end
 
-    def to_multipart(source, opts)
-      Multipart.call [source], opts
+    def to_multipart(source, **opts)
+      Multipart.call [source], **opts
     end
   end
 end

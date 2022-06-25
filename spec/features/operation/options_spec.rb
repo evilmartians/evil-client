@@ -2,7 +2,7 @@ RSpec.describe "operation options" do
   before { load "spec/fixtures/test_client.rb" }
 
   let(:params) { { subdomain: "europe", user: "andy", token: "foo", foo: 0 } }
-  let(:users)  { Test::Client.new(params).crm(version: 4).users }
+  let(:users)  { Test::Client.new(**params).crm(version: 4).users }
 
   shared_examples :valid_client do |details = "properly"|
     it "[assigns operation options #{details}]" do

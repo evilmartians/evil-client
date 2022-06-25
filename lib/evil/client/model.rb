@@ -91,9 +91,9 @@ class Evil::Client
       # @param  [Hash] op Model options
       # @return [Evil::Client::Model]
       #
-      def new(op = {})
+      def new(**op)
         op = Hash(op).each_with_object({}) { |(k, v), obj| obj[k.to_sym] = v }
-        super(op).tap { |item| in_english { policy[item].validate! } }
+        super(**op).tap { |item| in_english { policy[item].validate! } }
       end
       alias call new
       alias []   call
@@ -116,7 +116,7 @@ class Evil::Client
 
       def extend_model(other)
         other.dry_initializer.options.each do |definition|
-          option definition.source, definition.options
+          option definition.source, **definition.options
         end
 
         other.lets.each { |key, block| let(key, &block) }
