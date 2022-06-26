@@ -93,7 +93,7 @@ class Evil::Client
     # @return [String]
     #
     def inspect
-      number = super.match(/\>\:([^ ]+) /)[1]
+      number = super.match(/>:([^ ]+) /)[1]
       params = options.map { |k, v| "@#{k}=#{v}" }.join(", ")
       number ? "#<#{self.class}:#{number} #{params}>" : super
     end

@@ -53,7 +53,7 @@ RSpec.describe Evil::Client::Builder::Operation do
   end
 
   describe "#new" do
-    subject { builder.new **options }
+    subject { builder.new(**options) }
 
     it "creates operation with inherited options accepted by settings" do
       expect(subject).to be_a Evil::Client::Container::Operation
@@ -66,7 +66,7 @@ RSpec.describe Evil::Client::Builder::Operation do
     let(:operation) { double call: "success" }
 
     before  { allow(builder).to receive(:new) { operation } }
-    subject { builder.call **options }
+    subject { builder.call(**options) }
 
     it "builds and calls the operation at once" do
       expect(builder).to receive(:new).with options

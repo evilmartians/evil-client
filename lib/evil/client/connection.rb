@@ -25,10 +25,8 @@ class Evil::Client
 
     private
 
-    def open_http_connection_for(req)
-      Net::HTTP.start req.host, req.port, use_ssl: req.ssl? do |http|
-        yield(http)
-      end
+    def open_http_connection_for(req, &block)
+      Net::HTTP.start req.host, req.port, use_ssl: req.ssl?, &block
     end
 
     def build_from(request)

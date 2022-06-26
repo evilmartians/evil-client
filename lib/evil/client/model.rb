@@ -92,7 +92,7 @@ class Evil::Client
       # @return [Evil::Client::Model]
       #
       def new(**op)
-        op = Hash(op).each_with_object({}) { |(k, v), obj| obj[k.to_sym] = v }
+        op = Hash(op).transform_keys(&:to_sym)
         super(**op).tap { |item| in_english { policy[item].validate! } }
       end
       alias call new

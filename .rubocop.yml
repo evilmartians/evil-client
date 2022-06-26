@@ -1,10 +1,14 @@
 ---
 AllCops:
   DisplayCopNames:   true
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 2.3
 
 Lint/AmbiguousBlockAssociation:
   Enabled: false
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/**/*'
 
 Naming/FileName:
   Exclude:
@@ -12,6 +16,9 @@ Naming/FileName:
 
 Naming/MethodParameterName:
   MinNameLength: 2
+
+Naming/VariableNumber:
+  Enabled: false
 
 Metrics/BlockLength:
   Enabled: false
@@ -26,6 +33,9 @@ Style/DateTime:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/HashSyntax:
   Enabled: false
 
 Style/ModuleFunction:

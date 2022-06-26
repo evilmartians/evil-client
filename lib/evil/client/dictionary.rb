@@ -20,8 +20,8 @@ class Evil::Client
 
     # Iterates by dictionary items
     # @return [Enumerator<Evil::Client::Dictionary>]
-    def each
-      block_given? ? all.each { |item| yield(item) } : all.to_enum
+    def each(&block)
+      block_given? ? all.each(&block) : all.to_enum
     end
 
     # Calls the item and raises when it is not in the dictionary
