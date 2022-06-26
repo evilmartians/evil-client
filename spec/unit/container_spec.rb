@@ -1,6 +1,6 @@
 RSpec.describe Evil::Client::Container do
   let(:klass)     { double :class }
-  let(:container) { described_class.new schema, logger, opts }
+  let(:container) { described_class.new schema, logger, **opts }
   let(:logger)    { Logger.new log }
   let(:log)       { StringIO.new }
   let(:opts) do

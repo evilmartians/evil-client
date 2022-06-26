@@ -8,7 +8,7 @@ RSpec.describe Evil::Client::Container::Operation do
     end
   end
 
-  let(:operation)  { described_class.new schema, nil, opts }
+  let(:operation)  { described_class.new(schema, nil, **opts) }
   let(:connection) { Evil::Client::Connection }
   let(:schema) do
     double :schema,

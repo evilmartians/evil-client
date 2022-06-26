@@ -1,5 +1,5 @@
 RSpec.describe Evil::Client::Settings do
-  let(:settings) { klass.new(logger, options) }
+  let(:settings) { klass.new(logger, **options) }
   let(:log)      { StringIO.new }
   let(:logger)   { Logger.new log }
   let(:schema)   { double :schema, to_s: "Test::Api.users.update" }

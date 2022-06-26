@@ -1,7 +1,7 @@
 RSpec.describe Evil::Client::Model do
   before { class Test::Model < described_class; end }
 
-  let(:model)    { klass.new(options) }
+  let(:model)    { klass.new(**options) }
   let(:klass)    { Test::Model }
   let(:options)  { { "id" => 42, "name" => "Andrew" } }
   let(:dsl_methods) do

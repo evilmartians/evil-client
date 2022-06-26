@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.test_files       = gem.files.grep(/^spec/)
   gem.extra_rdoc_files = Dir["README.md", "LICENSE", "CHANGELOG.md"]
 
-  gem.required_ruby_version = "~> 2.3"
+  gem.required_ruby_version = ">= 2.3"
 
   gem.add_runtime_dependency "dry-initializer", ">= 2.1", "< 4"
   gem.add_runtime_dependency "mime-types", "~> 3.1"

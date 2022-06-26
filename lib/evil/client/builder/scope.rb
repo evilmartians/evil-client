@@ -23,7 +23,7 @@ class Evil::Client
     # @return [Evil::Client::Container::Scope]
     #
     def new(**options)
-      Container::Scope.new schema, parent.options.merge(options)
+      Container::Scope.new schema, **parent.options.merge(options)
     end
     alias_method :call, :new
     alias_method :[],   :new

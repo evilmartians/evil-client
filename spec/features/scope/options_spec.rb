@@ -2,7 +2,7 @@ RSpec.describe "scope options" do
   before { load "spec/fixtures/test_client.rb" }
 
   let(:params) { { subdomain: "europe", user: "andy", token: "foo", foo: 0 } }
-  let(:client) { Test::Client.new(params) }
+  let(:client) { Test::Client.new(**params) }
   let(:crm)    { client.crm(version: 4) }
 
   shared_examples :valid_client do |details = "properly"|

@@ -2,7 +2,7 @@ RSpec.describe "custom connection" do
   let(:conn)     { double call: response }
   let(:response) { [200, { "Foo" => "Bar" }, ["Hello!"]] }
   let(:params)   { { subdomain: "europe", user: "andy", token: "foo" } }
-  let(:users)    { Test::Client.new(params).crm(version: 4).users }
+  let(:users)    { Test::Client.new(**params).crm(version: 4).users }
 
   before do
     load "spec/fixtures/test_client.rb"
