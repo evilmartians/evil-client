@@ -1,7 +1,7 @@
 ---
 AllCops:
   DisplayCopNames:   true
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 3.1
 
 Lint/AmbiguousBlockAssociation:
   Enabled: false
@@ -10,7 +10,7 @@ Naming/FileName:
   Exclude:
     - lib/evil-client.rb
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   MinNameLength: 2
 
 Metrics/BlockLength:

@@ -13,15 +13,15 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = ">= 2.3"
 
-  gem.add_runtime_dependency "dry-initializer", ">= 2.1", "< 4"
-  gem.add_runtime_dependency "mime-types", "~> 3.1"
-  gem.add_runtime_dependency "rack", "~> 2"
+  gem.add_runtime_dependency "dry-initializer", ">= 2.1"
+  gem.add_runtime_dependency "mime-types", ">= 3.1"
+  gem.add_runtime_dependency "rack", ">= 2"
   gem.add_runtime_dependency "tram-policy", ">= 0.3.1", "< 3"
 
   gem.add_development_dependency "rake", ">= 10"
-  gem.add_development_dependency "rspec", "~> 3.0"
-  gem.add_development_dependency "rspec-its", "~> 1.2"
-  gem.add_development_dependency "rubocop", "~> 0.52.0"
-  gem.add_development_dependency "timecop", "~> 0.9"
-  gem.add_development_dependency "webmock", "~> 2.1"
+  gem.add_development_dependency "rspec", ">= 3.0"
+  gem.add_development_dependency "rspec-its"
+  gem.add_development_dependency "rubocop"
+  gem.add_development_dependency "timecop"
+  gem.add_development_dependency "webmock"
 end

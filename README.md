@@ -6,7 +6,6 @@ Human-friendly DSL for writing HTTP(s) clients in Ruby
 <img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
 
 [![Gem Version][gem-badger]][gem]
-[![Build Status][travis-badger]][travis]
 [![Inline docs][inch-badger]][inch]
 [![Documentation Status][readthedocs-badger]][readthedocs]
 
@@ -114,7 +113,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 [inch-badger]: http://inch-ci.org/github/evilmartians/evil-client.svg
 [inch]: https://inch-ci.org/github/evilmartians/evil-client
 [swagger]: http://swagger.io
-[travis-badger]: https://img.shields.io/travis/evilmartians/evil-client/master.svg?style=flat
-[travis]: https://travis-ci.org/evilmartians/evil-client
 [readthedocs-badger]: https://readthedocs.org/projects/evilclient/badge/?version=latest
 [readthedocs]: http://evilclient.readthedocs.io/en/latest

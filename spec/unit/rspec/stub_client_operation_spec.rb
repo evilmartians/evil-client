@@ -24,7 +24,7 @@ RSpec.describe Evil::Client::RSpec, "#stub_client_operation" do
     it "stubs the call with the original implementation" do
       stub_client_operation(klass).to_call_original
 
-      expect(perform).to eq [200, {}, []]
+      expect(perform).to eq [200, {}, [""]]
     end
 
     it "stubs the call with StandardError" do

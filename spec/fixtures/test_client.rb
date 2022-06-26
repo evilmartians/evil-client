@@ -29,7 +29,7 @@ module Test
           validate { errors.add :filter_given unless name || id || email }
 
           http_method   :get
-          response(200) { |*res| res.last.flat_map { |item| JSON.parse(item) } }
+          response(200) { |*res| res.last.flat_map { |item| item&.!=("") ? JSON.parse(item) : [] } }
         end
 
         operation :fetch do
