@@ -15,7 +15,7 @@ RSpec.describe Evil::Client do
     subject { klass.scopes }
 
     it "returns subscopes from the root schema" do
-      expect(subject).to eq(klass.schema.scopes(nil))
+      expect(subject).to eq klass.schema.scopes
     end
   end
 
