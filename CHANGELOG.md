@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
-## [3.0.5] [2022-20-01]
+## [3.1.0] [2022-07-04]
+
+### Added
+- Support for Ruby 3+ (@HolyWalley)
+
+## [3.0.5] [2022-01-20]
 
 ### Fixed
 - Don't remove public_send method from Scope (@mrexox)
@@ -495,3 +500,5 @@ formats will be added.
 [3.0.2]: https://github.com/evilmartians/evil-client/compare/v3.0.1...v3.0.2
 [3.0.3]: https://github.com/evilmartians/evil-client/compare/v3.0.2...v3.0.3
 [3.0.4]: https://github.com/evilmartians/evil-client/compare/v3.0.3...v3.0.4
+[3.0.5]: https://github.com/evilmartians/evil-client/compare/v3.0.4...v3.0.5
+[3.1.0]: https://github.com/evilmartians/evil-client/compare/v3.0.5...v3.1.0
