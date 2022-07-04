@@ -44,7 +44,7 @@ RSpec.describe Evil::Client do
     subject { klass.scope(:users) {} }
 
     it "updates root schema scopes" do
-      expect(klass.schema).to receive(:scope).with :users
+      expect(klass.schema).to receive(:scope).with(:users, any_args)
 
       subject
     end
@@ -54,7 +54,7 @@ RSpec.describe Evil::Client do
     subject { klass.operation(:users) {} }
 
     it "updates root schema scopes" do
-      expect(klass.schema).to receive(:operation).with :users
+      expect(klass.schema).to receive(:operation).with(:users, any_args)
 
       subject
     end
