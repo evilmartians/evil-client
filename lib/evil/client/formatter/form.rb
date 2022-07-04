@@ -26,9 +26,9 @@ module Evil::Client::Formatter
 
     def normalize(value, *keys)
       case value
-      when Hash then
+      when Hash
         value.flat_map { |key, val| normalize(val, *keys, key) }.join("&")
-      when Array then
+      when Array
         value.flat_map { |val| normalize(val, *keys, nil) }.join("&")
       else
         finalize(value, *keys)

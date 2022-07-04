@@ -69,11 +69,11 @@ class Evil::Client
     end
 
     def __symbolize_keys__(hash)
-      hash.each_with_object({}) { |(key, val), obj| obj[key.to_sym] = val }
+      hash.transform_keys(&:to_sym)
     end
 
     def __stringify_keys__(hash)
-      hash.each_with_object({}) { |(key, val), obj| obj[key.to_s] = val }
+      hash.transform_keys(&:to_s)
     end
 
     def respond_to_missing?(name, *)

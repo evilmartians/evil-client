@@ -9,10 +9,9 @@ class Evil::Client
     # The collection of named sub-scope constructors
     # @return [Hash<Symbol, Evil::Client::Container::Scope::Builder>]
     def scopes
-      @scopes ||= \
-        schema.scopes.each_with_object({}) do |(key, sub_schema), obj|
-          obj[key] = Builder::Scope.new(sub_schema, settings)
-        end
+      @scopes ||= schema.scopes.transform_values do |sub_schema|
+        Builder::Scope.new(sub_schema, settings)
+      end
     end
 
     # The collection of named operations constructors

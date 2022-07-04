@@ -8,7 +8,6 @@ class Evil::Client
     #
     # @return [Array]
     #
-    # rubocop: disable Metrics/AbcSize
     def call
       request    = Resolver::Request.call(schema, settings)
       middleware = Resolver::Middleware.call(schema, settings)
@@ -18,6 +17,5 @@ class Evil::Client
 
       Resolver::Response.call schema, settings, response
     end
-    # rubocop: enable Metrics/AbcSize
   end
 end

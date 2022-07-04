@@ -53,7 +53,7 @@ RSpec.describe Evil::Client::Builder::Scope do
   end
 
   describe "#new" do
-    subject { builder.new options }
+    subject { builder.new(**options) }
 
     it "creates scope with inherited options accepted by settings" do
       expect(subject).to be_a Evil::Client::Container::Scope
@@ -63,7 +63,7 @@ RSpec.describe Evil::Client::Builder::Scope do
   end
 
   describe "#call" do
-    subject { builder.call options }
+    subject { builder.call(**options) }
 
     it "creates scope with inherited options accepted by settings" do
       expect(subject).to be_a Evil::Client::Container::Scope
@@ -73,7 +73,7 @@ RSpec.describe Evil::Client::Builder::Scope do
   end
 
   describe "#[]" do
-    subject { builder[options] }
+    subject { builder[**options] }
 
     it "creates scope with inherited options accepted by settings" do
       expect(subject).to be_a Evil::Client::Container::Scope

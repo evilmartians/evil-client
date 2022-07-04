@@ -1,6 +1,6 @@
 begin
   require "pry"
-rescue LoadError
+rescue StandardError
   nil
 end
 

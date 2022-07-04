@@ -78,8 +78,8 @@ module Evil
         schema.respond_to? name
       end
 
-      def method_missing(*args, &block)
-        respond_to_missing?(*args) ? schema.send(*args, &block) : super
+      def method_missing(*args, **kwargs, &block)
+        respond_to_missing?(*args) ? schema.send(*args, **kwargs, &block) : super
       end
     end
 
@@ -152,7 +152,7 @@ module Evil
     private
 
     def initialize(**options)
-      @scope = Container::Scope.new self.class.send(:schema), options
+      @scope = Container::Scope.new self.class.send(:schema), **options
     end
   end
 end

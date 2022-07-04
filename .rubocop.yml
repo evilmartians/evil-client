@@ -1,17 +1,24 @@
 ---
 AllCops:
   DisplayCopNames:   true
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.6
 
 Lint/AmbiguousBlockAssociation:
   Enabled: false
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/**/*'
 
 Naming/FileName:
   Exclude:
     - lib/evil-client.rb
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   MinNameLength: 2
+
+Naming/VariableNumber:
+  Enabled: false
 
 Metrics/BlockLength:
   Enabled: false
@@ -26,6 +33,9 @@ Style/DateTime:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/HashSyntax:
   Enabled: false
 
 Style/ModuleFunction:

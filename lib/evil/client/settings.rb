@@ -50,9 +50,9 @@ class Evil::Client
       # @param  [Hash<#to_sym, Object>, nil] opts
       # @return [Evil::Client::Settings]
       #
-      def new(logger, op = {})
+      def new(logger, **op)
         logger&.debug(self) { "initializing with options #{op}..." }
-        super(op).tap do |item|
+        super(**op).tap do |item|
           item.logger = logger
           logger&.debug(item) { "initialized" }
         end
@@ -93,7 +93,7 @@ class Evil::Client
     # @return [String]
     #
     def inspect
-      number = super.match(/\>\:([^ ]+) /)[1]
+      number = super.match(/>:([^ ]+) /)[1]
       params = options.map { |k, v| "@#{k}=#{v}" }.join(", ")
       number ? "#<#{self.class}:#{number} #{params}>" : super
     end

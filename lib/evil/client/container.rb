@@ -74,7 +74,7 @@ class Evil::Client
 
     def initialize(schema, logger = nil, **opts)
       @schema   = schema
-      @settings = schema.settings.new(logger, opts)
+      @settings = schema.settings.new(logger, **opts)
     end
   end
 end

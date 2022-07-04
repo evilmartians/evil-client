@@ -158,7 +158,7 @@ class Evil::Client
     # @param  [Proc] block
     # @return [self]
     #
-    def response(*codes, &block)
+    def response(*codes, **_kwargs, &block)
       codes.flatten.map(&:to_i).each do |code|
         definitions[:responses][code] = block || proc { |*response| response }
       end

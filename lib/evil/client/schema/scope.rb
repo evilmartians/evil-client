@@ -20,7 +20,7 @@ class Evil::Client
     #
     # @return [Hash<Symbol, Class>]
     #
-    def scopes
+    def scopes(*_args)
       @__children__.reject { |_, child| child.leaf? }
     end
 
@@ -28,7 +28,7 @@ class Evil::Client
     #
     # @return [Hash<[Symbol, nil], Class>]
     #
-    def operations
+    def operations(*_args)
       @__children__.select { |_, child| child.leaf? }
     end
 
@@ -38,7 +38,7 @@ class Evil::Client
     # @param  [Proc] block The block containing definition for the subscope
     # @return [self]
     #
-    def scope(name, &block)
+    def scope(name, **_kwargs, &block)
       key = NameError.check!(name)
       TypeError.check! self, key, :scope
       @__children__[key] ||= self.class.new(self, key)

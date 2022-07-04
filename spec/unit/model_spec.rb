@@ -1,9 +1,9 @@
 RSpec.describe Evil::Client::Model do
   before { class Test::Model < described_class; end }
 
-  let(:model)    { klass.new(options) }
+  let(:model)    { klass.new(**options) }
   let(:klass)    { Test::Model }
-  let(:options)  { { "id" => 42, "name" => "Andrew" } }
+  let(:options)  { { id: 42, name: "Andrew" } }
   let(:dsl_methods) do
     %i[options datetime logger scope basic_auth key_auth token_auth]
   end
@@ -64,7 +64,7 @@ RSpec.describe Evil::Client::Model do
       klass.validate { errors.add :name_present if name.to_s == "" }
     end
 
-    let(:options) { { "name" => "" } }
+    let(:options) { { name: "" } }
 
     it "adds validation for an instance" do
       # see spec/fixtures/locale/en.yml

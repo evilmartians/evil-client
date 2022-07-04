@@ -23,7 +23,7 @@ class Evil::Client
     # @return [Evil::Client::Container::Operation]
     #
     def new(**options)
-      Container::Operation.new schema, parent.options.merge(options)
+      Container::Operation.new schema, **parent.options.merge(options)
     end
 
     # @!method call(options)
