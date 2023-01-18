@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name     = "evil-client"
-  gem.version  = "3.1.0"
+  gem.version  = "3.2.0"
   gem.author   = ["Andrew Kozin (nepalez)", "Ravil Bairamgalin (brainopia)"]
   gem.email    = ["andrew.kozin@gmail.com", "nepalez@evilmartians.com"]
   gem.homepage = "https://github.com/evilmartians/evil-client"
