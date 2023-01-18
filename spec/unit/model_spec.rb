@@ -108,18 +108,40 @@ RSpec.describe Evil::Client::Model do
 
     subject { model }
 
-    it "behaves like a model" do
-      expect(subject).to be_a klass
-      expect(subject.email).to eq "joe@example.com"
+    context "with kwargs" do
+      let(:model) { klass.new(**options) }
+
+      it "behaves like a model" do
+        expect(subject).to be_a klass
+        expect(subject.email).to eq "joe@example.com"
+      end
+
+      it "injects options from the other model" do
+        expect(subject.first_name).to eq "Joe"
+        expect(subject.last_name).to  eq "Doe"
+      end
+
+      it "injects memoizers from the other model" do
+        expect(subject.name).to eq "Joe Doe"
+      end
     end
 
-    it "injects options from the other model" do
-      expect(subject.first_name).to eq "Joe"
-      expect(subject.last_name).to  eq "Doe"
-    end
+    context "with hash argument" do
+      let(:model) { klass.new(options) }
 
-    it "injects memoizers from the other model" do
-      expect(subject.name).to eq "Joe Doe"
+      it "behaves like a model" do
+        expect(subject).to be_a klass
+        expect(subject.email).to eq "joe@example.com"
+      end
+
+      it "injects options from the other model" do
+        expect(subject.first_name).to eq "Joe"
+        expect(subject.last_name).to  eq "Doe"
+      end
+
+      it "injects memoizers from the other model" do
+        expect(subject.name).to eq "Joe Doe"
+      end
     end
 
     context "with invalid options" do

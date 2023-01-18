@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.2.0] [2023-01-18]
+
+### Added
+- Support for plain hash argument in the model (@nepalez)
+
 ## [3.1.0] [2022-07-04]
 
 ### Added
@@ -502,3 +507,4 @@ formats will be added.
 [3.0.4]: https://github.com/evilmartians/evil-client/compare/v3.0.3...v3.0.4
 [3.0.5]: https://github.com/evilmartians/evil-client/compare/v3.0.4...v3.0.5
 [3.1.0]: https://github.com/evilmartians/evil-client/compare/v3.0.5...v3.1.0
+[3.1.0]: https://github.com/evilmartians/evil-client/compare/v3.1.0...v3.2.0

@@ -88,12 +88,12 @@ class Evil::Client
 
       # Model instance constructor
       #
-      # @param  [Hash] op Model options
+      # @param [Hash] options The list of options as a plain hash
       # @return [Evil::Client::Model]
       #
-      def new(**op)
-        op = Hash(op).transform_keys(&:to_sym)
-        super(**op).tap { |item| in_english { policy[item].validate! } }
+      def new(options = {}, **kwargs)
+        kwargs = Hash(options).transform_keys(&:to_sym).merge(kwargs)
+        super(**kwargs).tap { |item| in_english { policy[item].validate! } }
       end
       alias call new
       alias []   call
