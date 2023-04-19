@@ -4,6 +4,14 @@ rescue StandardError
   nil
 end
 
+if ENV["CI"] == "true"
+  require "simplecov"
+  SimpleCov.start do
+    add_filter "/spec/"
+    enable_coverage :branch
+  end
+end
+
 require "bundler/setup"
 require "webmock/rspec"
 require "rspec/its"
