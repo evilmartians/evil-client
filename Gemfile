@@ -6,4 +6,5 @@ gemspec
 group :development, :test do
   gem "pry",        platform: :mri
   gem "pry-byebug", platform: :mri
+  gem "simplecov", ">= 0.22.0", platform: :mri
 end
