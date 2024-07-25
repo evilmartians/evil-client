@@ -35,7 +35,7 @@ class Evil::Client
         "SERVER_NAME" => uri.host,
         "SERVER_PORT" => uri.port,
         "HTTP_Variables" => headers,
-        "rack.version" => Rack::VERSION,
+        "rack.version" => Rack.release,
         "rack.url_scheme" => uri.scheme,
         "rack.input" => Formatter.call(body, format, boundary: boundary),
         "rack.multithread" => false,
