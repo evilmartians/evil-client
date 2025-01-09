@@ -23,7 +23,11 @@ RSpec.describe Evil::Client::Formatter do
     let(:format) { :text }
 
     it "returns formatted body as plain text" do
-      expect(subject).to eq "{:foo=>:bar}"
+      if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.4.0")
+        expect(subject).to eq "{:foo=>:bar}"
+      else
+        expect(subject).to eq "{foo: :bar}"
+      end
     end
   end
 
