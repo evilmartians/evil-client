@@ -17,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "mime-types", ">= 3.1"
   gem.add_runtime_dependency "rack", ">= 2"
   gem.add_runtime_dependency "tram-policy", ">= 0.3.1", "< 3"
+  gem.add_runtime_dependency "base64", ">= 0.2.0", "< 0.3"
 
   gem.add_development_dependency "rake", ">= 10"
   gem.add_development_dependency "rspec", ">= 3.0"
