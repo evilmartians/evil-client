@@ -1,3 +1,5 @@
+require "base64"
+
 class Evil::Client
   #
   # Resolves security definitions from operation settings and schema.
