@@ -14,7 +14,7 @@ module Test
     response(500) { raise "Server error" }
 
     scope :crm do
-      option :version, defaul: proc { 1 }
+      option :version, default: proc { 1 }
       format { version.to_i > 2 ? :json : :form }
       path   { "crm/v#{version}" }
 

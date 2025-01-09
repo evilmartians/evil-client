@@ -105,7 +105,7 @@ RSpec.describe Evil::Client::Settings do
   describe ".name" do
     subject { klass.name }
 
-    it "represents settins class in a human-friendly manner" do
+    it "represents settings class in a human-friendly manner" do
       expect(subject).to eq "Test::Api.users.update"
     end
   end
@@ -113,7 +113,7 @@ RSpec.describe Evil::Client::Settings do
   describe ".inspect" do
     subject { klass.inspect }
 
-    it "represents settins class in a human-friendly manner" do
+    it "represents settings class in a human-friendly manner" do
       expect(subject).to eq "Test::Api.users.update"
     end
   end
@@ -121,7 +121,7 @@ RSpec.describe Evil::Client::Settings do
   describe ".to_s" do
     subject { klass.to_s }
 
-    it "represents settins class in a human-friendly manner" do
+    it "represents settings class in a human-friendly manner" do
       expect(subject).to eq "Test::Api.users.update"
     end
   end
@@ -129,7 +129,7 @@ RSpec.describe Evil::Client::Settings do
   describe ".to_str" do
     subject { klass.to_str }
 
-    it "represents settins class in a human-friendly manner" do
+    it "represents settings class in a human-friendly manner" do
       expect(subject).to eq "Test::Api.users.update"
     end
   end
@@ -230,7 +230,7 @@ RSpec.describe Evil::Client::Settings do
       end
     end
 
-    context "with unparseable value" do
+    context "with unparsable value" do
       let(:value) { "foo" }
 
       it "raises ArgumentError" do

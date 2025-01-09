@@ -69,7 +69,7 @@ RSpec.describe Evil::Client::Container::Operation do
       expect(subject).to eq "result" => "success"
     end
 
-    context "whe a client has custom connection" do
+    context "when a client has custom connection" do
       let(:connection) { double call: [200, {}, %w[{"result":"wow"}]] }
 
       it "sends request to selected connection" do

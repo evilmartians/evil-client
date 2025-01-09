@@ -11,7 +11,7 @@ class Evil::Client
   class Builder
     Names.clean(self) # Remove unnecessary methods from the instance
 
-    # Load concrete implementations for the abstact builder
+    # Load concrete implementations for the abstract builder
     require_relative "builder/scope"
     require_relative "builder/operation"
 

@@ -78,7 +78,7 @@ The user of custom client sends a request by invoking some operation by name on 
 
 ```ruby
 client = CatsClient.new
-cats   = client.cats # scope for the `fetch` operaton
+cats   = client.cats # scope for the `fetch` operation
 
 cats.fetch id: 44 # sends request and returns a processed response
 ```

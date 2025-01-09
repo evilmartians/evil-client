@@ -178,7 +178,7 @@ drastically in many important details.
 
 ### [BREAKING] Changed
 
-- There is no more differencies between "root" DSL, DSL of scope and
+- There is no more differences between "root" DSL, DSL of scope and
   operation. All scopes use exactly the same methods. All operations
   uses just the same methods except for `#operation` and `#scope` that
   provide further nesting.
@@ -463,7 +463,7 @@ formats will be added.
   ```
 
   This time response handler will try processing a response using various
-  definitions (in order of their declaration) until some suits. The hanlder
+  definitions (in order of their declaration) until some suits. The handler
   returns `ResponseError` in case no definition proves suitable.
 
   Names (the first param) are unique. When several definitions use the same name,

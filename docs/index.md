@@ -78,7 +78,7 @@ class CatsClient < Evil::Client
       end
 
       # Parses json response, wraps it into model with [#error] and raises
-      # an exception where [ResponseError#response] contains the model istance
+      # an exception where [ResponseError#response] contains the model instance
       response(400, 422) { |(status, *)| raise "#{status}: Record invalid" }
     end
   end
