@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog], and this project adheres
 to [Semantic Versioning].
 
+## [3.3.0] [2025-01-09]
+
+### Fixed
+- Rename `rack.version` to `rack.release` to follow deprecation of `Rack::VERSION` (@mrexox)
+- Add dependency from `base64` which is absent in latest  versions of ruby (@mrexox)
+
 ## [3.2.0] [2023-01-18]
 
 ### Added
@@ -507,4 +513,5 @@ formats will be added.
 [3.0.4]: https://github.com/evilmartians/evil-client/compare/v3.0.3...v3.0.4
 [3.0.5]: https://github.com/evilmartians/evil-client/compare/v3.0.4...v3.0.5
 [3.1.0]: https://github.com/evilmartians/evil-client/compare/v3.0.5...v3.1.0
-[3.1.0]: https://github.com/evilmartians/evil-client/compare/v3.1.0...v3.2.0
+[3.2.0]: https://github.com/evilmartians/evil-client/compare/v3.1.0...v3.2.0
+[3.3.0]: https://github.com/evilmartians/evil-client/compare/v3.2.0...v3.3.0
