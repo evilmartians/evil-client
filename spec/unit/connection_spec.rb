@@ -15,7 +15,7 @@ RSpec.describe Evil::Client::Connection, ".call" do
         "Authorization" => "Bearer eoiqopr==",
         "Content-Type" => "application/json"
       },
-      "rack.version" => Rack::VERSION,
+      "rack.version" => Rack.release,
       "rack.input" => "name=Andrew&age=46",
       "rack.url_scheme" => "https",
       "rack.multithread" => false,

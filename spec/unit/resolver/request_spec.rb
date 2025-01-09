@@ -50,7 +50,7 @@ RSpec.describe Evil::Client::Resolver::Request, ".call" do
         "Authorization" => "Bearer eoiqopr==",
         "Content-Type" => "application/json"
       },
-      "rack.version" => Rack::VERSION,
+      "rack.version" => Rack.release,
       "rack.input" => '{"version":"v77"}',
       "rack.url_scheme" => "https",
       "rack.multithread" => false,
