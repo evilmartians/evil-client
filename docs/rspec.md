@@ -1,6 +1,6 @@
 When you provide a client to remote API, you would provide some means for its users to test their operations.
 
-Surely, they could use [webmock] to check the ultimate requests that are sent to the server. But doing this, they would inadvertedly specify not their own code, but your client's code too. What do they actually need is a means to stub and check invocations of your client's operations. This way they would back on correctness of your client, and take its interface as an endpoint.
+Surely, they could use [webmock] to check the ultimate requests that are sent to the server. But doing this, they would inadvertently specify not their own code, but your client's code too. What do they actually need is a means to stub and check invocations of your client's operations. This way they would back on correctness of your client, and take its interface as an endpoint.
 
 For this reason, we support a special RSpec stubs and expectations. sThey are not loaded by default, so you must require it first, and then include the module:
 

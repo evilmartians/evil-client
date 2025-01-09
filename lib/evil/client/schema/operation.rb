@@ -101,7 +101,7 @@ class Evil::Client
     # Adds query definition to the schema
     #
     # Query should be a nested hash.
-    # Wnen subscope or operation reloads previously defined query,
+    # When subscope or operation reloads previously defined query,
     # new definition are merged deeply to older one. You can populate
     # a query step-by-step from client root to an operation.
     #
@@ -117,7 +117,7 @@ class Evil::Client
     #
     # It is expected the body to correspond to [#format].
     #
-    # When a format is :json,      the body should be convertable to json
+    # When a format is :json,      the body should be convertible to json
     # When a format is :text,      the body should be stringified
     # When a format is :form,      the body should be a hash
     # When a format is :multipart, the body can be object or array of objects

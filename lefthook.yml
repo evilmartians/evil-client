@@ -1,0 +1,8 @@
+output:
+  - execution_info
+
+pre-commit:
+  jobs:
+    - run: bundle exec rubocop
+      glob: "*.{rb,gemspec}"
+      stage_fixed: true

@@ -12,7 +12,7 @@ class CatsClient < Evil::Client
 end
 ```
 
-Remember that you can define header values as a flat array instead of the string. Inside an array all the values are counted as srings.
+Remember that you can define header values as a flat array instead of the string. Inside an array all the values are counted as strings.
 
 ```ruby
 headers { "Language" => ["ru_RU", "charset=utf-8"] }

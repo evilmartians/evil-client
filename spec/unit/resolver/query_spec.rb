@@ -74,7 +74,7 @@ RSpec.describe Evil::Client::Resolver::Query, ".call" do
     end
   end
 
-  context "when query defintion returns neither hash nor nil" do
+  context "when query definition returns neither hash nor nil" do
     before { schema.definitions[:query] = proc { 1323 } }
 
     it "raises Evil::Client::DefinitionError" do

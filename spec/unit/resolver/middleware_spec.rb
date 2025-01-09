@@ -72,7 +72,7 @@ RSpec.describe Evil::Client::Resolver::Middleware, ".call" do
     end
   end
 
-  context "when middleware defintion has wrong format" do
+  context "when middleware definition has wrong format" do
     before { schema.definitions[:middleware] = proc { 1323 } }
 
     it "raises Evil::Client::DefinitionError" do

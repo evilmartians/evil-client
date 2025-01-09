@@ -30,7 +30,7 @@ jobs:
         run: sudo apt-get install libpq-dev
 
       - name: Install Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1.61.1
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # 'bundle install' and cache

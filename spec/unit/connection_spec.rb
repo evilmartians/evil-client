@@ -15,7 +15,7 @@ RSpec.describe Evil::Client::Connection, ".call" do
         "Authorization" => "Bearer eoiqopr==",
         "Content-Type" => "application/json"
       },
-      "rack.version" => Rack.release,
+      "rack.release" => Rack.release,
       "rack.input" => "name=Andrew&age=46",
       "rack.url_scheme" => "https",
       "rack.multithread" => false,
@@ -57,22 +57,40 @@ RSpec.describe Evil::Client::Connection, ".call" do
   it "logs the request" do
     subject
 
-    <<-LOG.gsub(/^ +\|/, "").lines.each { |l| expect(log.string).to include l }
-      |INFO -- Evil::Client::Connection: sending request:
-      |INFO -- Evil::Client::Connection:  Url     | https://foo.com/api/v77/users/43?version=77&verbose=true
-      |INFO -- Evil::Client::Connection:  Headers | {"Foo"=>"BAR", "Baz"=>"QUX", "Authorization"=>"Bearer eoiqopr==", "Content-Type"=>"application/json"}
-      |INFO -- Evil::Client::Connection:  Body    | name=Andrew&age=46
-    LOG
+    if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.4.0")
+      <<-LOG.gsub(/^ +\|/, "").lines.each { |l| expect(log.string).to include l }
+        |INFO -- Evil::Client::Connection: sending request:
+        |INFO -- Evil::Client::Connection:  Url     | https://foo.com/api/v77/users/43?version=77&verbose=true
+        |INFO -- Evil::Client::Connection:  Headers | {"Foo"=>"BAR", "Baz"=>"QUX", "Authorization"=>"Bearer eoiqopr==", "Content-Type"=>"application/json"}
+        |INFO -- Evil::Client::Connection:  Body    | name=Andrew&age=46
+      LOG
+    else
+      <<-LOG.gsub(/^ +\|/, "").lines.each { |l| expect(log.string).to include l }
+        |INFO -- Evil::Client::Connection: sending request:
+        |INFO -- Evil::Client::Connection:  Url     | https://foo.com/api/v77/users/43?version=77&verbose=true
+        |INFO -- Evil::Client::Connection:  Headers | {"Foo" => "BAR", "Baz" => "QUX", "Authorization" => "Bearer eoiqopr==", "Content-Type" => "application/json"}
+        |INFO -- Evil::Client::Connection:  Body    | name=Andrew&age=46
+      LOG
+    end
   end
 
   it "logs the response" do
     subject
 
-    <<-LOG.gsub(/^ +\|/, "").lines.each { |l| expect(log.string).to include l }
-      |INFO -- Evil::Client::Connection: receiving response:
-      |INFO -- Evil::Client::Connection:  Status  | 200
-      |INFO -- Evil::Client::Connection:  Headers | {\"content-language\"=>[\"en_AU\"]}
-      |INFO -- Evil::Client::Connection:  Body    | [\"Done!\"]
-    LOG
+    if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.4.0")
+      <<-LOG.gsub(/^ +\|/, "").lines.each { |l| expect(log.string).to include l }
+        |INFO -- Evil::Client::Connection: receiving response:
+        |INFO -- Evil::Client::Connection:  Status  | 200
+        |INFO -- Evil::Client::Connection:  Headers | {"content-language"=>["en_AU"]}
+        |INFO -- Evil::Client::Connection:  Body    | ["Done!"]
+      LOG
+    else
+      <<-LOG.gsub(/^ +\|/, "").lines.each { |l| expect(log.string).to include l }
+        |INFO -- Evil::Client::Connection: receiving response:
+        |INFO -- Evil::Client::Connection:  Status  | 200
+        |INFO -- Evil::Client::Connection:  Headers | {"content-language" => ["en_AU"]}
+        |INFO -- Evil::Client::Connection:  Body    | ["Done!"]
+      LOG
+    end
   end
 end

@@ -50,7 +50,7 @@ RSpec.describe Evil::Client::Resolver::Request, ".call" do
         "Authorization" => "Bearer eoiqopr==",
         "Content-Type" => "application/json"
       },
-      "rack.version" => Rack.release,
+      "rack.release" => Rack.release,
       "rack.input" => '{"version":"v77"}',
       "rack.url_scheme" => "https",
       "rack.multithread" => false,
@@ -82,7 +82,12 @@ RSpec.describe Evil::Client::Resolver::Request, ".call" do
   context "with :text format" do
     before do
       schema.definitions[:format] = -> { :text }
-      environment["rack.input"] = '{:version=>"v77"}'
+      environment["rack.input"] =
+        if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.4.0")
+          '{:version=>"v77"}'
+        else
+          '{version: "v77"}'
+        end
       environment["HTTP_Variables"]["Content-Type"] = "text/plain"
     end
 
